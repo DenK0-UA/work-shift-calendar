@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Київ: Арт-програма 05.04.2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0b0d17;
+            --accent-gold: #c9a063;
+            --accent-pink: #ff8fa3;
+            --text-main: #e0e0e0;
+            --muted: #888;
+            --glass: rgba(255, 255, 255, 0.05);
+            --transition: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- ВСПЛИВАЮЧЕ ВІКНО (SPLASH SCREEN) --- */
+        body.locked { overflow: hidden; }
+        
+        #splash-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(25px);
+            background: rgba(11, 13, 23, 0.85);
+            transition: background 0.8s ease, opacity 0.8s var(--transition);
+        }
+
+        #splash-content { 
+            text-align: center; 
+            max-width: 650px; 
+            padding: 2rem; 
+            transition: opacity 0.5s ease;
+        }
+        
+        #splash-content h2 { 
+            font-family: 'Playfair Display', serif; 
+            font-size: clamp(2rem, 5vw, 3rem); 
+            margin-bottom: 3rem; 
+            color: #fff; 
+        }
+        
+        .splash-btns { 
+            display: flex; 
+            gap: 2rem; 
+            justify-content: center; 
+            flex-wrap: wrap; 
+        }
+        
+        .splash-btn {
+            padding: 1rem 3rem;
+            border: 1px solid var(--accent-gold);
+            background: transparent;
+            color: var(--accent-gold);
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            letter-spacing: 2px;
+            cursor: pointer;
+            position: relative;
+            transform: translateY(0);
+            transition: transform 0.4s var(--transition), box-shadow 0.4s, background 0.4s, color 0.4s;
+        }
+
+        .splash-btn:hover { 
+            background: var(--accent-gold); 
+            color: #000; 
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(201, 160, 99, 0.4);
+        }
+
+        .btn-yes { animation: pulseGold 2s infinite; }
+        
+        @keyframes pulseGold {
+            0% { box-shadow: 0 0 0 0 rgba(201, 160, 99, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(201, 160, 99, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(201, 160, 99, 0); }
+        }
+
+        .no-choice-mode { background: #000 !important; backdrop-filter: none !important; }
+        
+        .despair-text { 
+            color: #555; 
+            font-family: 'Playfair Display', serif; 
+            font-style: italic; 
+            font-size: 1.4rem; 
+            line-height: 1.8; 
+            animation: fadeIn 2s ease; 
+        }
+
+        .redemption-wrapper {
+            margin-top: 4rem;
+            opacity: 0;
+            animation: fadeIn 1s ease 2.5s forwards;
+        }
+
+        .btn-redeem {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: rgba(255,255,255,0.5);
+            padding: 0.8rem 2rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.4s var(--transition);
+        }
+
+        .btn-redeem:hover {
+            color: #000;
+            background: #fff;
+            border-color: #fff;
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        .bg-glow {
+            position: fixed; width: 80vw; height: 80vw;
+            background: radial-gradient(circle, rgba(201, 160, 99, 0.03) 0%, transparent 70%);
+            top: -30vw; left: -20vw; z-index: -1; pointer-events: none;
+        }
+
+        .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s var(--transition), transform 0.8s var(--transition); }
+        .reveal.active { opacity: 1; transform: translateY(0); }
+
+        .final-reveal { opacity: 0; transform: translateY(60px) scale(0.95); transition: opacity 0.6s var(--transition), transform 0.6s var(--transition); }
+        .final-reveal.active { opacity: 1; transform: translateY(0) scale(1); }
+
+        .container { max-width: 1000px; width: 100%; margin: 0 auto; padding: 0 1rem; }
+
+        .hero {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center;
+            background: linear-gradient(rgba(11, 13, 23, 0.8), rgba(11, 13, 23, 0.8)), 
+                        url('https://gloss.ua/file/source/tkacheva2019/musei/1558368719_529702_1558368958_noticia_normal.jpg');
+            background-size: cover; background-position: center; background-attachment: fixed; position: relative;
+        }
+
+        .hero::after {
+            content: ''; position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+            width: 2rem; height: 3.5rem; border: 2px solid var(--accent-gold); border-radius: 20px;
+            animation: scroll-hint 2s infinite;
+        }
+
+        @keyframes scroll-hint {
+            0% { transform: translateX(-50%) translateY(0); opacity: 1; }
+            50% { transform: translateX(-50%) translateY(10px); opacity: 0.5; }
+            100% { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+
+        .hero h1 { font-size: clamp(2.5rem, 8vw, 5rem); margin: 0; line-height: 1.1; }
+        .date-label { font-size: 1.2rem; text-transform: uppercase; letter-spacing: 0.5rem; color: var(--accent-gold); margin-bottom: 2rem; display: block; }
+
+        .section { padding: 6rem 0; position: relative; }
+        .program-tag { color: var(--accent-gold); font-weight: 600; text-transform: uppercase; letter-spacing: 3px; font-size: 0.9rem; margin-bottom: 1.5rem; display: block; }
+        .content-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+
+        .card-wrapper { perspective: 1000px; }
+        .card {
+            background: var(--glass); border: 1px solid rgba(255,255,255,0.08); padding: 3rem; border-radius: 4px;
+            backdrop-filter: blur(15px); transform-style: preserve-3d; transition: transform 0.1s ease, border-color 0.4s ease;
+        }
+        .card:hover { border-color: rgba(201, 160, 99, 0.4); }
+        .card h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); margin-top: 0; }
+
+        .btn {
+            display: inline-block; padding: 1rem 2rem; border: 1px solid var(--accent-gold); color: var(--accent-gold);
+            text-decoration: none; text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; font-weight: 600;
+            transition: all 0.4s var(--transition); margin-top: 2rem; position: relative; overflow: hidden; z-index: 1;
+            text-align: center;
+        }
+        .btn::before {
+            content: ''; position: absolute; top: 50%; left: 50%; width: 300px; height: 300px;
+            background-color: var(--accent-gold); transform: translate(-50%, -50%) scale(0); border-radius: 50%; z-index: -1; transition: transform 0.6s var(--transition);
+        }
+        .btn:hover { color: var(--bg); }
+        .btn:hover::before { transform: translate(-50%, -50%) scale(1); }
+
+        .walk-path { text-align: center; background: #0d1127; padding: 8rem 0; position: relative; }
+        .map-visual { max-width: 600px; margin: 4rem auto 0; position: relative; height: 100px; }
+        .map-line { position: absolute; top: 50%; left: 10%; width: 80%; height: 2px; background: rgba(255,255,255,0.1); }
+        .map-line-active { position: absolute; top: 50%; left: 10%; width: 0%; height: 2px; background: var(--accent-gold); transition: width 1.5s ease-in-out; }
+        .walk-path.active .map-line-active { width: 80%; }
+        .map-point { position: absolute; top: 50%; transform: translateY(-50%) scale(0); width: 12px; height: 12px; background: var(--accent-gold); border-radius: 50%; transition: transform 0.4s var(--transition); }
+        .map-point::after { content: attr(data-label); position: absolute; top: 20px; left: 50%; transform: translateX(-50%); color: var(--muted); font-size: 0.8rem; white-space: nowrap; }
+        .walk-path.active .map-point { transform: translateY(-50%) scale(1); }
+        .p1 { left: 10%; transition-delay: 0.2s !important; }
+        .p2 { left: 50%; transition-delay: 0.8s !important; }
+        .p3 { left: 90%; transition-delay: 1.4s !important; }
+
+        .pink-border { border-color: rgba(255, 133, 161, 0.2) !important; }
+        .pink-border:hover { border-color: rgba(255, 133, 161, 0.6) !important; }
+        .pink-text { color: var(--accent-pink); }
+        .btn-pink { border-color: var(--accent-pink); color: var(--accent-pink); }
+        .btn-pink::before { background-color: var(--accent-pink); }
+        .btn-pink:hover { color: #fff; }
+
+        .weather-style-box { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 4rem; }
+        .info-item { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 2rem; border-left: 3px solid var(--accent-gold); transition: background 0.4s var(--transition); }
+        .info-item:hover { background: rgba(201, 160, 99, 0.05); }
+        .info-item h3 { color: var(--accent-gold); margin-bottom: 0.5rem; margin-top: 0; transition: color 0.3s; }
+
+        .collapsible-wrapper { margin-top: 4rem; perspective: 1000px; }
+        details { border: 1px dashed rgba(201, 160, 99, 0.3); border-radius: 4px; background: rgba(255,255,255,0.02); transition: background 0.3s ease; }
+        details[open] { background: var(--glass); border-style: solid; }
+        summary { cursor: pointer; font-weight: 600; color: var(--accent-gold); outline: none; padding: 1.5rem; user-select: none; position: relative; }
+        summary::after { content: '＋'; position: absolute; right: 1.5rem; transition: transform 0.3s ease; }
+        details[open] summary::after { transform: rotate(45deg); }
+        .details-content { padding: 0 1.5rem 2.5rem; line-height: 1.7; opacity: 0; transform: translateY(-10px); transition: opacity 0.5s ease, transform 0.5s ease; }
+        details[open] .details-content { opacity: 1; transform: translateY(0); }
+
+        /* --- ФІНАЛЬНИЙ БЛОК ЗАКЛИКУ ДО ДІЇ --- */
+        .final-cta {
+            background: linear-gradient(135deg, rgba(201, 160, 99, 0.1) 0%, rgba(255, 133, 161, 0.05) 100%);
+            border: 1px solid rgba(201, 160, 99, 0.3);
+            border-radius: 8px;
+            padding: 4rem 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .final-cta::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(255, 133, 161, 0.1) 0%, transparent 50%);
+            animation: rotateGlow 15s linear infinite; z-index: 0; pointer-events: none;
+        }
+
+        @keyframes rotateGlow { 100% { transform: rotate(360deg); } }
+
+        .final-cta > * { position: relative; z-index: 1; }
+        .final-cta h2 { font-size: clamp(2rem, 4vw, 3rem); color: var(--accent-gold); margin-bottom: 1rem; }
+        .final-cta p { font-size: 1.1rem; line-height: 1.8; color: var(--text-main); font-family: 'Montserrat', sans-serif; max-width: 600px; margin: 0 auto;}
+
+        .viber-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2.5rem;
+        }
+        
+        .btn-fill { background: var(--accent-gold); color: #000; }
+        .btn-fill:hover { color: #fff; }
+
+        footer { padding: 5rem 0; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); font-size: 0.8rem; color: var(--muted); letter-spacing: 3px; margin-top: 4rem; }
+
+        @media (max-width: 768px) {
+            .content-grid { grid-template-columns: 1fr; gap: 3rem; }
+            .section { padding: 4rem 0; }
+            .hero h1 { font-size: 3rem; }
+            .card { padding: 2rem; }
+            .map-visual { height: 180px; margin-top: 2rem;}
+            .map-line, .map-line-active { width: 2px; height: 80%; left: 50%; top: 10%; transform: translateX(-50%); }
+            .walk-path.active .map-line-active { height: 80%; width: 2px; }
+            .map-point { left: 50% !important; transform: translateX(-50%) translateY(0) scale(0); top: auto; }
+            .walk-path.active .map-point { transform: translateX(-50%) translateY(0) scale(1); }
+            .map-point::after { left: 30px; top: 50%; transform: translateY(-50%); text-align: left;}
+            .p1 { top: 10%; }
+            .p2 { top: 50%; }
+            .p3 { top: 90%; }
+            details summary { padding: 1.2rem; }
+            .details-content { padding: 0 1.2rem 2rem; }
+            .splash-btns { flex-direction: column; width: 100%; }
+            .splash-btn { width: 100%; }
+            .splash-btn:hover { transform: translateY(-3px); }
+            .final-cta { padding: 3rem 1.5rem; margin: 0 1rem;}
+            .viber-buttons .btn { width: 100%; margin-top: 0; }
+        }
+    </style>
+</head>
+<body class="locked">
+
+    <div id="splash-overlay">
+        <div id="splash-content">
+            <h2 id="splash-title">Готові з користю провести недільний час?</h2>
+            <div class="splash-btns" id="splash-btns-container">
+                <button class="splash-btn btn-yes" onclick="choiceYes()">ТАК</button>
+                <button class="splash-btn" onclick="choiceNo()">НІ</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bg-glow"></div>
+
+    <header class="hero">
+        <div class="container">
+            <span class="date-label">5 Квітня 2026</span>
+            <h1>Мистецтво сповільнення</h1>
+            <p style="font-size: 1.2rem; max-width: 700px; margin: 2rem auto;">Програма неділі: від класичних полотен до солодких моментів у місті.</p>
+        </div>
+    </header>
+
+    <section class="section section-museum reveal">
+        <div class="container content-grid">
+            <div class="card-wrapper tilt-card">
+                <div class="card">
+                    <span class="program-tag">Програма: Крок 1</span>
+                    <h2>Естетика класики</h2>
+                    <p>Починаємо нашу прогулянку у <strong>Київській картинній галереї</strong>. Це час для глибокого споглядання та естетичного наповнення у тиші історичних залів.</p>
+                    <p class="muted">📍 вул. Терещенківська, 9</p>
+                    <a href="https://knag.museum/index.php/uk/" target="_blank" class="btn">До галереї</a>
+                </div>
+            </div>
+            <div class="text-right-mobile reveal" style="font-size: 1rem; letter-spacing: 1px; line-height: 1.8;">
+                <p>Неспішний початок серед мистецтва — найкращий спосіб задати ритм усьому вихідному дню.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="walk-path reveal section-walk">
+        <div class="container">
+            <span class="program-tag">Програма: Маршрут</span>
+            <h2>Міська прогулянка</h2>
+            <p style="font-size: 1.5rem; font-family: 'Playfair Display'; italic; max-width: 800px; margin: 0 auto; line-height: 1.5;">
+                Від Терещенківської прямуємо крізь парк Шевченка. Насолоджуємося весняним Києвом та ділимося враженнями.
+            </p>
+            
+            <div class="map-visual">
+                <div class="map-line"></div>
+                <div class="map-line-active"></div>
+                <div class="map-point p1" data-label="Галерея"></div>
+                <div class="map-point p2" data-label="Парк Шевченка"></div>
+                <div class="map-point p3" data-label="Namelaka"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-namelaka reveal">
+        <div class="container content-grid">
+            <div class="card-wrapper tilt-card" style="order: 2;">
+                <div class="card pink-border">
+                    <span class="program-tag pink-text">Програма: Фінал</span>
+                    <h2 class="pink-text">NAMELAKA</h2>
+                    <p>Завершуємо маршрут у найрожевішій локації Києва. Час для десертів, кави та повного релаксу.</p>
+                    <p class="muted">📍 вул. Велика Васильківська, 51</p>
+                    <a href="https://thegrandnamelaka.choiceqr.com/" target="_blank" class="btn btn-pink">Меню Namelaka</a>
+                </div>
+            </div>
+            <div style="order: 1; text-align: right; font-size: 1rem; letter-spacing: 1px;">
+                <p class="pink-text">Солодкий фінал дня в атмосфері, де кожна деталь створена для насолоди.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section section-weather reveal">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 2rem;">Налаштування на день</h2>
+            
+            <div class="weather-style-box" id="dynamic-weather">
+                <div class="info-item" id="w-morning">
+                    <h3>Ранок (+6…+8°C)</h3>
+                    <p>Свіже весняне повітря для ідеального старту програми.</p>
+                </div>
+                <div class="info-item" id="w-day">
+                    <h3>День (+12…+15°C)</h3>
+                    <p>Сонячно та тепло. Найкращий час для прогулянки парком.</p>
+                </div>
+                <div class="info-item" id="w-evening">
+                    <h3>Вечір (+7…+10°C)</h3>
+                    <p>Приємна прохолода для затишного фіналу за кавою.</p>
+                </div>
+            </div>
+
+            <div class="collapsible-wrapper">
+                <details>
+                    <summary>➕ Додатково: Питання комфорту</summary>
+                    <div class="details-content">
+                        <h3 style="color: var(--accent-gold); margin-top: 0; font-size: 1.4rem;">Консультація у Mebelok</h3>
+                        <p><strong>📍 пр-т Миколи Бажана 24/1</strong></p>
+                        <p>Якщо матимемо час та сили перед основною програмою — заїхати поспілкуватися з консультантом щодо дивана <strong>«Челсі»</strong>.</p>
+                        <p style="font-size: 0.9rem; font-style: italic; color: var(--muted); border-left: 2px solid rgba(255,255,255,0.1); padding-left: 1rem; margin: 1.5rem 0;">
+                            *Головна мета — наживо обрати ідеальний колір та текстуру тканини з професійною допомогою.
+                        </p>
+                        <a href="https://www.mebelok.com/uk-ua/pryamoy-divan-chelsi/" target="_blank" style="color: var(--accent-gold); text-decoration: underline; font-weight: 600;">Диван Челсі на сайті</a>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <section class="section final-reveal" style="padding-top: 2rem;">
+        <div class="container">
+            <div class="final-cta">
+                <h2>Ваш хід...</h2>
+                <p>Якщо ця маленька недільна пригода припала вам до душі, просто натисніть на кнопку нижче, щоб повідомити Дениса про своє рішення.</p>
+                
+                <div class="viber-buttons">
+                    <a href="viber://chat?number=380637344967" class="btn btn-fill" style="margin-top: 0;">Так, я з Вами! 🌸</a>
+                    <a href="viber://chat?number=380637344967" class="btn" style="margin-top: 0;">Не піду 🙅‍♀️</a>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            PANDA WEB • UKRAINE • 2026
+        </div>
+    </footer>
+
+    <script>
+        // --- ДИНАМІЧНЕ ПІДВАНТАЖЕННЯ ПОГОДИ (Open-Meteo) ---
+        async function fetchWeather() {
+            try {
+                const lat = 50.4501; 
+                const lon = 30.5234;
+                const targetDate = "2026-04-05"; 
+
+                const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,weathercode&start_date=${targetDate}&end_date=${targetDate}&timezone=Europe%2FKyiv`);
+                
+                if (!res.ok) throw new Error("API не відповідає"); 
+                
+                const data = await res.json();
+                const temps = data.hourly?.temperature_2m;
+                const codes = data.hourly?.weathercode;
+
+                if (!temps || temps.length < 20 || temps[9] === null || temps[9] === undefined) {
+                    throw new Error("Немає даних на цю дату");
+                }
+
+                const tMorn = Math.round(temps[9]);  
+                const tDay = Math.round(temps[14]);  
+                const tEve = Math.round(temps[19]);  
+
+                if (isNaN(tMorn) || isNaN(tDay) || isNaN(tEve)) {
+                    throw new Error("Отримано NaN замість температури");
+                }
+
+                const getDesc = (c) => {
+                    if (c === 0) return "Ясно та сонячно";
+                    if (c > 0 && c <= 3) return "Мінлива хмарність, комфортно";
+                    if (c >= 45 && c <= 48) return "Атмосферний туман";
+                    if (c >= 51 && c <= 67) return "Можливий дощ, краще взяти парасольку";
+                    if (c >= 71 && c <= 77) return "Можливий сніжок";
+                    return "Беремо гарний настрій за будь-якої погоди";
+                };
+
+                document.getElementById('w-morning').innerHTML = `<h3>Ранок (${tMorn > 0 ? '+'+tMorn : tMorn}°C)</h3><p>${getDesc(codes[9])} для ідеального старту.</p>`;
+                document.getElementById('w-day').innerHTML = `<h3>День (${tDay > 0 ? '+'+tDay : tDay}°C)</h3><p>${getDesc(codes[14])}. Чудовий час для прогулянки.</p>`;
+                document.getElementById('w-evening').innerHTML = `<h3>Вечір (${tEve > 0 ? '+'+tEve : tEve}°C)</h3><p>${getDesc(codes[19])}. Затишний фінал за кавою.</p>`;
+                
+            } catch (e) {
+                console.log("Дані погоди ще не доступні, залишаємо резервний красивий текст.");
+            }
+        }
+        
+        fetchWeather();
+
+        // --- БАЗОВА ЛОГІКА САЙТУ ---
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        
+        window.scrollTo(0, 0);
+
+        function choiceYes() {
+            window.scrollTo(0, 0); 
+            const overlay = document.getElementById('splash-overlay');
+            overlay.style.opacity = '0';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                document.body.classList.remove('locked');
+            }, 800);
+        }
+
+        function choiceNo() {
+            const overlay = document.getElementById('splash-overlay');
+            const content = document.getElementById('splash-content');
+            
+            overlay.classList.add('no-choice-mode');
+            content.innerHTML = `
+                <div class="despair-text">
+                    Ну тоді сидіть вдома. Нічого не робіть. Не розвивайтеся. <br><br>
+                    Не дивіться на прекрасне, не куштуйте смачного. Життя — це рух, а ви обрали стагнацію. <br><br>
+                    Ваша неділя офіційно втрачена. Прощавайте.
+                </div>
+                <div class="redemption-wrapper">
+                    <button class="btn-redeem" onclick="redeemChoice()">Я передумав(ла), покажіть план</button>
+                </div>
+            `;
+        }
+
+        function redeemChoice() {
+            const overlay = document.getElementById('splash-overlay');
+            const content = document.getElementById('splash-content');
+            
+            content.style.opacity = '0';
+            setTimeout(() => {
+                overlay.classList.remove('no-choice-mode');
+                choiceYes();
+            }, 500);
+        }
+
+        const reveals = document.querySelectorAll('.reveal, .walk-path');
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, { threshold: 0.15 });
+        reveals.forEach(reveal => revealObserver.observe(reveal));
+
+        const finalReveal = document.querySelector('.final-reveal');
+        if (finalReveal) {
+            const finalObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                    } else {
+                        entry.target.classList.remove('active'); 
+                    }
+                });
+            }, { threshold: 0.1 }); 
+            finalObserver.observe(finalReveal);
+        }
+
+        if (window.innerWidth > 900) {
+            const tiltCards = document.querySelectorAll('.tilt-card');
+            tiltCards.forEach(wrapper => {
+                const card = wrapper.querySelector('.card');
+                wrapper.addEventListener('mousemove', (e) => {
+                    const rect = wrapper.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = (centerY - y) / 10;
+                    const rotateY = (x - centerX) / 10;
+                    
+                    card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+                });
+                
+                wrapper.addEventListener('mouseleave', () => {
+                    card.style.transform = 'rotateX(0deg) rotateY(0deg)';
+                });
+            });
+        }
+    </script>
+
+</body>
+</html>
