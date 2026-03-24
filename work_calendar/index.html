@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fluid 5/5 Work Schedule & Weather</title>
+    <title>Work Schedule & Weather</title>
     <style>
         :root {
             /* Palette - Ultra Modern / Apple-like */
@@ -865,6 +865,254 @@
             background: rgba(255, 255, 255, 0.15);
         }
 
+        /* --- МОДАЛЬ ГРАФІК --- */
+        .schedule-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--modal-overlay);
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), backdrop-filter 0.4s ease;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .schedule-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .schedule-card {
+            background: var(--main-container-bg);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            width: 100%;
+            max-width: 380px;
+            border-radius: 26px;
+            padding: 28px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 20px 60px rgba(0, 0, 0, 0.24);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transform: scale(0.85) translateY(40px) rotateX(12deg);
+            opacity: 0;
+            transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        [data-theme="dark"] .schedule-card {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .schedule-overlay.active .schedule-card {
+            transform: scale(1) translateY(0) rotateX(0deg);
+            opacity: 1;
+        }
+
+        .schedule-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .schedule-templates {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .schedule-btn {
+            padding: 16px 12px;
+            border: 2px solid var(--card-border);
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.02);
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            text-align: center;
+        }
+
+        [data-theme="dark"] .schedule-btn {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .schedule-btn:hover {
+            border-color: var(--accent);
+            background: rgba(0, 122, 255, 0.08);
+            transform: translateY(-2px);
+        }
+
+        [data-theme="dark"] .schedule-btn:hover {
+            background: rgba(0, 122, 255, 0.12);
+        }
+
+        .schedule-btn.active {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
+        }
+
+        .schedule-btn-label {
+            font-size: 12px;
+            opacity: 0.7;
+            font-weight: 500;
+        }
+
+        .schedule-custom {
+            margin-bottom: 24px;
+            padding: 16px;
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.02);
+            display: none;
+        }
+
+        [data-theme="dark"] .schedule-custom {
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .schedule-custom.active {
+            display: block;
+        }
+
+        .custom-input-group {
+            margin-bottom: 12px;
+        }
+
+        .custom-input-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .custom-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--card-border);
+            border-radius: 12px;
+            background: var(--main-container-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            transition: border-color 0.2s;
+        }
+
+        [data-theme="dark"] .custom-input {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .custom-input:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        .schedule-info {
+            background: var(--accent-soft);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 24px;
+            font-size: 12px;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .schedule-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .schedule-btn-action {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .schedule-btn-action.primary {
+            background: var(--accent);
+            color: white;
+        }
+
+        .schedule-btn-action.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
+        }
+
+        .schedule-btn-action.secondary {
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .schedule-btn-action.secondary {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .schedule-btn-action.secondary:hover {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        [data-theme="dark"] .schedule-btn-action.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .schedule-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.05);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        [data-theme="dark"] .schedule-close {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .schedule-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+            transform: rotate(90deg);
+        }
+
+        [data-theme="dark"] .schedule-close:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
         /* --- RESPONSIVE --- */
         @media (max-width: 480px) {
             .main-container {
@@ -1090,6 +1338,7 @@
                     <p class="subtitle">Графік 5/5. Старт: 27.03.2026</p>
                 </div>
                 <div style="display: flex; gap: 12px; align-items: center;">
+                    <button class="settings-btn" id="schedule-btn" title="Графік">📅</button>
                     <button class="settings-btn" id="settings-btn">⚙️</button>
                     <button class="theme-toggle" id="theme-btn">🌓</button>
                 </div>
@@ -1186,6 +1435,64 @@
             <div class="settings-buttons">
                 <button class="settings-btn-action btn-apply" id="apply-settings">Застосувати</button>
                 <button class="settings-btn-action btn-reset" id="reset-settings">Скидання</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="schedule-overlay" id="schedule-overlay">
+        <div class="schedule-card">
+            <button class="schedule-close" id="schedule-overlay-close">✕</button>
+            <h2 class="schedule-title">Твій Графік 📅</h2>
+            
+            <div class="schedule-info">
+                ⏱️ Вибери готовий графік або налаштуй свій. Календар автоматично перераховується.
+            </div>
+
+            <div class="schedule-templates">
+                <button class="schedule-btn" data-schedule="5/5">
+                    <strong>5/5</strong>
+                    <span class="schedule-btn-label">5 роб. / 5 вих.</span>
+                </button>
+                <button class="schedule-btn" data-schedule="4/4">
+                    <strong>4/4</strong>
+                    <span class="schedule-btn-label">4 роб. / 4 вих.</span>
+                </button>
+                <button class="schedule-btn" data-schedule="5/2">
+                    <strong>5/2</strong>
+                    <span class="schedule-btn-label">5 роб. / 2 вих.</span>
+                </button>
+                <button class="schedule-btn" data-schedule="3/3">
+                    <strong>3/3</strong>
+                    <span class="schedule-btn-label">3 роб. / 3 вих.</span>
+                </button>
+                <button class="schedule-btn" data-schedule="2/2">
+                    <strong>2/2</strong>
+                    <span class="schedule-btn-label">2 роб. / 2 вих.</span>
+                </button>
+                <button class="schedule-btn" data-schedule="7/0">
+                    <strong>7/0</strong>
+                    <span class="schedule-btn-label">7 днів роб.</span>
+                </button>
+                <button class="schedule-btn" data-schedule="custom">
+                    <strong>⚙️</strong>
+                    <span class="schedule-btn-label">Кастомний</span>
+                </button>
+            </div>
+
+            <div class="schedule-custom" id="custom-schedule-form">
+                <div class="custom-input-group">
+                    <label class="custom-input-label">Дні роботи</label>
+                    <input type="number" id="custom-work-days" class="custom-input" min="0" max="30" placeholder="Наприклад: 5">
+                </div>
+                <div class="custom-input-group">
+                    <label class="custom-input-label">Дні вихідних</label>
+                    <input type="number" id="custom-off-days" class="custom-input" min="0" max="30" placeholder="Наприклад: 2">
+                </div>
+            </div>
+
+            <div class="schedule-buttons">
+                <button class="schedule-btn-action primary" id="apply-schedule">Застосувати</button>
+                <button class="schedule-btn-action secondary" id="schedule-overlay-close2">Назад</button>
             </div>
         </div>
     </div>
@@ -1399,17 +1706,40 @@
             magneticBtns: document.querySelectorAll('[data-magnetic]')
         };
 
-        // --- Логіка Графіка 5/5 ---
+        // --- Логіка Графіка (з динамічною підтримкою) ---
+        function getScheduleConfig() {
+            try {
+                const saved = localStorage.getItem('scheduleConfig');
+                if (saved) {
+                    return JSON.parse(saved);
+                }
+            } catch (e) { }
+            // Стандартний графік 5/5
+            return { type: '5/5', workDays: 5, offDays: 5 };
+        }
+
+        function setScheduleConfig(config) {
+            try {
+                localStorage.setItem('scheduleConfig', JSON.stringify(config));
+            } catch (e) {
+                console.warn('Не вдалось зберегти графік', e);
+            }
+        }
+
         function getDayStatus(year, month, day) {
             // Спочатку перевіряємо пользовательский статус
             const customStatus = getCustomDayStatus(year, month, day);
             if (customStatus) return customStatus;
 
-            // Якщо немає, використовуємо стандартний Fluid 5/5
+            // Отримуємо поточний графік конфіг
+            const schedule = getScheduleConfig();
+            const cycleDays = schedule.workDays + schedule.offDays;
+
+            // Якщо немає, використовуємо стандартний графік
             const targetDateUtc = Date.UTC(year, month, day);
             const diffDays = Math.floor((targetDateUtc - SHIFT_START_DATE_UTC) / (1000 * 60 * 60 * 24));
-            const cycleDay = ((diffDays % 10) + 10) % 10;
-            return cycleDay < 5 ? 'work' : 'off';
+            const cycleDay = ((diffDays % cycleDays) + cycleDays) % cycleDays;
+            return cycleDay < schedule.workDays ? 'work' : 'off';
         }
 
         // --- Управління пользовательскими статусами днів ---
@@ -1740,6 +2070,93 @@
         } catch (e) {
             console.error('Помилка теми', e);
         }
+
+        // --- УПРАВЛІННЯ МОДАЛЛЮ ГРАФІКУ ---
+        const scheduleEls = {
+            overlay: document.getElementById('schedule-overlay'),
+            scheduleBtn: document.getElementById('schedule-btn'),
+            closeBtn: document.getElementById('schedule-overlay-close'),
+            closeBtn2: document.getElementById('schedule-overlay-close2'),
+            applyBtn: document.getElementById('apply-schedule'),
+            templateBtns: document.querySelectorAll('.schedule-btn'),
+            customForm: document.getElementById('custom-schedule-form'),
+            customWorkDays: document.getElementById('custom-work-days'),
+            customOffDays: document.getElementById('custom-off-days')
+        };
+
+        let selectedSchedule = getScheduleConfig().type;
+
+        // Оновлюємо інтерфейс з поточним графіком
+        const updateScheduleUI = () => {
+            scheduleEls.templateBtns.forEach(btn => {
+                if (btn.dataset.schedule === selectedSchedule) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Показуємо кастомну форму якщо вибрано custom
+            if (selectedSchedule === 'custom') {
+                scheduleEls.customForm.classList.add('active');
+            } else {
+                scheduleEls.customForm.classList.remove('active');
+            }
+        };
+
+        // Обробники для кнопок графікури
+        scheduleEls.templateBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                selectedSchedule = btn.dataset.schedule;
+                updateScheduleUI();
+            });
+        });
+
+        // Відкриття модалю графіку
+        scheduleEls.scheduleBtn.addEventListener('click', () => {
+            selectedSchedule = getScheduleConfig().type;
+            updateScheduleUI();
+            scheduleEls.overlay.classList.add('active');
+        });
+
+        // Закриття модалю
+        const closeScheduleModal = () => {
+            scheduleEls.overlay.classList.remove('active');
+        };
+
+        scheduleEls.closeBtn.addEventListener('click', closeScheduleModal);
+        scheduleEls.closeBtn2.addEventListener('click', closeScheduleModal);
+        scheduleEls.overlay.addEventListener('click', (e) => {
+            if (e.target === scheduleEls.overlay) closeScheduleModal();
+        });
+
+        // Застосування обраного графіку
+        scheduleEls.applyBtn.addEventListener('click', () => {
+            let config = null;
+
+            if (selectedSchedule === 'custom') {
+                const workDays = parseInt(scheduleEls.customWorkDays.value) || 5;
+                const offDays = parseInt(scheduleEls.customOffDays.value) || 5;
+                config = { type: 'custom', workDays, offDays };
+            } else {
+                // Розбираємо графік вигляду "5/5"
+                const [work, off] = selectedSchedule.split('/').map(Number);
+                config = { type: selectedSchedule, workDays: work, offDays: off };
+            }
+
+            setScheduleConfig(config);
+            
+            // Перерахуємо календар з новим графіком
+            renderCalendar(currentState.year, currentState.month);
+            
+            // Оновлюємо заголовок
+            const subtitle = document.querySelector('.subtitle');
+            if (subtitle) {
+                subtitle.textContent = `Графік ${config.type}. Старт: 27.03.2026`;
+            }
+
+            closeScheduleModal();
+        });
 
         // Рендеримо календар ОДРАЗУ, щоб не чекати погоду
         renderCalendar(currentState.year, currentState.month);
