@@ -9,6 +9,15 @@ const calendarEls = {
     magneticBtns: document.querySelectorAll('[data-magnetic]')
 };
 
+const modalStatusEls = {
+    badge: document.getElementById('m-badge'),
+    text: document.getElementById('m-status-text'),
+    caption: document.getElementById('m-status-caption'),
+    setWork: document.getElementById('m-set-work'),
+    setOff: document.getElementById('m-set-off'),
+    reset: document.getElementById('m-reset-status')
+};
+
 const modalNoteEls = {
     block: document.getElementById('m-note-block'),
     input: document.getElementById('m-note-input'),
@@ -17,9 +26,131 @@ const modalNoteEls = {
     clear: document.getElementById('m-note-clear')
 };
 
+const undoEls = {
+    toast: document.getElementById('undo-toast'),
+    text: document.getElementById('undo-toast-text'),
+    button: document.getElementById('undo-toast-btn')
+};
+
 let activeModalDate = null;
 let activeModalSavedNote = '';
+let activeModalStatusMeta = null;
+let pendingUndoState = null;
+let undoToastTimerId = null;
 const supportsInteractiveHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+function getDayStatusLabel(status) {
+    return status === 'work' ? 'Робочий день' : 'Вихідний день';
+}
+
+function getDayStatusChangeLabel(status) {
+    return status === 'work' ? 'робочий день' : 'вихідний день';
+}
+
+function getStatusActionCaption(scheduledStatus, customStatus) {
+    if (customStatus) {
+        return `Вручну змінено. За графіком тут ${getDayStatusChangeLabel(scheduledStatus)}.`;
+    }
+
+    return `Статус визначено Вашим графіком: ${getDayStatusChangeLabel(scheduledStatus)}.`;
+}
+
+function updateModalStatusBadge(status) {
+    modalStatusEls.badge.style.background = status === 'work' ? 'var(--work-bg)' : 'var(--off-bg)';
+    modalStatusEls.badge.style.color = status === 'work' ? 'var(--work-text)' : 'var(--off-text)';
+    modalStatusEls.badge.style.boxShadow = status === 'off'
+        ? '0 4px 15px rgba(52, 199, 89, 0.3)'
+        : '0 4px 15px rgba(0, 0, 0, 0.05)';
+    modalStatusEls.text.textContent = getDayStatusLabel(status);
+}
+
+function updateModalStatusActions() {
+    if (!activeModalStatusMeta) return;
+
+    const { currentStatus, customStatus, scheduledStatus } = activeModalStatusMeta;
+    modalStatusEls.setWork.classList.toggle('active', currentStatus === 'work');
+    modalStatusEls.setOff.classList.toggle('active', currentStatus === 'off');
+    modalStatusEls.reset.classList.toggle('active', customStatus === null);
+    modalStatusEls.caption.textContent = getStatusActionCaption(scheduledStatus, customStatus);
+}
+
+function syncModalStatusMeta(year, month, day) {
+    activeModalStatusMeta = {
+        scheduledStatus: getScheduledDayStatus(year, month, day),
+        customStatus: getCustomDayStatus(year, month, day),
+        currentStatus: getDayStatus(year, month, day)
+    };
+
+    updateModalStatusBadge(activeModalStatusMeta.currentStatus);
+    updateModalStatusActions();
+}
+
+function hideUndoToast() {
+    if (undoToastTimerId) {
+        clearTimeout(undoToastTimerId);
+        undoToastTimerId = null;
+    }
+
+    pendingUndoState = null;
+    undoEls.toast.classList.remove('active');
+}
+
+function showUndoToast(message, undoState) {
+    pendingUndoState = undoState;
+    undoEls.text.textContent = message;
+    undoEls.toast.classList.add('active');
+
+    if (undoToastTimerId) {
+        clearTimeout(undoToastTimerId);
+    }
+
+    undoToastTimerId = window.setTimeout(() => {
+        hideUndoToast();
+    }, 5200);
+}
+
+function applyDayStatusChange(nextStatus) {
+    if (!activeModalDate) return;
+
+    const { year, month, day } = activeModalDate;
+    const previousCustomStatus = getCustomDayStatus(year, month, day);
+    const normalizedNextStatus = nextStatus === null ? null : normalizeCustomDayStatus(year, month, day, nextStatus);
+
+    if (previousCustomStatus === normalizedNextStatus) {
+        return;
+    }
+
+    setCustomDayStatus(year, month, day, normalizedNextStatus);
+    renderCalendar(currentState.year, currentState.month);
+    syncModalStatusMeta(year, month, day);
+
+    const changedTo = getDayStatus(year, month, day);
+    const undoLabel = normalizedNextStatus === null
+        ? 'Повернуто значення за графіком'
+        : `Встановлено ${getDayStatusChangeLabel(changedTo)}`;
+
+    showUndoToast(undoLabel, { year, month, day, previousCustomStatus });
+}
+
+function undoLastDayStatusChange() {
+    if (!pendingUndoState) return;
+
+    const { year, month, day, previousCustomStatus } = pendingUndoState;
+    setCustomDayStatus(year, month, day, previousCustomStatus);
+    renderCalendar(currentState.year, currentState.month);
+
+    if (
+        activeModalDate &&
+        activeModalDate.year === year &&
+        activeModalDate.month === month &&
+        activeModalDate.day === day &&
+        calendarEls.modal.classList.contains('active')
+    ) {
+        syncModalStatusMeta(year, month, day);
+    }
+
+    hideUndoToast();
+}
 
 // --- Рендер Календаря ---
 function renderCalendar(year, month) {
@@ -57,18 +188,12 @@ function renderCalendar(year, month) {
         dayEl.className = `day ${isToday ? 'today' : ''}`;
         dayEl.dataset.status = dayStatus;
 
-        // Формуємо вміст дня
         dayEl.innerHTML = `
             <span class="date-num">${day}</span>
             ${holidayName ? '<div class="holiday-marker"></div>' : ''}
         `;
 
-        // Подвійний клік - переключає статус, звичайний - модаль
-        dayEl.addEventListener('dblclick', () => {
-            toggleDayStatus(year, month, day);
-        });
-
-        dayEl.addEventListener('click', () => openModal(year, month, day, dayStatus, holidayName));
+        dayEl.addEventListener('click', () => openModal(year, month, day, holidayName));
         if (supportsInteractiveHover) {
             setup3DTilt(dayEl);
         }
@@ -173,7 +298,7 @@ calendarEls.magneticBtns.forEach(btn => {
 });
 
 // --- Модальне Вікно ---
-function openModal(year, month, day, status, holidayName) {
+function openModal(year, month, day, holidayName) {
     activeModalDate = { year, month, day };
     calendarEls.modal.dataset.year = String(year);
     calendarEls.modal.dataset.month = String(month);
@@ -193,20 +318,7 @@ function openModal(year, month, day, status, holidayName) {
         holidayEl.classList.remove('active');
     }
 
-    const badge = document.getElementById('m-badge');
-    const statusText = document.getElementById('m-status-text');
-
-    // Налаштування кольору бейджика в модалці
-    badge.style.background = status === 'work' ? 'var(--work-bg)' : 'var(--off-bg)';
-    badge.style.color = status === 'work' ? 'var(--work-text)' : 'var(--off-text)';
-
-    if (status === 'off') {
-        badge.style.boxShadow = '0 4px 15px rgba(52, 199, 89, 0.3)';
-    } else {
-        badge.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.05)';
-    }
-
-    statusText.textContent = status === 'work' ? 'Робочий день' : 'Вихідний день';
+    syncModalStatusMeta(year, month, day);
     updateModalWeather(year, month, day);
     activeModalSavedNote = getDayNote(year, month, day);
     modalNoteEls.input.value = activeModalSavedNote;
@@ -257,8 +369,12 @@ modalNoteEls.save.addEventListener('click', () => {
     closeModal();
 });
 modalNoteEls.clear.addEventListener('click', clearModalNote);
+modalStatusEls.setWork.addEventListener('click', () => applyDayStatusChange('work'));
+modalStatusEls.setOff.addEventListener('click', () => applyDayStatusChange('off'));
+modalStatusEls.reset.addEventListener('click', () => applyDayStatusChange(null));
+undoEls.button.addEventListener('click', undoLastDayStatusChange);
 modalNoteEls.input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
         saveModalNote();
         closeModal();
         e.preventDefault();
@@ -274,8 +390,8 @@ modalNoteEls.input.addEventListener('keydown', (e) => {
 let touchStartX = 0;
 let touchEndX = 0;
 let touchStartTime = 0;
-const SWIPE_THRESHOLD = 50; // Мінімальна відстань для свайпу
-const SWIPE_TIME = 500; // Максимальний час для свайпу (мс)
+const SWIPE_THRESHOLD = 50;
+const SWIPE_TIME = 500;
 
 const calendarSection = document.querySelector('.calendar-section');
 
@@ -292,14 +408,12 @@ if (calendarSection) {
 
         if (swipeDuration < SWIPE_TIME && swipeDistance > SWIPE_THRESHOLD) {
             if (touchEndX < touchStartX) {
-                // Свайп вліво - наступний місяць
                 calendarSection.classList.add('swipe-left');
                 setTimeout(() => {
                     changeMonth(1);
                     calendarSection.classList.remove('swipe-left');
                 }, 300);
             } else {
-                // Свайп вправо - попередній місяць
                 calendarSection.classList.add('swipe-right');
                 setTimeout(() => {
                     changeMonth(-1);

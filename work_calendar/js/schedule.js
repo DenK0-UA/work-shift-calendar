@@ -28,12 +28,7 @@ function setScheduleConfig(config) {
     }
 }
 
-function getDayStatus(year, month, day) {
-    // Спочатку перевіряємо пользовательский статус
-    const customStatus = getCustomDayStatus(year, month, day);
-    if (customStatus) return customStatus;
-
-    // Отримуємо поточний графік конфіг
+function getScheduledDayStatus(year, month, day) {
     const schedule = getScheduleConfig();
     const cycleDays = schedule.workDays + schedule.offDays;
     if (cycleDays <= 0) {
@@ -45,6 +40,12 @@ function getDayStatus(year, month, day) {
     const diffDays = Math.floor((targetDateUtc - startDateUtc) / (1000 * 60 * 60 * 24));
     const cycleDay = ((diffDays % cycleDays) + cycleDays) % cycleDays;
     return cycleDay < schedule.workDays ? 'work' : 'off';
+}
+
+function getDayStatus(year, month, day) {
+    const customStatus = getCustomDayStatus(year, month, day);
+    if (customStatus) return customStatus;
+    return getScheduledDayStatus(year, month, day);
 }
 
 // --- Управління пользовательскими статусами днів ---
@@ -81,6 +82,18 @@ function getCustomDayStatuses() {
     }
 }
 
+function hasCustomDayOverrides() {
+    return Object.keys(getCustomDayStatuses()).length > 0;
+}
+
+function clearCustomDayStatuses() {
+    try {
+        localStorage.removeItem('customDayStatuses');
+    } catch (e) {
+        console.warn('Не вдалось очистити ручні зміни днів', e);
+    }
+}
+
 function getDayStorageKey(year, month, day) {
     return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
@@ -112,10 +125,23 @@ function setDayNote(year, month, day, note) {
     }
 }
 
+function normalizeCustomDayStatus(year, month, day, status) {
+    if (status === null) {
+        return null;
+    }
+
+    const scheduledStatus = getScheduledDayStatus(year, month, day);
+    return status === scheduledStatus ? null : status;
+}
+
+function setDayStatusOverride(year, month, day, status) {
+    setCustomDayStatus(year, month, day, normalizeCustomDayStatus(year, month, day, status));
+}
+
 function toggleDayStatus(year, month, day) {
     const current = getDayStatus(year, month, day);
     const newStatus = current === 'work' ? 'off' : 'work';
-    setCustomDayStatus(year, month, day, newStatus);
+    setDayStatusOverride(year, month, day, newStatus);
     renderCalendar(currentState.year, currentState.month);
 }
 
@@ -157,7 +183,8 @@ function updateSubtitle() {
     } else {
         startDate = '27.03.2026';
     }
-    subtitle.textContent = `Графік ${schedule.type}. Старт: ${startDate}`;
+    const scheduleLabel = hasCustomDayOverrides() ? 'custom' : schedule.type;
+    subtitle.textContent = `Графік ${scheduleLabel}. Старт: ${startDate}`;
 }
 
 function getPeriodRange(period, year = currentState.year, month = currentState.month) {
@@ -224,21 +251,8 @@ function calculatePeriodStats(period, year = currentState.year, month = currentS
         work,
         off,
         customCount,
-        longestStreak: Math.max(maxWorkStreak, maxOffStreak),
-        longestStreakLabel: maxWorkStreak >= maxOffStreak ? 'роб.' : 'вих.'
+        longestWorkStreak: maxWorkStreak,
+        longestOffStreak: maxOffStreak,
+        totalDays: work + off
     };
-}
-
-function updatePeriodStatsPanel(period) {
-    const stats = calculatePeriodStats(period);
-    const caption = document.getElementById('period-stats-caption');
-
-    document.getElementById('period-stat-work').textContent = stats.work;
-    document.getElementById('period-stat-off').textContent = stats.off;
-    document.getElementById('period-stat-streak').textContent = `${stats.longestStreak} ${stats.longestStreakLabel}`;
-    document.getElementById('period-stat-custom').textContent = stats.customCount;
-
-    if (caption) {
-        caption.textContent = `Огляд періоду: ${stats.label}`;
-    }
 }

@@ -44,6 +44,19 @@ function getWeatherRisk(entry) {
     return null;
 }
 
+function getWeatherFeel(entry) {
+    if (!entry) return 'Немає даних';
+    if (entry.weatherCode >= 95) return 'Нестабільно';
+    if (entry.weatherCode >= 71 && entry.weatherCode <= 86) return 'Зимово';
+    if (entry.precipitationProbability >= 70) return 'Мокро';
+    if (entry.maxTemp >= 30) return 'Спекотно';
+    if (entry.maxTemp >= 24 && entry.precipitationProbability < 35 && entry.weatherCode <= 2) return 'Комфортно';
+    if (entry.minTemp <= 3) return 'Холодно';
+    if (entry.weatherCode <= 2 && entry.maxTemp >= 16 && entry.maxTemp <= 23) return 'Приємно';
+    if (entry.weatherCode === 3) return 'Похмуро';
+    return 'Змінно';
+}
+
 function getWeatherDateKey(year, month, day) {
     return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
@@ -79,7 +92,14 @@ function getWeatherForDate(year, month, day) {
     return weatherForecastCache[getWeatherDateKey(year, month, day)] || null;
 }
 
-function setModalWeather({ icon, summary, meta }) {
+function setModalWeather({ icon, summary, meta, hidden = false }) {
+    const weatherBlock = document.getElementById('m-weather');
+    weatherBlock.hidden = hidden;
+
+    if (hidden) {
+        return;
+    }
+
     document.getElementById('m-weather-icon').textContent = icon;
     document.getElementById('m-weather-summary').textContent = summary;
     document.getElementById('m-weather-meta').textContent = meta;
@@ -89,27 +109,26 @@ function updateModalWeather(year, month, day) {
     const weather = getWeatherForDate(year, month, day);
 
     if (!weather) {
-        setModalWeather({
-            icon: '⏳',
-            summary: 'Немає прогнозу для цього дня',
-            meta: 'Open-Meteo дає прогноз лише на найближчі 10 днів. Оновлено: ' + formatWeatherUpdateTime()
-        });
+        setModalWeather({ hidden: true });
         return;
     }
 
     const risk = getWeatherRisk(weather);
+    const feel = getWeatherFeel(weather);
     const riskText = risk ? ` · ризик: ${risk}` : '';
 
     setModalWeather({
         icon: weather.icon,
-        summary: `${weather.maxTemp}° / ${weather.minTemp}° · ${weather.label}`,
-        meta: `Бориспіль · опади ${weather.precipitationProbability}%${riskText} · оновлено ${formatWeatherUpdateTime()}`
+        summary: `${feel} · ${weather.label}`,
+        meta: `Бориспіль · ${weather.maxTemp}° / ${weather.minTemp}° · опади ${weather.precipitationProbability}%${riskText} · оновлено ${formatWeatherUpdateTime()}`
     });
 }
 
 async function fetchTodayWeather() {
-    const refreshBtn = document.getElementById('weather-refresh');
-    refreshBtn.disabled = true;
+    const refreshButtons = document.querySelectorAll('#modal-weather-refresh');
+    refreshButtons.forEach((button) => {
+        button.disabled = true;
+    });
 
     try {
         const lat = 50.35;
@@ -147,6 +166,8 @@ async function fetchTodayWeather() {
             );
         }
     } finally {
-        refreshBtn.disabled = false;
+        refreshButtons.forEach((button) => {
+            button.disabled = false;
+        });
     }
 }

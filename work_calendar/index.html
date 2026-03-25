@@ -19,7 +19,7 @@
                     <h1>Ваша Зміна</h1>
                     <p class="subtitle">Графік 5/5. Старт: 27.03.2026</p>
                 </div>
-                <div style="display: flex; gap: 12px; align-items: center;">
+                <div class="header-actions">
                     <button class="settings-btn" id="schedule-btn" title="Графік">📅</button>
                     <button class="settings-btn" id="settings-btn">⚙️</button>
                     <button class="theme-toggle" id="theme-btn">🌓</button>
@@ -33,7 +33,6 @@
                     <button class="btn-icon" id="next-btn" data-magnetic>❯</button>
                 </div>
                 <div class="calendar-actions">
-                    <button class="weather-refresh compact" id="weather-refresh" type="button" aria-label="Оновити погоду">↻</button>
                     <button class="today-btn" id="today-btn">Сьогодні</button>
                 </div>
             </div>
@@ -49,17 +48,17 @@
         <section class="depth-panel summary-legend">
             <div class="stats" id="stats-container">
                 <div class="stat-item" data-status="work">
-                    <div class="legend-circle" style="background: var(--work-bg);"></div>
+                    <div class="legend-circle legend-circle-work"></div>
                     <div>
-                        <div class="stat-num" id="stat-work" style="color: var(--text-primary)">0</div>
+                        <div class="stat-num stat-num-primary" id="stat-work">0</div>
                         <div class="stat-label">Робочі</div>
                     </div>
                 </div>
                 <div class="separator"></div>
                 <div class="stat-item" data-status="off">
-                    <div class="legend-circle" style="background: var(--off-bg);"></div>
+                    <div class="legend-circle legend-circle-off"></div>
                     <div>
-                        <div class="stat-num" id="stat-off" style="color: var(--text-primary)">0</div>
+                        <div class="stat-num stat-num-primary" id="stat-off">0</div>
                         <div class="stat-label">Вихідні</div>
                     </div>
                 </div>
@@ -91,8 +90,12 @@
                     <div class="period-stat-value" id="period-stat-off">0</div>
                 </article>
                 <article class="period-stat-card">
-                    <div class="period-stat-label">Макс. серія</div>
-                    <div class="period-stat-value" id="period-stat-streak">0</div>
+                    <div class="period-stat-label">Серія робочих</div>
+                    <div class="period-stat-value" id="period-stat-work-streak">0</div>
+                </article>
+                <article class="period-stat-card">
+                    <div class="period-stat-label">Серія вихідних</div>
+                    <div class="period-stat-value" id="period-stat-off-streak">0</div>
                 </article>
                 <article class="period-stat-card">
                     <div class="period-stat-label">Ручні зміни</div>
@@ -114,23 +117,30 @@
                 <span id="m-status-text">Робочий день</span>
             </div>
 
-            <div class="modal-weather" id="m-weather">
+            <div class="modal-status-actions" id="m-status-actions">
+                <button class="modal-status-action" id="m-set-work" type="button">Робочий</button>
+                <button class="modal-status-action" id="m-set-off" type="button">Вихідний</button>
+                <button class="modal-status-action modal-status-reset" id="m-reset-status" type="button">За графіком</button>
+            </div>
+            <div class="modal-status-caption" id="m-status-caption">Статус визначено Вашим графіком</div>
+
+            <div class="modal-weather" id="m-weather" hidden>
                 <div class="modal-weather-icon" id="m-weather-icon">⏳</div>
                 <div class="modal-weather-content">
                     <div class="modal-weather-summary" id="m-weather-summary">Завантажуємо прогноз...</div>
                     <div class="modal-weather-meta" id="m-weather-meta">Бориспіль · прогноз для обраного дня</div>
                 </div>
+                <button class="weather-refresh modal-weather-refresh" id="modal-weather-refresh" type="button" aria-label="Оновити погоду">↻</button>
             </div>
 
             <div class="modal-note" id="m-note-block">
-                <input
-                    type="text"
-                    class="modal-note-input"
+                <textarea
+                    class="modal-note-input modal-note-textarea"
                     id="m-note-input"
                     placeholder="Це нотатки"
-                    maxlength="120"
-                    autocomplete="off"
-                >
+                    maxlength="280"
+                    rows="3"
+                ></textarea>
                 <div class="modal-note-actions" id="m-note-actions">
                     <button class="modal-note-btn modal-note-clear" id="m-note-clear" type="button">Очистити</button>
                     <button class="modal-note-btn modal-note-save" id="m-note-save" type="button">Зберегти</button>
@@ -139,6 +149,11 @@
 
             <button class="modal-close" id="modal-close">Добре</button>
         </div>
+    </div>
+
+    <div class="undo-toast" id="undo-toast" role="status" aria-live="polite">
+        <span class="undo-toast-text" id="undo-toast-text">Статус дня змінено</span>
+        <button class="undo-toast-btn" id="undo-toast-btn" type="button">Скасувати</button>
     </div>
 
     <div class="settings-overlay" id="settings-overlay">
@@ -177,7 +192,7 @@
                 <label class="settings-label">Колір робочих днів</label>
                 <div class="color-picker-wrapper">
                     <input type="color" id="work-color" class="color-picker-input">
-                    <div class="color-preview" id="work-preview" style="background: var(--work-bg);">Робочий день</div>
+                    <div class="color-preview color-preview-work" id="work-preview">Робочий день</div>
                 </div>
             </div>
 
@@ -185,14 +200,14 @@
                 <label class="settings-label">Колір вихідних днів</label>
                 <div class="color-picker-wrapper">
                     <input type="color" id="off-color" class="color-picker-input">
-                    <div class="color-preview" id="off-preview" style="background: var(--off-bg);">Вихідний день</div>
+                    <div class="color-preview color-preview-off" id="off-preview">Вихідний день</div>
                 </div>
             </div>
 
             <div class="settings-group">
                 <label class="settings-label">💡 Інформація</label>
-                <p style="font-size: 12px; color: var(--text-secondary); line-height: 1.6;">
-                    Подвійний клік на день календаря, щоб змінити його статус з роботи на вихідний та навпаки.
+                <p class="settings-help-text">
+                    Відкрийте день календаря, щоб змінити його статус вручну або повернути значення за графіком.
                 </p>
             </div>
 
@@ -267,6 +282,8 @@
     <script src="js/schedule.js"></script>
     <script src="js/calendar.js"></script>
     <script src="js/settings-state.js"></script>
+    <script src="js/insights.js"></script>
+    <script src="js/schedule-ui.js"></script>
     <script src="js/ui.js"></script>
 </body>
 
