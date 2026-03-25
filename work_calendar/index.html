@@ -135,6 +135,102 @@
             margin-bottom: 16px;
         }
 
+        .weather-today {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            margin-bottom: 12px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(0, 122, 255, 0.12), rgba(90, 200, 250, 0.08));
+            border: 1px solid rgba(0, 122, 255, 0.14);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        [data-theme="dark"] .weather-today {
+            background: linear-gradient(135deg, rgba(10, 132, 255, 0.18), rgba(90, 200, 250, 0.1));
+            border-color: rgba(10, 132, 255, 0.22);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+
+        .weather-today-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.72);
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        [data-theme="dark"] .weather-today-icon {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .weather-today-copy {
+            min-width: 0;
+            flex: 1;
+        }
+
+        .weather-today-date {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 2px;
+        }
+
+        .weather-today-temp {
+            font-size: 16px;
+            font-weight: 800;
+            line-height: 1.2;
+            color: var(--text-primary);
+        }
+
+        .weather-today-meta {
+            margin-top: 2px;
+            font-size: 12px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .weather-refresh {
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            color: var(--accent);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .weather-refresh:hover {
+            transform: rotate(12deg);
+            background: rgba(255, 255, 255, 0.82);
+        }
+
+        .weather-refresh:disabled {
+            opacity: 0.6;
+            cursor: wait;
+            transform: none;
+        }
+
+        [data-theme="dark"] .weather-refresh {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
         h1 {
             font-size: 28px;
             font-weight: 800;
@@ -568,32 +664,6 @@
 
         [data-theme="dark"] .modal-status-badge:hover {
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-        }
-        }
-
-        .modal-weather {
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            background: var(--card-border);
-            padding: 10px 16px;
-            border-radius: 16px;
-            margin-bottom: 24px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .modal-weather.active {
-            display: inline-flex;
-        }
-
-        .weather-loc {
-            color: var(--text-secondary);
-            font-weight: 500;
-            font-size: 12px;
-            margin-left: 6px;
         }
 
         .modal-close {
@@ -1198,6 +1268,25 @@
                 padding: 8px 16px;
             }
 
+            .weather-today {
+                padding: 10px 12px;
+                gap: 10px;
+            }
+
+            .weather-today-icon {
+                width: 38px;
+                height: 38px;
+                font-size: 20px;
+            }
+
+            .weather-today-temp {
+                font-size: 15px;
+            }
+
+            .weather-today-meta {
+                font-size: 11px;
+            }
+
             .calendar-section {
                 position: relative;
                 overflow: hidden;
@@ -1334,7 +1423,7 @@
         <header class="depth-panel">
             <div class="header-top">
                 <div>
-                    <h1>Твоя Зміна</h1>
+                    <h1>Ваша Зміна</h1>
                     <p class="subtitle">Графік 5/5. Старт: 27.03.2026</p>
                 </div>
                 <div style="display: flex; gap: 12px; align-items: center;">
@@ -1342,6 +1431,16 @@
                     <button class="settings-btn" id="settings-btn">⚙️</button>
                     <button class="theme-toggle" id="theme-btn">🌓</button>
                 </div>
+            </div>
+
+            <div class="weather-today" id="today-weather">
+                <div class="weather-today-icon" id="today-weather-icon">📍</div>
+                <div class="weather-today-copy">
+                    <div class="weather-today-date" id="today-weather-date">Сьогодні</div>
+                    <div class="weather-today-temp" id="today-weather-temp">Оновлюю поточну погоду...</div>
+                    <div class="weather-today-meta" id="today-weather-meta">Бориспіль · прогноз на день</div>
+                </div>
+                <button class="weather-refresh" id="weather-refresh" type="button" aria-label="Оновити погоду">↻</button>
             </div>
 
             <div class="controls-row">
@@ -1392,12 +1491,6 @@
 
             <div class="modal-status-badge" id="m-badge">
                 <span id="m-status-text">Робочий день</span>
-            </div>
-
-            <div class="modal-weather" id="m-weather">
-                <span id="w-icon">☀️</span>
-                <span id="w-temp">+15° / +8°</span>
-                <span class="weather-loc">📍 Бориспіль</span>
             </div>
 
             <button class="modal-close" id="modal-close">Добре</button>
@@ -1469,10 +1562,6 @@
                     <strong>2/2</strong>
                     <span class="schedule-btn-label">2 роб. / 2 вих.</span>
                 </button>
-                <button class="schedule-btn" data-schedule="7/0">
-                    <strong>7/0</strong>
-                    <span class="schedule-btn-label">7 днів роб.</span>
-                </button>
                 <button class="schedule-btn" data-schedule="custom">
                     <strong>⚙️</strong>
                     <span class="schedule-btn-label">Кастомний</span>
@@ -1488,6 +1577,11 @@
                     <label class="custom-input-label">Дні вихідних</label>
                     <input type="number" id="custom-off-days" class="custom-input" min="0" max="30" placeholder="Наприклад: 2">
                 </div>
+            </div>
+
+            <div class="custom-input-group">
+                <label class="custom-input-label">Початок циклу</label>
+                <input type="date" id="schedule-start-date" class="custom-input" />
             </div>
 
             <div class="schedule-buttons">
@@ -1633,9 +1727,36 @@
         });
 
         // --- Дані та Налаштування ---
-        const SHIFT_START_DATE_UTC = Date.UTC(2026, 2, 27); // 27 березня 2026
+        const DEFAULT_SHIFT_START_DATE = new Date(Date.UTC(2026, 2, 27)); // 27 березня 2026
+        let shiftStartDateUTC = Date.UTC(2026, 2, 27);
         const DEMO_TODAY = new Date();
 
+        function getShiftStartDateUTC() {
+            const schedule = getScheduleConfig();
+            try {
+                if (schedule && schedule.startDate) {
+                    const parsed = new Date(schedule.startDate);
+                    if (!Number.isNaN(parsed.getTime())) {
+                        const utc = Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate());
+                        return utc;
+                    }
+                }
+            } catch (e) {
+                console.warn('Помилка читання дати старту графіку', e);
+            }
+            return shiftStartDateUTC;
+        }
+
+        // якщо з localStorage приходить некоректна дата, нормалізуєм
+        function normalizeStartDate() {
+            const schedule = getScheduleConfig();
+            if (!schedule.startDate || Number.isNaN(new Date(schedule.startDate).getTime())) {
+                schedule.startDate = DEFAULT_SHIFT_START_DATE.toISOString();
+                setScheduleConfig(schedule);
+            }
+        }
+
+        normalizeStartDate();
         let currentState = {
             year: DEMO_TODAY.getFullYear(),
             month: DEMO_TODAY.getMonth()
@@ -1660,38 +1781,108 @@
             "12-25": "Різдво Христове"
         };
 
-        let weatherData = {};
+        
 
-        // Завантаження прогнозу у фоні
-        async function fetchWeather() {
-            try {
-                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=50.3486&longitude=30.9563&daily=weather_code,temperature_2m_max,temperature_2m_min&timezone=Europe%2FKyiv&forecast_days=16');
-                const data = await res.json();
-
-                if (data && data.daily) {
-                    data.daily.time.forEach((dateStr, index) => {
-                        weatherData[dateStr] = {
-                            max: data.daily.temperature_2m_max[index],
-                            min: data.daily.temperature_2m_min[index],
-                            code: data.daily.weather_code[index]
-                        };
-                    });
-                }
-            } catch (error) {
-                console.warn('Не вдалося завантажити погоду', error);
-            }
+        function getWeatherIcon(code, isDay = 1) {
+            if (code === 0) return isDay ? '☀️' : '🌙';
+            if (code <= 3) return isDay ? '⛅' : '☁️';
+            if (code <= 48) return '🌫️';
+            if (code <= 67) return '🌧️';
+            if (code <= 77) return '❄️';
+            if (code <= 82) return '🌦️';
+            if (code <= 86) return '🌨️';
+            if (code >= 95) return '⛈️';
+            return '🌤️';
         }
 
-        function getWeatherEmoji(code) {
-            if (code === 0) return '☀️ Ясно';
-            if (code <= 3) return '☁️ Хмарно';
-            if (code <= 48) return '🌫 Туман';
-            if (code <= 67) return '🌧 Дощ';
-            if (code <= 77) return '❄️ Сніг';
-            if (code <= 82) return '🌧 Злива';
-            if (code <= 86) return '❄️ Снігопад';
-            if (code >= 95) return '⛈ Гроза';
-            return '🌤';
+        function getWeatherLabel(code) {
+            if (code === 0) return 'Ясно';
+            if (code === 1) return 'Переважно ясно';
+            if (code === 2) return 'Мінлива хмарність';
+            if (code === 3) return 'Хмарно';
+            if (code <= 48) return 'Туман';
+            if (code <= 57) return 'Мряка';
+            if (code <= 67) return 'Дощ';
+            if (code <= 77) return 'Сніг';
+            if (code <= 82) return 'Зливи';
+            if (code <= 86) return 'Снігопад';
+            if (code >= 95) return 'Гроза';
+            return 'Без уточнення';
+        }
+
+        function formatTodayWeatherDate(date = new Date()) {
+            const formatted = new Intl.DateTimeFormat('uk-UA', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+            }).format(date);
+
+            return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+        }
+
+        function formatWeatherUpdateTime(date = new Date()) {
+            return new Intl.DateTimeFormat('uk-UA', {
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(date);
+        }
+
+        function setTodayWeatherCard({ icon, summary, meta }) {
+            document.getElementById('today-weather-date').textContent = formatTodayWeatherDate();
+            document.getElementById('today-weather-icon').textContent = icon;
+            document.getElementById('today-weather-temp').textContent = summary;
+            document.getElementById('today-weather-meta').textContent = meta;
+        }
+
+        async function fetchTodayWeather() {
+            const refreshBtn = document.getElementById('weather-refresh');
+            refreshBtn.disabled = true;
+
+            setTodayWeatherCard({
+                icon: '📍',
+                summary: 'Оновлюю поточну погоду...',
+                meta: 'Бориспіль · завантажую дані'
+            });
+
+            try {
+                const lat = 50.35;
+                const lon = 30.95;
+                const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weather_code,is_day&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FKyiv&forecast_days=1`;
+                const response = await fetch(url);
+
+                if (!response.ok) {
+                    throw new Error(`Weather request failed: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const current = data.current;
+                const daily = data.daily;
+
+                if (!current || !daily || !daily.temperature_2m_max || !daily.temperature_2m_max.length) {
+                    throw new Error('Weather data is missing');
+                }
+
+                const weatherCode = current.weather_code;
+                const currentTemp = Math.round(current.temperature_2m);
+                const feelsLike = Math.round(current.apparent_temperature);
+                const maxTemp = Math.round(daily.temperature_2m_max[0]);
+                const minTemp = Math.round(daily.temperature_2m_min[0]);
+                const label = getWeatherLabel(weatherCode);
+
+                setTodayWeatherCard({
+                    icon: getWeatherIcon(weatherCode, current.is_day),
+                    summary: `${currentTemp}°C, ${label}`,
+                    meta: `Бориспіль · день ${maxTemp}° / ніч ${minTemp}° · відчувається як ${feelsLike}°C · ${formatWeatherUpdateTime()}`
+                });
+            } catch (error) {
+                setTodayWeatherCard({
+                    icon: '⚠️',
+                    summary: 'Поточна погода недоступна',
+                    meta: 'Бориспіль · не вдалося оновити дані'
+                });
+            } finally {
+                refreshBtn.disabled = false;
+            }
         }
 
         // --- DOM Елементи ---
@@ -1711,15 +1902,26 @@
             try {
                 const saved = localStorage.getItem('scheduleConfig');
                 if (saved) {
-                    return JSON.parse(saved);
+                    const parsed = JSON.parse(saved);
+                    if (parsed && parsed.type && typeof parsed.workDays === 'number' && typeof parsed.offDays === 'number') {
+                        if (!parsed.startDate) {
+                            parsed.startDate = DEFAULT_SHIFT_START_DATE.toISOString();
+                        }
+                        return parsed;
+                    }
                 }
-            } catch (e) { }
+            } catch (e) {
+                console.warn('Не вдалось зчитати конфіг графіку', e);
+            }
             // Стандартний графік 5/5
-            return { type: '5/5', workDays: 5, offDays: 5 };
+            return { type: '5/5', workDays: 5, offDays: 5, startDate: DEFAULT_SHIFT_START_DATE.toISOString() };
         }
 
         function setScheduleConfig(config) {
             try {
+                if (!config.startDate) {
+                    config.startDate = DEFAULT_SHIFT_START_DATE.toISOString();
+                }
                 localStorage.setItem('scheduleConfig', JSON.stringify(config));
             } catch (e) {
                 console.warn('Не вдалось зберегти графік', e);
@@ -1734,10 +1936,13 @@
             // Отримуємо поточний графік конфіг
             const schedule = getScheduleConfig();
             const cycleDays = schedule.workDays + schedule.offDays;
+            if (cycleDays <= 0) {
+                return 'off';
+            }
 
-            // Якщо немає, використовуємо стандартний графік
             const targetDateUtc = Date.UTC(year, month, day);
-            const diffDays = Math.floor((targetDateUtc - SHIFT_START_DATE_UTC) / (1000 * 60 * 60 * 24));
+            const startDateUtc = getShiftStartDateUTC();
+            const diffDays = Math.floor((targetDateUtc - startDateUtc) / (1000 * 60 * 60 * 24));
             const cycleDay = ((diffDays % cycleDays) + cycleDays) % cycleDays;
             return cycleDay < schedule.workDays ? 'work' : 'off';
         }
@@ -1804,16 +2009,16 @@
 
                 const isToday = (year === DEMO_TODAY.getFullYear() && month === DEMO_TODAY.getMonth() && day === DEMO_TODAY.getDate());
                 const dayStr = String(day).padStart(2, '0');
-                const isHoliday = holidays[`${monthStr}-${dayStr}`];
+                const holidayName = holidays[`${monthStr}-${dayStr}`];
 
                 const dayEl = document.createElement('div');
                 dayEl.className = `day ${isToday ? 'today' : ''}`;
                 dayEl.dataset.status = dayStatus;
 
-                // Формуємо вміст дня (тепер без статусних крапок знизу)
+                // Формуємо вміст дня
                 dayEl.innerHTML = `
                     <span class="date-num">${day}</span>
-                    ${isHoliday ? '<div class="holiday-marker"></div>' : ''}
+                    ${holidayName ? '<div class="holiday-marker"></div>' : ''}
                 `;
 
                 // Подвійний клік - переключає статус, звичайний - модаль
@@ -1821,7 +2026,7 @@
                     toggleDayStatus(year, month, day);
                 });
 
-                dayEl.addEventListener('click', () => openModal(year, month, day, dayStatus, isHoliday));
+                dayEl.addEventListener('click', () => openModal(year, month, day, dayStatus, holidayName));
                 setup3DTilt(dayEl);
 
                 els.grid.appendChild(dayEl);
@@ -1829,6 +2034,7 @@
 
             els.statWork.textContent = stats.work;
             els.statOff.textContent = stats.off;
+            updateSubtitle();
         }
 
         // --- 3D Ефекти ---
@@ -1905,12 +2111,13 @@
             const dayOfWeek = localeData.days[dateObj.getUTCDay()];
             document.getElementById('m-day-week').textContent = `${dayOfWeek}, ${localeData.months[month].toLowerCase()} ${year}`;
 
-            const elHoliday = document.getElementById('m-holiday');
+            const holidayEl = document.getElementById('m-holiday');
             if (holidayName) {
-                elHoliday.textContent = `🎈 ${holidayName}`;
-                elHoliday.classList.add('active');
+                holidayEl.textContent = `🎈 ${holidayName}`;
+                holidayEl.classList.add('active');
             } else {
-                elHoliday.classList.remove('active');
+                holidayEl.textContent = '';
+                holidayEl.classList.remove('active');
             }
 
             const badge = document.getElementById('m-badge');
@@ -1927,20 +2134,6 @@
             }
 
             statusText.textContent = status === 'work' ? 'Робочий день' : 'Вихідний день';
-
-            const monthStr = String(month + 1).padStart(2, '0');
-            const dayStr = String(day).padStart(2, '0');
-            const dateKey = `${year}-${monthStr}-${dayStr}`;
-            const weather = weatherData[dateKey];
-            const elWeather = document.getElementById('m-weather');
-
-            if (weather) {
-                document.getElementById('w-icon').textContent = getWeatherEmoji(weather.code);
-                document.getElementById('w-temp').textContent = `${Math.round(weather.max)}° / ${Math.round(weather.min)}°`;
-                elWeather.classList.add('active');
-            } else {
-                elWeather.classList.remove('active');
-            }
 
             els.modal.classList.add('active');
         }
@@ -2081,13 +2274,16 @@
             templateBtns: document.querySelectorAll('.schedule-btn'),
             customForm: document.getElementById('custom-schedule-form'),
             customWorkDays: document.getElementById('custom-work-days'),
-            customOffDays: document.getElementById('custom-off-days')
+            customOffDays: document.getElementById('custom-off-days'),
+            startDate: document.getElementById('schedule-start-date')
         };
 
         let selectedSchedule = getScheduleConfig().type;
 
         // Оновлюємо інтерфейс з поточним графіком
         const updateScheduleUI = () => {
+            const schedule = getScheduleConfig();
+
             scheduleEls.templateBtns.forEach(btn => {
                 if (btn.dataset.schedule === selectedSchedule) {
                     btn.classList.add('active');
@@ -2102,6 +2298,11 @@
             } else {
                 scheduleEls.customForm.classList.remove('active');
             }
+
+            // Заповнюємо поля за збереженим графіком
+            scheduleEls.customWorkDays.value = schedule.workDays;
+            scheduleEls.customOffDays.value = schedule.offDays;
+            scheduleEls.startDate.value = schedule.startDate ? schedule.startDate.slice(0,10) : DEFAULT_SHIFT_START_DATE.toISOString().slice(0,10);
         };
 
         // Обробники для кнопок графікури
@@ -2130,39 +2331,85 @@
             if (e.target === scheduleEls.overlay) closeScheduleModal();
         });
 
+        const updateSubtitle = () => {
+            const schedule = getScheduleConfig();
+            const subtitle = document.querySelector('.subtitle');
+            if (!subtitle) return;
+            let startDate = schedule.startDate;
+            if (startDate) {
+                const d = new Date(startDate);
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                startDate = `${day}.${month}.${year}`;
+            } else {
+                startDate = '27.03.2026';
+            }
+            subtitle.textContent = `Графік ${schedule.type}. Старт: ${startDate}`;
+        };
+
+        // Ініціалізуємо UI і підпис одразу
+        updateScheduleUI();
+        updateSubtitle();
+
         // Застосування обраного графіку
         scheduleEls.applyBtn.addEventListener('click', () => {
             let config = null;
 
             if (selectedSchedule === 'custom') {
-                const workDays = parseInt(scheduleEls.customWorkDays.value) || 5;
-                const offDays = parseInt(scheduleEls.customOffDays.value) || 5;
-                config = { type: 'custom', workDays, offDays };
+                let workDays = parseInt(scheduleEls.customWorkDays.value);
+                let offDays = parseInt(scheduleEls.customOffDays.value);
+                if (Number.isNaN(workDays)) workDays = 5;
+                if (Number.isNaN(offDays)) offDays = 5;
+                if (workDays < 0) workDays = 0;
+                if (offDays < 0) offDays = 0;
+
+                if (workDays + offDays <= 0) {
+                    alert('Невірний цикл: кількість робочих і вихідних днів повинна бути більше 0. Використано 5/5 за замовчуванням.');
+                    workDays = 5;
+                    offDays = 5;
+                    selectedSchedule = '5/5';
+                }
+
+                const startDateValue = scheduleEls.startDate.value;
+                const startDate = startDateValue ? new Date(startDateValue).toISOString() : DEFAULT_SHIFT_START_DATE.toISOString();
+                config = { type: 'custom', workDays, offDays, startDate };
             } else {
                 // Розбираємо графік вигляду "5/5"
                 const [work, off] = selectedSchedule.split('/').map(Number);
-                config = { type: selectedSchedule, workDays: work, offDays: off };
+                let workDays = Number.isNaN(work) ? 5 : work;
+                let offDays = Number.isNaN(off) ? 5 : off;
+                const startDateValue = scheduleEls.startDate.value;
+                const startDate = startDateValue ? new Date(startDateValue).toISOString() : DEFAULT_SHIFT_START_DATE.toISOString();
+
+                if (workDays + offDays <= 0) {
+                    alert('Невірний цикл графіку. Використано 5/5 за замовчуванням.');
+                    workDays = 5;
+                    offDays = 5;
+                    selectedSchedule = '5/5';
+                }
+
+                config = { type: selectedSchedule, workDays, offDays, startDate };
             }
 
             setScheduleConfig(config);
-            
+
             // Перерахуємо календар з новим графіком
             renderCalendar(currentState.year, currentState.month);
-            
-            // Оновлюємо заголовок
-            const subtitle = document.querySelector('.subtitle');
-            if (subtitle) {
-                subtitle.textContent = `Графік ${config.type}. Старт: 27.03.2026`;
-            }
 
+            // Оновимо підпис
+            updateScheduleUI();
+            updateSubtitle();
             closeScheduleModal();
         });
 
-        // Рендеримо календар ОДРАЗУ, щоб не чекати погоду
+        document.getElementById('weather-refresh').addEventListener('click', fetchTodayWeather);
+
+        // Рендеримо календар одразу
         renderCalendar(currentState.year, currentState.month);
 
-        // Погоду вантажимо у фон
-        fetchWeather();
+        // Погоду на сьогодні вантажимо окремо з геолокації
+        fetchTodayWeather();
 
     </script>
 </body>
