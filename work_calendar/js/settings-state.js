@@ -1,5 +1,19 @@
 (() => {
-    let cachedCustomSettings = null;
+    const STORAGE_KEYS = {
+        settings: 'workCalendarSettings',
+        stylePreset: 'stylePreset',
+        theme: 'theme',
+        themeMode: 'themeMode'
+    };
+
+    const settingsState = {
+        customSettings: null,
+        savedStylePreset: 'current',
+        savedThemeMode: 'auto',
+        isDark: false,
+        hydrated: false
+    };
+
     let visualSwitchTimeoutId = null;
 
     const DEFAULT_DAY_COLORS = {
@@ -33,6 +47,28 @@
             }
         }
         return fallback;
+    };
+
+    const safeStorageGet = (key) => {
+        try {
+            return localStorage.getItem(key);
+        } catch (e) {
+            return null;
+        }
+    };
+
+    const safeStorageSet = (key, value) => {
+        try {
+            localStorage.setItem(key, value);
+        } catch (e) {
+            console.warn('Не вдалось зберегти налаштування', e);
+        }
+    };
+
+    const safeStorageRemove = (key) => {
+        try {
+            localStorage.removeItem(key);
+        } catch (e) {}
     };
 
     const getDefaultDayColors = (stylePreset = 'current', themeName = 'light') => {
@@ -92,111 +128,111 @@
         }
     };
 
-    const loadCustomSettings = () => {
-        try {
-            const saved = localStorage.getItem('workCalendarSettings');
-            if (saved) {
-                const settings = JSON.parse(saved);
-                if (!settings || !settings.workColor || !settings.offColor) {
-                    cachedCustomSettings = null;
-                    clearCustomColors();
-                    return null;
-                }
-
-                const isLegacyDefault =
-                    settings.isCustomColors !== true &&
-                    matchesBuiltInPalette(settings.workColor, settings.offColor);
-
-                if (isLegacyDefault || settings.isCustomColors === false) {
-                    cachedCustomSettings = null;
-                    clearCustomColors();
-                    localStorage.removeItem('workCalendarSettings');
-                    return null;
-                }
-
-                cachedCustomSettings = {
-                    ...settings,
-                    isCustomColors: true,
-                    workColor: normalizeHexColor(settings.workColor, '#E5E5EA'),
-                    offColor: normalizeHexColor(settings.offColor, '#34C759')
-                };
-                applyColors(cachedCustomSettings.workColor, cachedCustomSettings.offColor);
-                return cachedCustomSettings;
-            }
-        } catch (e) {
-            console.warn('Не вдалось завантажити налаштування', e);
+    const hydrateSettingsState = () => {
+        if (settingsState.hydrated) {
+            return;
         }
 
-        cachedCustomSettings = null;
-        clearCustomColors();
-        return null;
+        const savedStylePreset = safeStorageGet(STORAGE_KEYS.stylePreset);
+        if (savedStylePreset) {
+            settingsState.savedStylePreset = savedStylePreset;
+        }
+
+        const savedThemeMode = safeStorageGet(STORAGE_KEYS.themeMode);
+        const legacyTheme = safeStorageGet(STORAGE_KEYS.theme);
+        settingsState.savedThemeMode =
+            savedThemeMode === 'auto' || savedThemeMode === 'light' || savedThemeMode === 'dark'
+                ? savedThemeMode
+                : (legacyTheme === 'light' || legacyTheme === 'dark' ? legacyTheme : 'auto');
+
+        const savedSettingsRaw = safeStorageGet(STORAGE_KEYS.settings);
+        if (savedSettingsRaw) {
+            try {
+                const savedSettings = JSON.parse(savedSettingsRaw);
+                const isLegacyDefault =
+                    savedSettings &&
+                    savedSettings.workColor &&
+                    savedSettings.offColor &&
+                    savedSettings.isCustomColors !== true &&
+                    matchesBuiltInPalette(savedSettings.workColor, savedSettings.offColor);
+
+                if (!isLegacyDefault && savedSettings?.workColor && savedSettings?.offColor && savedSettings.isCustomColors !== false) {
+                    settingsState.customSettings = {
+                        ...savedSettings,
+                        isCustomColors: true,
+                        workColor: normalizeHexColor(savedSettings.workColor, '#E5E5EA'),
+                        offColor: normalizeHexColor(savedSettings.offColor, '#34C759')
+                    };
+                } else {
+                    safeStorageRemove(STORAGE_KEYS.settings);
+                }
+            } catch (e) {
+                console.warn('Не вдалось завантажити налаштування', e);
+            }
+        }
+
+        settingsState.hydrated = true;
+
+        if (settingsState.customSettings?.isCustomColors) {
+            applyColors(settingsState.customSettings.workColor, settingsState.customSettings.offColor);
+        } else {
+            clearCustomColors();
+        }
+    };
+
+    const loadCustomSettings = () => {
+        hydrateSettingsState();
+        return settingsState.customSettings ? { ...settingsState.customSettings } : null;
     };
 
     const saveCustomSettings = (workColor, offColor) => {
-        try {
-            const normalizedWork = normalizeHexColor(workColor, '#E5E5EA');
-            const normalizedOff = normalizeHexColor(offColor, '#34C759');
-            const currentStyle = document.body.getAttribute('data-style') || 'current';
-            const currentTheme = document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-            const defaultColors = getDefaultDayColors(currentStyle, currentTheme);
+        hydrateSettingsState();
+        const normalizedWork = normalizeHexColor(workColor, '#E5E5EA');
+        const normalizedOff = normalizeHexColor(offColor, '#34C759');
+        const currentStyle = document.body.getAttribute('data-style') || settingsState.savedStylePreset;
+        const currentTheme = document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        const defaultColors = getDefaultDayColors(currentStyle, currentTheme);
 
-            if (normalizedWork === defaultColors.workColor && normalizedOff === defaultColors.offColor) {
-                cachedCustomSettings = null;
-                clearCustomColors();
-                localStorage.removeItem('workCalendarSettings');
-                return null;
-            }
-
-            const settings = {
-                workColor: normalizedWork,
-                workText: '#1d1d1f',
-                offColor: normalizedOff,
-                offText: '#ffffff',
-                isCustomColors: true
-            };
-
-            cachedCustomSettings = settings;
-            localStorage.setItem('workCalendarSettings', JSON.stringify(settings));
-            return settings;
-        } catch (e) {
-            console.warn('Не вдалось зберегти налаштування', e);
+        if (normalizedWork === defaultColors.workColor && normalizedOff === defaultColors.offColor) {
+            settingsState.customSettings = null;
+            clearCustomColors();
+            safeStorageRemove(STORAGE_KEYS.settings);
             return null;
         }
+
+        settingsState.customSettings = {
+            workColor: normalizedWork,
+            workText: '#1d1d1f',
+            offColor: normalizedOff,
+            offText: '#ffffff',
+            isCustomColors: true
+        };
+
+        safeStorageSet(STORAGE_KEYS.settings, JSON.stringify(settingsState.customSettings));
+        return { ...settingsState.customSettings };
     };
 
     const getSavedStylePreset = () => {
-        try {
-            return localStorage.getItem('stylePreset') || 'current';
-        } catch (e) {
-            return 'current';
-        }
+        hydrateSettingsState();
+        return settingsState.savedStylePreset;
+    };
+
+    const persistStylePreset = (stylePreset) => {
+        hydrateSettingsState();
+        settingsState.savedStylePreset = stylePreset;
+        safeStorageSet(STORAGE_KEYS.stylePreset, stylePreset);
     };
 
     const getSavedThemeMode = () => {
-        try {
-            const savedThemeMode = localStorage.getItem('themeMode');
-            if (savedThemeMode === 'auto' || savedThemeMode === 'light' || savedThemeMode === 'dark') {
-                return savedThemeMode;
-            }
-
-            const legacyTheme = localStorage.getItem('theme');
-            if (legacyTheme === 'light' || legacyTheme === 'dark') {
-                return legacyTheme;
-            }
-        } catch (e) {
-            return 'auto';
-        }
-
-        return 'auto';
+        hydrateSettingsState();
+        return settingsState.savedThemeMode;
     };
 
     const resetSettings = () => {
-        try {
-            localStorage.removeItem('workCalendarSettings');
-            localStorage.removeItem('stylePreset');
-            localStorage.removeItem('theme');
-            localStorage.removeItem('themeMode');
-        } catch (e) { }
+        safeStorageRemove(STORAGE_KEYS.settings);
+        safeStorageRemove(STORAGE_KEYS.stylePreset);
+        safeStorageRemove(STORAGE_KEYS.theme);
+        safeStorageRemove(STORAGE_KEYS.themeMode);
         location.reload();
     };
 
@@ -223,99 +259,100 @@
         }
     };
 
+    const persistThemeMode = (themeMode) => {
+        settingsState.savedThemeMode = themeMode;
+        safeStorageSet(STORAGE_KEYS.themeMode, themeMode);
+        if (themeMode === 'auto') {
+            safeStorageRemove(STORAGE_KEYS.theme);
+        } else {
+            safeStorageSet(STORAGE_KEYS.theme, themeMode);
+        }
+    };
+
     const createThemeController = ({ themeBtn, onThemeModeUIChange, onThemeApplied }) => {
+        hydrateSettingsState();
+
         let darkModeQuery = null;
-        let themeMode = getSavedThemeMode();
-        let isDark = false;
         let mediaListenerAttached = false;
 
         const updateThemeToggleIcon = () => {
             if (!themeBtn) return;
-            const nextIcon = themeMode === 'auto' ? '🌓' : (isDark ? '☀️' : '🌙');
+            const nextIcon = settingsState.savedThemeMode === 'auto'
+                ? '🌓'
+                : (settingsState.isDark ? '☀️' : '🌙');
             themeBtn.textContent = nextIcon;
             themeBtn.setAttribute(
                 'aria-label',
-                themeMode === 'auto'
-                    ? `Тема: авто (${isDark ? 'темна' : 'світла'})`
-                    : `Тема: ${isDark ? 'темна' : 'світла'}`
+                settingsState.savedThemeMode === 'auto'
+                    ? `Тема: авто (${settingsState.isDark ? 'темна' : 'світла'})`
+                    : `Тема: ${settingsState.isDark ? 'темна' : 'світла'}`
             );
             themeBtn.setAttribute('title', themeBtn.getAttribute('aria-label'));
         };
 
-        const persistThemeMode = () => {
-            try {
-                localStorage.setItem('themeMode', themeMode);
-                if (themeMode === 'auto') {
-                    localStorage.removeItem('theme');
-                } else {
-                    localStorage.setItem('theme', themeMode);
-                }
-            } catch (e) {
-                console.warn('LocalStorage заблоковано. Використовую тему системи.');
-            }
-        };
-
         const setTheme = (nextIsDark) => {
-            isDark = nextIsDark;
+            settingsState.isDark = nextIsDark;
             withVisualSwitchGuard();
-            document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            document.body.setAttribute('data-theme', settingsState.isDark ? 'dark' : 'light');
             updateThemeToggleIcon();
 
-            if (cachedCustomSettings?.isCustomColors) {
-                applyColors(cachedCustomSettings.workColor, cachedCustomSettings.offColor);
+            if (settingsState.customSettings?.isCustomColors) {
+                applyColors(settingsState.customSettings.workColor, settingsState.customSettings.offColor);
             } else {
                 clearCustomColors();
             }
 
             if (typeof onThemeApplied === 'function') {
-                onThemeApplied({ isDark, themeMode, hasCustomColors: Boolean(cachedCustomSettings?.isCustomColors) });
+                onThemeApplied({
+                    isDark: settingsState.isDark,
+                    themeMode: settingsState.savedThemeMode,
+                    hasCustomColors: Boolean(settingsState.customSettings?.isCustomColors)
+                });
             }
         };
 
         const applyThemeMode = () => {
-            if (themeMode === 'auto') {
+            if (settingsState.savedThemeMode === 'auto') {
                 if (!darkModeQuery && window.matchMedia) {
                     darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
                 }
 
                 if (darkModeQuery && !mediaListenerAttached) {
                     darkModeQuery.addEventListener('change', (e) => {
-                        if (themeMode === 'auto') {
+                        if (settingsState.savedThemeMode === 'auto') {
                             setTheme(e.matches);
                             if (typeof onThemeModeUIChange === 'function') {
-                                onThemeModeUIChange(themeMode);
+                                onThemeModeUIChange(settingsState.savedThemeMode);
                             }
                         }
                     });
                     mediaListenerAttached = true;
                 }
 
-                isDark = darkModeQuery ? darkModeQuery.matches : false;
+                settingsState.isDark = darkModeQuery ? darkModeQuery.matches : false;
             } else {
-                isDark = themeMode === 'dark';
+                settingsState.isDark = settingsState.savedThemeMode === 'dark';
             }
 
-            setTheme(isDark);
+            setTheme(settingsState.isDark);
 
             if (typeof onThemeModeUIChange === 'function') {
-                onThemeModeUIChange(themeMode);
+                onThemeModeUIChange(settingsState.savedThemeMode);
             }
         };
 
         const applySelectedThemeMode = (nextThemeMode) => {
-            themeMode = nextThemeMode;
-            persistThemeMode();
+            persistThemeMode(nextThemeMode);
             applyThemeMode();
         };
 
-        persistThemeMode();
         applyThemeMode();
 
         return {
             applySelectedThemeMode,
-            toggleTheme: () => applySelectedThemeMode(isDark ? 'light' : 'dark'),
-            getThemeMode: () => themeMode,
-            isDark: () => isDark
+            toggleTheme: () => applySelectedThemeMode(settingsState.isDark ? 'light' : 'dark'),
+            getThemeMode: () => settingsState.savedThemeMode,
+            isDark: () => settingsState.isDark
         };
     };
 
@@ -329,9 +366,11 @@
         getSavedStylePreset,
         getSavedThemeMode,
         setStylePreset,
+        persistStylePreset,
         withVisualSwitchGuard,
         createThemeController,
-        hasCustomColors: () => Boolean(cachedCustomSettings?.isCustomColors),
-        getCustomSettings: () => cachedCustomSettings ? { ...cachedCustomSettings } : null
+        hasCustomColors: () => Boolean(settingsState.customSettings?.isCustomColors),
+        getCustomSettings: () => settingsState.customSettings ? { ...settingsState.customSettings } : null,
+        getState: () => ({ ...settingsState })
     };
 })();

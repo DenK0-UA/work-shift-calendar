@@ -5,8 +5,15 @@ const calendarEls = {
     statWork: document.getElementById('stat-work'),
     statOff: document.getElementById('stat-off'),
     modal: document.getElementById('modal'),
+    modalDate: document.getElementById('m-date'),
+    modalDayWeek: document.getElementById('m-day-week'),
+    modalHoliday: document.getElementById('m-holiday'),
+    modalClose: document.getElementById('modal-close'),
     legendItems: document.querySelectorAll('.stat-item'),
-    magneticBtns: document.querySelectorAll('[data-magnetic]')
+    magneticBtns: document.querySelectorAll('[data-magnetic]'),
+    prevBtn: document.getElementById('prev-btn'),
+    nextBtn: document.getElementById('next-btn'),
+    todayBtn: document.getElementById('today-btn')
 };
 
 const modalStatusEls = {
@@ -37,6 +44,9 @@ let activeModalSavedNote = '';
 let activeModalStatusMeta = null;
 let pendingUndoState = null;
 let undoToastTimerId = null;
+let activeFilter = null;
+let calendarAnimationFrameId = null;
+const renderedDayEls = [];
 const supportsInteractiveHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
 function getDayStatusLabel(status) {
@@ -152,21 +162,84 @@ function undoLastDayStatusChange() {
     hideUndoToast();
 }
 
+function queueCalendarEnterAnimation() {
+    calendarEls.grid.classList.remove('fluid-enter');
+
+    if (calendarAnimationFrameId) {
+        cancelAnimationFrame(calendarAnimationFrameId);
+    }
+
+    calendarAnimationFrameId = requestAnimationFrame(() => {
+        calendarEls.grid.classList.add('fluid-enter');
+        calendarAnimationFrameId = null;
+    });
+}
+
+function createDayCell(year, month, day, dayStatus, isToday, holidayName) {
+    const dayEl = document.createElement('div');
+    dayEl.className = `day ${isToday ? 'today' : ''}`;
+    dayEl.dataset.status = dayStatus;
+    dayEl.dataset.year = String(year);
+    dayEl.dataset.month = String(month);
+    dayEl.dataset.day = String(day);
+
+    if (holidayName) {
+        dayEl.dataset.holiday = holidayName;
+    }
+
+    const dateNum = document.createElement('span');
+    dateNum.className = 'date-num';
+    dateNum.textContent = String(day);
+    dayEl.appendChild(dateNum);
+
+    if (holidayName) {
+        const holidayMarker = document.createElement('div');
+        holidayMarker.className = 'holiday-marker';
+        dayEl.appendChild(holidayMarker);
+    }
+
+    if (supportsInteractiveHover) {
+        setup3DTilt(dayEl);
+    }
+
+    renderedDayEls.push(dayEl);
+    return dayEl;
+}
+
+function updateLegendStats(stats) {
+    calendarEls.statWork.textContent = String(stats.work);
+    calendarEls.statOff.textContent = String(stats.off);
+}
+
+function applyActiveFilter() {
+    calendarEls.legendItems.forEach((item) => {
+        item.style.background = item.dataset.status === activeFilter ? 'var(--accent-soft)' : '';
+    });
+
+    if (!activeFilter) {
+        calendarEls.grid.classList.remove('grid-dim');
+        renderedDayEls.forEach((dayEl) => dayEl.classList.remove('filtered'));
+        return;
+    }
+
+    calendarEls.grid.classList.add('grid-dim');
+    renderedDayEls.forEach((dayEl) => {
+        dayEl.classList.toggle('filtered', dayEl.dataset.status === activeFilter);
+    });
+}
+
 // --- Рендер Календаря ---
 function renderCalendar(year, month) {
-    calendarEls.grid.classList.remove('fluid-enter');
-    void calendarEls.grid.offsetWidth;
-    calendarEls.grid.classList.add('fluid-enter');
-
-    calendarEls.grid.innerHTML = '';
+    queueCalendarEnterAnimation();
+    renderedDayEls.length = 0;
     calendarEls.monthTitle.textContent = `${localeData.months[month]} ${year}`;
-    const fragment = document.createDocumentFragment();
 
+    const fragment = document.createDocumentFragment();
     const firstDayOfWeek = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const paddingDays = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
-
-    let stats = { work: 0, off: 0 };
+    const stats = { work: 0, off: 0 };
+    const monthStr = String(month + 1).padStart(2, '0');
 
     for (let i = 0; i < paddingDays; i++) {
         const emptyDiv = document.createElement('div');
@@ -174,41 +247,28 @@ function renderCalendar(year, month) {
         fragment.appendChild(emptyDiv);
     }
 
-    const monthStr = String(month + 1).padStart(2, '0');
-
     for (let day = 1; day <= daysInMonth; day++) {
         const dayStatus = getDayStatus(year, month, day);
         stats[dayStatus]++;
 
-        const isToday = (year === DEMO_TODAY.getFullYear() && month === DEMO_TODAY.getMonth() && day === DEMO_TODAY.getDate());
+        const isToday = (
+            year === DEMO_TODAY.getFullYear() &&
+            month === DEMO_TODAY.getMonth() &&
+            day === DEMO_TODAY.getDate()
+        );
         const dayStr = String(day).padStart(2, '0');
-        const holidayName = holidays[`${monthStr}-${dayStr}`];
+        const holidayName = holidays[`${monthStr}-${dayStr}`] || '';
 
-        const dayEl = document.createElement('div');
-        dayEl.className = `day ${isToday ? 'today' : ''}`;
-        dayEl.dataset.status = dayStatus;
-
-        dayEl.innerHTML = `
-            <span class="date-num">${day}</span>
-            ${holidayName ? '<div class="holiday-marker"></div>' : ''}
-        `;
-
-        dayEl.addEventListener('click', () => openModal(year, month, day, holidayName));
-        if (supportsInteractiveHover) {
-            setup3DTilt(dayEl);
-        }
-
-        fragment.appendChild(dayEl);
+        fragment.appendChild(createDayCell(year, month, day, dayStatus, isToday, holidayName));
     }
 
-    calendarEls.grid.appendChild(fragment);
-
-    calendarEls.statWork.textContent = stats.work;
-    calendarEls.statOff.textContent = stats.off;
+    calendarEls.grid.replaceChildren(fragment);
+    updateLegendStats(stats);
     updateSubtitle();
     if (typeof updatePeriodStatsPanel === 'function') {
         updatePeriodStatsPanel(window.activeStatsPeriod || 'month');
     }
+    applyActiveFilter();
 }
 
 // --- 3D Ефекти ---
@@ -258,27 +318,17 @@ function setup3DTilt(el) {
 }
 
 // --- Фільтрація Легенди ---
-let activeFilter = null;
 const clearFilters = () => {
     activeFilter = null;
-    calendarEls.grid.classList.remove('grid-dim');
-    document.querySelectorAll('.day').forEach(d => d.classList.remove('filtered'));
-    calendarEls.legendItems.forEach(i => i.style.background = '');
+    applyActiveFilter();
 };
 
-calendarEls.legendItems.forEach(item => {
+calendarEls.legendItems.forEach((item) => {
     item.addEventListener('click', (e) => {
         e.stopPropagation();
         const status = item.dataset.status;
-        if (activeFilter === status) {
-            clearFilters();
-        } else {
-            clearFilters();
-            activeFilter = status;
-            calendarEls.grid.classList.add('grid-dim');
-            document.querySelectorAll(`.day[data-status="${status}"]`).forEach(d => d.classList.add('filtered'));
-            item.style.background = 'var(--accent-soft)';
-        }
+        activeFilter = activeFilter === status ? null : status;
+        applyActiveFilter();
     });
 });
 
@@ -287,14 +337,16 @@ window.addEventListener('click', (e) => {
 });
 
 // --- Магнітні кнопки ---
-calendarEls.magneticBtns.forEach(btn => {
+calendarEls.magneticBtns.forEach((btn) => {
     btn.addEventListener('mousemove', (e) => {
         const rect = btn.getBoundingClientRect();
         const x = e.clientX - rect.left - rect.width / 2;
         const y = e.clientY - rect.top - rect.height / 2;
         btn.style.transform = `translate(${x * 0.3}px, ${y * 0.4}px)`;
     });
-    btn.addEventListener('mouseleave', () => btn.style.transform = 'translate(0, 0)');
+    btn.addEventListener('mouseleave', () => {
+        btn.style.transform = 'translate(0, 0)';
+    });
 });
 
 // --- Модальне Вікно ---
@@ -303,19 +355,18 @@ function openModal(year, month, day, holidayName) {
     calendarEls.modal.dataset.year = String(year);
     calendarEls.modal.dataset.month = String(month);
     calendarEls.modal.dataset.day = String(day);
-    document.getElementById('m-date').textContent = day;
+    calendarEls.modalDate.textContent = String(day);
 
     const dateObj = new Date(Date.UTC(year, month, day));
     const dayOfWeek = localeData.days[dateObj.getUTCDay()];
-    document.getElementById('m-day-week').textContent = `${dayOfWeek}, ${localeData.months[month].toLowerCase()} ${year}`;
+    calendarEls.modalDayWeek.textContent = `${dayOfWeek}, ${localeData.months[month].toLowerCase()} ${year}`;
 
-    const holidayEl = document.getElementById('m-holiday');
     if (holidayName) {
-        holidayEl.textContent = `🎈 ${holidayName}`;
-        holidayEl.classList.add('active');
+        calendarEls.modalHoliday.textContent = `🎈 ${holidayName}`;
+        calendarEls.modalHoliday.classList.add('active');
     } else {
-        holidayEl.textContent = '';
-        holidayEl.classList.remove('active');
+        calendarEls.modalHoliday.textContent = '';
+        calendarEls.modalHoliday.classList.remove('active');
     }
 
     syncModalStatusMeta(year, month, day);
@@ -361,8 +412,24 @@ const closeModal = () => {
     calendarEls.modal.classList.remove('active');
 };
 
-document.getElementById('modal-close').addEventListener('click', closeModal);
-calendarEls.modal.addEventListener('click', (e) => { if (e.target === calendarEls.modal) closeModal(); });
+calendarEls.grid.addEventListener('click', (event) => {
+    const dayEl = event.target.closest('.day');
+    if (!dayEl || dayEl.classList.contains('empty')) {
+        return;
+    }
+
+    openModal(
+        Number(dayEl.dataset.year),
+        Number(dayEl.dataset.month),
+        Number(dayEl.dataset.day),
+        dayEl.dataset.holiday || ''
+    );
+});
+
+calendarEls.modalClose.addEventListener('click', closeModal);
+calendarEls.modal.addEventListener('click', (e) => {
+    if (e.target === calendarEls.modal) closeModal();
+});
 modalNoteEls.input.addEventListener('input', updateModalNoteActions);
 modalNoteEls.save.addEventListener('click', () => {
     saveModalNote();
@@ -427,18 +494,21 @@ if (calendarSection) {
 // --- Навігація ---
 const changeMonth = (delta) => {
     currentState.month += delta;
-    if (currentState.month > 11) { currentState.month = 0; currentState.year++; }
-    if (currentState.month < 0) { currentState.month = 11; currentState.year--; }
+    if (currentState.month > 11) {
+        currentState.month = 0;
+        currentState.year++;
+    }
+    if (currentState.month < 0) {
+        currentState.month = 11;
+        currentState.year--;
+    }
     renderCalendar(currentState.year, currentState.month);
-    if (activeFilter) clearFilters();
 };
 
-document.getElementById('prev-btn').addEventListener('click', () => changeMonth(-1));
-document.getElementById('next-btn').addEventListener('click', () => changeMonth(1));
-
-document.getElementById('today-btn').addEventListener('click', () => {
+calendarEls.prevBtn.addEventListener('click', () => changeMonth(-1));
+calendarEls.nextBtn.addEventListener('click', () => changeMonth(1));
+calendarEls.todayBtn.addEventListener('click', () => {
     currentState.year = DEMO_TODAY.getFullYear();
     currentState.month = DEMO_TODAY.getMonth();
     renderCalendar(currentState.year, currentState.month);
-    if (activeFilter) clearFilters();
 });

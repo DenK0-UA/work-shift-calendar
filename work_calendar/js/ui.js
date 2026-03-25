@@ -4,6 +4,7 @@ const {
     getSavedStylePreset,
     getSavedThemeMode,
     loadCustomSettings,
+    persistStylePreset,
     resetSettings,
     saveCustomSettings,
     setStylePreset,
@@ -50,7 +51,7 @@ setThemeModeUI(selectedThemeMode);
 
 syncColorInputsFromTheme(settingsEls);
 let applySelectedThemeMode = null;
-// Превью кольорів
+
 const updatePreview = () => {
     settingsEls.workPreview.style.background = settingsEls.workColor.value;
     settingsEls.offPreview.style.background = settingsEls.offColor.value;
@@ -59,7 +60,6 @@ const updatePreview = () => {
 settingsEls.workColor.addEventListener('change', updatePreview);
 settingsEls.offColor.addEventListener('change', updatePreview);
 
-// Відкриття/закриття налаштувань
 settingsEls.settingsBtn.addEventListener('click', () => {
     settingsEls.overlay.classList.add('active');
 });
@@ -86,20 +86,16 @@ settingsEls.themeModeBtns.forEach((button) => {
     });
 });
 
-// Застосування та скидання
 settingsEls.applyBtn.addEventListener('click', () => {
     const workColor = settingsEls.workColor.value;
     const offColor = settingsEls.offColor.value;
 
     applyColors(workColor, offColor);
     saveCustomSettings(workColor, offColor);
-    try {
-        localStorage.setItem('stylePreset', selectedStylePreset);
-        if (applySelectedThemeMode) {
-            applySelectedThemeMode(selectedThemeMode);
-        }
-    } catch (e) {
-        console.warn('Не вдалось зберегти налаштування інтерфейсу', e);
+    persistStylePreset(selectedStylePreset);
+
+    if (applySelectedThemeMode) {
+        applySelectedThemeMode(selectedThemeMode);
     }
 
     settingsEls.overlay.classList.remove('active');
@@ -111,7 +107,6 @@ settingsEls.resetBtn.addEventListener('click', () => {
     }
 });
 
-// --- Безпечна Тема ---
 const initTheme = () => {
     const themeBtn = document.getElementById('theme-btn');
     const themeController = createThemeController({
@@ -136,7 +131,6 @@ const initTheme = () => {
     });
 };
 
-// --- Безпечний Запуск ---
 try {
     initTheme();
 } catch (e) {

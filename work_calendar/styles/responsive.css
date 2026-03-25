@@ -150,6 +150,17 @@
         position: relative;
         overflow: hidden;
     }
+
+    .undo-toast {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 132px);
+        max-width: min(88vw, 360px);
+    }
+
+    .modal-overlay.active ~ .undo-toast,
+    .schedule-overlay.active ~ .undo-toast,
+    .settings-overlay.active ~ .undo-toast {
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 176px);
+    }
 }
 
 @media (min-width: 768px) {
