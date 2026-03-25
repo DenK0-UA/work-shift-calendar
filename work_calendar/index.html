@@ -67,19 +67,21 @@
             <div class="logo-area">PANDA</div>
         </section>
 
-        <section class="depth-panel insights-panel">
-            <div class="panel-heading">
+        <section class="depth-panel insights-panel is-collapsed" id="insights-panel">
+            <button class="panel-heading panel-heading-toggle" id="period-stats-toggle" type="button" aria-expanded="false" aria-controls="insights-content">
                 <div>
                     <h2 class="panel-title">Статистика періоду</h2>
                     <p class="panel-subtitle" id="period-stats-caption">Огляд поточного місяця</p>
                 </div>
+                <span class="panel-toggle-icon" id="period-stats-toggle-icon">❯</span>
+            </button>
+            <div class="insights-content" id="insights-content">
                 <div class="period-switcher" id="period-switcher">
                     <button class="period-btn active" type="button" data-period="month">Місяць</button>
                     <button class="period-btn" type="button" data-period="quarter">3 міс</button>
                     <button class="period-btn" type="button" data-period="year">Рік</button>
                 </div>
-            </div>
-            <div class="period-stats-grid" id="period-stats-grid">
+                <div class="period-stats-grid" id="period-stats-grid">
                 <article class="period-stat-card">
                     <div class="period-stat-label">Робочі</div>
                     <div class="period-stat-value" id="period-stat-work">0</div>
@@ -96,6 +98,7 @@
                     <div class="period-stat-label">Ручні зміни</div>
                     <div class="period-stat-value" id="period-stat-custom">0</div>
                 </article>
+                </div>
             </div>
         </section>
     </div>

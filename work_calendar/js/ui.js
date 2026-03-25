@@ -316,6 +316,10 @@ const scheduleEls = {
 };
 
 const periodStatsEls = {
+    panel: document.getElementById('insights-panel'),
+    content: document.getElementById('insights-content'),
+    toggle: document.getElementById('period-stats-toggle'),
+    toggleIcon: document.getElementById('period-stats-toggle-icon'),
     switcher: document.getElementById('period-switcher'),
     buttons: document.querySelectorAll('.period-btn')
 };
@@ -406,6 +410,18 @@ scheduleEls.applyBtn.addEventListener('click', () => {
 
 document.getElementById('weather-refresh').addEventListener('click', fetchTodayWeather);
 
+const setPeriodStatsCollapsed = (isCollapsed) => {
+    if (!periodStatsEls.panel || !periodStatsEls.toggle) return;
+    periodStatsEls.panel.classList.toggle('is-collapsed', isCollapsed);
+    periodStatsEls.toggle.setAttribute('aria-expanded', String(!isCollapsed));
+};
+
+if (periodStatsEls.toggle) {
+    periodStatsEls.toggle.addEventListener('click', () => {
+        setPeriodStatsCollapsed(!periodStatsEls.panel.classList.contains('is-collapsed'));
+    });
+}
+
 periodStatsEls.buttons.forEach((button) => {
     button.addEventListener('click', () => {
         window.activeStatsPeriod = button.dataset.period;
@@ -419,6 +435,7 @@ selectedSchedule = getScheduleConfig().type;
 syncScheduleControls(scheduleEls, selectedSchedule);
 updateSubtitle();
 updatePeriodStatsPanel(window.activeStatsPeriod);
+setPeriodStatsCollapsed(true);
 
 // Рендеримо календар одразу
 renderCalendar(currentState.year, currentState.month);

@@ -92,13 +92,40 @@
         align-items: stretch;
     }
 
+    .panel-heading.panel-heading-toggle {
+        flex-direction: row;
+        align-items: center;
+    }
+
+    .panel-heading-toggle {
+        flex-direction: row;
+        align-items: center;
+    }
+
     .period-switcher {
         width: 100%;
         justify-content: space-between;
     }
 
     .appearance-presets {
-        grid-template-columns: 1fr;
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(108px, 120px);
+        grid-template-columns: none;
+        overflow-x: auto;
+        gap: 8px;
+        padding-bottom: 4px;
+        scroll-snap-type: x proximity;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .appearance-presets::-webkit-scrollbar {
+        display: none;
+    }
+
+    .appearance-preset {
+        min-height: 72px;
+        scroll-snap-align: start;
     }
 
     .theme-mode-switcher {

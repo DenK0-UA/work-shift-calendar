@@ -180,6 +180,8 @@ body[data-theme="dark"][data-style="ios26"] .schedule-close:hover {
     background: rgba(30, 44, 66, 0.84);
 }
 
+
+
 body[data-style="material"] .weather-refresh,
 body[data-style="material"] .btn-icon,
 body[data-style="material"] .settings-btn,
@@ -249,6 +251,8 @@ body[data-theme="dark"][data-style="material"] .schedule-btn-action.primary {
     color: #2b2438;
 }
 
+
+
 .insights-panel {
     display: flex;
     flex-direction: column;
@@ -273,6 +277,56 @@ body[data-theme="dark"][data-style="material"] .schedule-btn-action.primary {
     margin-top: 4px;
     font-size: 12px;
     color: var(--text-secondary);
+}
+
+
+.panel-heading-toggle {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 0;
+    text-align: left;
+    cursor: pointer;
+}
+
+.panel-toggle-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 18px;
+    line-height: 1;
+    transition: var(--control-transition);
+    flex-shrink: 0;
+    opacity: 0.78;
+}
+
+.panel-heading-toggle:hover .panel-toggle-icon {
+    transform: var(--button-hover-transform);
+    color: var(--accent);
+    opacity: 1;
+}
+
+.insights-content {
+    overflow: hidden;
+    max-height: 420px;
+    opacity: 1;
+    margin-top: 14px;
+    transition: max-height 0.26s ease, opacity 0.24s ease, margin-top 0.24s ease;
+}
+
+.insights-panel.is-collapsed .insights-content {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+}
+
+.insights-panel:not(.is-collapsed) .panel-toggle-icon {
+    transform: rotate(180deg);
 }
 
 .period-switcher {
@@ -355,8 +409,8 @@ body[data-theme="dark"][data-style="material"] .schedule-btn-action.primary {
     border: 1px solid var(--card-border);
     background: rgba(0, 0, 0, 0.03);
     color: var(--text-primary);
-    border-radius: 18px;
-    padding: 14px 12px;
+    border-radius: 16px;
+    padding: 10px 10px;
     text-align: left;
     cursor: pointer;
     transition: var(--control-transition);
@@ -380,15 +434,15 @@ body[data-theme="dark"][data-style="material"] .schedule-btn-action.primary {
 
 .appearance-preset strong {
     display: block;
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 800;
 }
 
 .appearance-preset span {
     display: block;
-    margin-top: 4px;
-    font-size: 11px;
-    line-height: 1.35;
+    margin-top: 3px;
+    font-size: 10px;
+    line-height: 1.25;
     color: var(--text-secondary);
 }
 
@@ -1650,4 +1704,193 @@ body[data-theme="dark"][data-style="material"] .period-stat-card {
 
 [data-theme="dark"] .schedule-close:hover {
     background: rgba(255, 255, 255, 0.15);
+}
+
+
+.panel-heading.panel-heading-toggle {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.panel-heading.panel-heading-toggle .panel-toggle-icon {
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    box-shadow: none;
+    font-size: 18px;
+    opacity: 0.78;
+}
+
+[data-theme="dark"] .panel-heading.panel-heading-toggle .panel-toggle-icon {
+    background: transparent;
+    box-shadow: none;
+}
+
+.panel-heading.panel-heading-toggle:hover .panel-toggle-icon {
+    opacity: 1;
+}
+
+
+/* Final override for stats toggle: align with month switch arrows */
+.panel-heading.panel-heading-toggle {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.panel-heading.panel-heading-toggle .panel-toggle-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.85);
+    color: var(--accent);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.06);
+    border: none;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1;
+    opacity: 1;
+    transform: rotate(90deg);
+}
+
+[data-theme="dark"] .panel-heading.panel-heading-toggle .panel-toggle-icon {
+    background: rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.panel-heading.panel-heading-toggle:hover .panel-toggle-icon {
+    transform: rotate(90deg) var(--icon-hover-transform);
+    background: #ffffff;
+    color: var(--accent);
+}
+
+[data-theme="dark"] .panel-heading.panel-heading-toggle:hover .panel-toggle-icon {
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.insights-panel:not(.is-collapsed) .panel-heading.panel-heading-toggle .panel-toggle-icon {
+    transform: rotate(-90deg);
+}
+
+.insights-panel:not(.is-collapsed) .panel-heading.panel-heading-toggle:hover .panel-toggle-icon {
+    transform: rotate(-90deg) var(--icon-hover-transform);
+}
+
+body[data-style="ios26"] .panel-heading.panel-heading-toggle .panel-toggle-icon {
+    background: rgba(255, 255, 255, 0.48);
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    box-shadow: 0 10px 24px rgba(95, 120, 170, 0.12);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+}
+
+body[data-theme="dark"][data-style="ios26"] .panel-heading.panel-heading-toggle .panel-toggle-icon {
+    background: rgba(23, 34, 52, 0.72);
+    border-color: rgba(173, 210, 255, 0.12);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+}
+
+body[data-theme="dark"][data-style="ios26"] .panel-heading.panel-heading-toggle:hover .panel-toggle-icon {
+    background: rgba(30, 44, 66, 0.84);
+}
+
+body[data-style="material"] .panel-heading.panel-heading-toggle .panel-toggle-icon {
+    border-radius: 18px;
+    background: rgba(103, 80, 164, 0.08);
+    border: 1px solid rgba(103, 80, 164, 0.16);
+    box-shadow: none;
+}
+
+body[data-theme="dark"][data-style="material"] .panel-heading.panel-heading-toggle .panel-toggle-icon {
+    background: rgba(230, 224, 233, 0.06);
+    border-color: rgba(202, 196, 208, 0.14);
+    color: var(--text-primary);
+}
+
+body[data-theme="dark"][data-style="material"] .panel-heading.panel-heading-toggle:hover .panel-toggle-icon {
+    background: rgba(230, 224, 233, 0.1);
+}
+
+/* Final final override: stats toggle should match month navigation controls */
+.panel-heading.panel-heading-toggle {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+
+.panel-heading.panel-heading-toggle .panel-toggle-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.85) !important;
+    color: var(--accent) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.06) !important;
+    border: none !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    line-height: 1 !important;
+    opacity: 1 !important;
+    transform: rotate(90deg) !important;
+}
+
+[data-theme="dark"] .panel-heading.panel-heading-toggle .panel-toggle-icon {
+    background: rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.3) !important;
+}
+
+.panel-heading.panel-heading-toggle:hover .panel-toggle-icon {
+    background: #ffffff !important;
+    color: var(--accent) !important;
+}
+
+[data-theme="dark"] .panel-heading.panel-heading-toggle:hover .panel-toggle-icon {
+    background: rgba(0, 0, 0, 0.4) !important;
+}
+
+.insights-panel:not(.is-collapsed) .panel-heading.panel-heading-toggle .panel-toggle-icon {
+    transform: rotate(-90deg) !important;
+}
+
+body[data-style="ios26"] .panel-heading.panel-heading-toggle .panel-toggle-icon {
+    background: rgba(255, 255, 255, 0.48) !important;
+    border: 1px solid rgba(255, 255, 255, 0.42) !important;
+    box-shadow: 0 10px 24px rgba(95, 120, 170, 0.12) !important;
+    backdrop-filter: blur(18px) saturate(160%) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(160%) !important;
+}
+
+body[data-theme="dark"][data-style="ios26"] .panel-heading.panel-heading-toggle .panel-toggle-icon {
+    background: rgba(23, 34, 52, 0.72) !important;
+    border-color: rgba(173, 210, 255, 0.12) !important;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28) !important;
+}
+
+body[data-theme="dark"][data-style="ios26"] .panel-heading.panel-heading-toggle:hover .panel-toggle-icon {
+    background: rgba(30, 44, 66, 0.84) !important;
+}
+
+body[data-style="material"] .panel-heading.panel-heading-toggle .panel-toggle-icon {
+    border-radius: 18px !important;
+    background: rgba(103, 80, 164, 0.08) !important;
+    border: 1px solid rgba(103, 80, 164, 0.16) !important;
+    box-shadow: none !important;
+}
+
+body[data-theme="dark"][data-style="material"] .panel-heading.panel-heading-toggle .panel-toggle-icon {
+    background: rgba(230, 224, 233, 0.06) !important;
+    border-color: rgba(202, 196, 208, 0.14) !important;
+    color: var(--text-primary) !important;
+}
+
+body[data-theme="dark"][data-style="material"] .panel-heading.panel-heading-toggle:hover .panel-toggle-icon {
+    background: rgba(230, 224, 233, 0.1) !important;
 }
