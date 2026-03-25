@@ -1,0 +1,252 @@
+/* --- RESPONSIVE --- */
+@media (max-width: 480px) {
+    .main-container {
+        gap: 12px;
+        padding: 8px;
+    }
+
+    body {
+        padding: 12px 8px;
+    }
+
+    .depth-panel {
+        border-radius: 20px;
+        padding: 16px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .subtitle {
+        font-size: 12px;
+    }
+
+    .weekdays {
+        gap: 2px;
+    }
+
+    .weekdays span {
+        font-size: 12px;
+        padding: 8px 0;
+    }
+
+    .day {
+        aspect-ratio: 1;
+        border-radius: 12px;
+        padding: 8px;
+    }
+
+    .date-num {
+        font-size: 16px;
+    }
+
+    .modal-card {
+        max-width: 90vw;
+        padding: 20px;
+    }
+
+    .modal-date {
+        font-size: 48px;
+    }
+
+    .settings-card {
+        max-width: 90vw;
+        padding: 20px;
+    }
+
+    .stat-item {
+        padding: 4px 8px;
+        font-size: 14px;
+    }
+
+    .stat-num {
+        font-size: 18px;
+    }
+
+    .stat-label {
+        font-size: 11px;
+    }
+
+    .month-title {
+        min-width: 120px;
+    }
+
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+
+    .today-btn {
+        font-size: 13px;
+        padding: 8px 16px;
+    }
+
+    .calendar-actions {
+        gap: 8px;
+    }
+
+    .panel-heading {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .period-switcher {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .appearance-presets {
+        grid-template-columns: 1fr;
+    }
+
+    .theme-mode-switcher {
+        width: 100%;
+    }
+
+    .period-btn {
+        flex: 1;
+    }
+
+    .modal-weather {
+        padding: 12px 14px;
+    }
+
+    .modal-weather-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 22px;
+    }
+
+    .calendar-section {
+        position: relative;
+        overflow: hidden;
+    }
+}
+
+@media (min-width: 768px) {
+    .main-container {
+        max-width: 540px;
+        gap: 14px;
+    }
+
+    .day {
+        border-radius: 14px;
+    }
+
+    .depth-panel {
+        border-radius: 24px;
+        padding: 18px;
+    }
+
+    h1 {
+        font-size: 26px;
+    }
+
+    .modal-card {
+        max-width: 380px;
+    }
+
+    .settings-card {
+        max-width: 400px;
+    }
+
+    .period-stat-value {
+        font-size: 28px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .main-container {
+        max-width: 540px;
+        gap: 12px;
+    }
+
+    body {
+        padding: 16px 12px;
+        min-height: 100vh;
+    }
+
+    .depth-panel {
+        padding: 16px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    .subtitle {
+        font-size: 12px;
+    }
+
+    .month-title {
+        min-width: 110px;
+        font-size: 13px;
+    }
+
+    .stat-num {
+        font-size: 16px;
+    }
+
+    .stat-label {
+        font-size: 10px;
+    }
+}
+
+/* Touch-friendly */
+@media (hover: none) and (pointer: coarse) {
+    .day,
+    .btn-icon,
+    .stat-item {
+        transition: transform 0.15s, background 0.15s;
+    }
+
+    .day:active {
+        transform: scale(0.95) !important;
+    }
+
+    .btn-icon:active {
+        transform: scale(0.92) !important;
+    }
+
+    /* Вимикаємо 3D ефекти на мобільних */
+    .day-hover-3d {
+        display: none;
+    }
+}
+
+/* Swipe анімація */
+.calendar-section {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.calendar-section.swipe-left {
+    animation: swipeOut 0.3s ease-out forwards;
+}
+
+.calendar-section.swipe-right {
+    animation: swipeOutRight 0.3s ease-out forwards;
+}
+
+@keyframes swipeOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(-100px);
+        opacity: 0;
+    }
+}
+
+@keyframes swipeOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100px);
+        opacity: 0;
+    }
+}

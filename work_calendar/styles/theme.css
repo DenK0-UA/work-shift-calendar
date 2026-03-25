@@ -1,0 +1,204 @@
+:root {
+    /* Palette - Ultra Modern / Apple-like */
+    --bg-color: #f0f2f5;
+    --main-container-bg: #ffffff;
+    --text-primary: #121214;
+    --text-secondary: #6e6e73;
+    --accent: #007aff;
+    --accent-soft: rgba(0, 122, 255, 0.08);
+
+    /* Нові кольори: Сірий для роботи, Зелений для вихідних */
+    --work-bg: #e5e5ea;
+    --work-text: #1d1d1f;
+    --off-bg: #34c759;
+    --off-text: #ffffff;
+
+    --holiday-color: #ff3b30;
+    --glass-bg: rgba(255, 255, 255, 0.4);
+    --glass-border: rgba(255, 255, 255, 0.8);
+    --card-border: rgba(0, 0, 0, 0.04);
+    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    --card-hover-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    --modal-overlay: rgba(255, 255, 255, 0.6);
+    --base-font-size: 16px;
+    --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --page-gradient: radial-gradient(circle at top, rgba(255, 255, 255, 0.9), rgba(240, 242, 245, 0.94) 46%, rgba(226, 231, 238, 0.92));
+    --noise-opacity: 0.015;
+    --panel-hover-transform: translateY(-2px);
+    --icon-hover-transform: translateY(-4px);
+    --button-hover-transform: translateY(-1px);
+    --theme-toggle-hover-transform: rotate(15deg) scale(1.05);
+    --weather-refresh-hover-transform: rotate(12deg);
+    --calendar-day-hover-transform: translateY(-6px);
+    --control-transition: background-color 0.22s cubic-bezier(0.2, 0, 0, 1), color 0.22s cubic-bezier(0.2, 0, 0, 1), border-color 0.22s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.22s cubic-bezier(0.2, 0, 0, 1), transform 0.22s cubic-bezier(0.2, 0, 0, 1), opacity 0.22s cubic-bezier(0.2, 0, 0, 1), filter 0.22s cubic-bezier(0.2, 0, 0, 1);
+    --panel-transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.2s ease;
+    --modal-card-initial-transform: scale(0.85) translateY(40px) rotateX(12deg);
+    --modal-card-active-transform: scale(1) translateY(0) rotateX(0deg);
+    --modal-card-transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease;
+    --calendar-enter-animation: fluidIn 0.5s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+[data-theme="dark"] {
+    --bg-color: #08080a;
+    --main-container-bg: #111113;
+    --text-primary: #f5f5f7;
+    --text-secondary: #a1a1a6;
+    --accent: #0a84ff;
+    --accent-soft: rgba(10, 132, 255, 0.15);
+
+    /* Темна тема кольорів */
+    --work-bg: #2c2c2e;
+    --work-text: #f5f5f7;
+    --off-bg: #30d158;
+    --off-text: #ffffff;
+
+    --holiday-color: #ff453a;
+    --glass-bg: rgba(20, 20, 22, 0.5);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --card-border: rgba(255, 255, 255, 0.06);
+    --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    --card-hover-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+    --modal-overlay: rgba(0, 0, 0, 0.6);
+    --page-gradient: radial-gradient(circle at top, rgba(34, 34, 40, 0.5), rgba(8, 8, 10, 0.96) 46%, rgba(5, 5, 8, 1));
+    --noise-opacity: 0.02;
+}
+
+body[data-style="ios26"] {
+    --bg-color: #edf4ff;
+    --main-container-bg: rgba(255, 255, 255, 0.72);
+    --text-primary: #15171c;
+    --text-secondary: #697287;
+    --accent: #1a8cff;
+    --accent-soft: rgba(26, 140, 255, 0.12);
+    --card-border: rgba(255, 255, 255, 0.55);
+    --card-shadow: 0 18px 40px rgba(72, 98, 148, 0.18);
+    --card-hover-shadow: 0 24px 54px rgba(72, 98, 148, 0.24);
+    --glass-bg: rgba(255, 255, 255, 0.44);
+    --glass-border: rgba(255, 255, 255, 0.68);
+    --modal-overlay: rgba(239, 245, 255, 0.62);
+    --page-gradient: radial-gradient(circle at top left, rgba(255, 255, 255, 0.96), rgba(221, 235, 255, 0.92) 45%, rgba(202, 224, 255, 0.86));
+    --noise-opacity: 0.01;
+    --panel-hover-transform: translateY(-4px) scale(1.01);
+    --icon-hover-transform: translateY(-2px) scale(1.04);
+    --button-hover-transform: translateY(-2px) scale(1.01);
+    --theme-toggle-hover-transform: rotate(10deg) scale(1.08);
+    --weather-refresh-hover-transform: rotate(16deg) scale(1.06);
+    --calendar-day-hover-transform: translateY(-4px) scale(1.03);
+    --control-transition: background-color 0.28s cubic-bezier(0.23, 1, 0.32, 1), color 0.28s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.28s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.28s cubic-bezier(0.23, 1, 0.32, 1), transform 0.28s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.28s cubic-bezier(0.23, 1, 0.32, 1), filter 0.28s cubic-bezier(0.23, 1, 0.32, 1);
+    --panel-transition: box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1), transform 0.28s cubic-bezier(0.23, 1, 0.32, 1);
+    --modal-card-initial-transform: scale(0.92) translateY(30px);
+    --modal-card-transition: transform 0.48s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.32s ease;
+    --calendar-enter-animation: glassRiseIn 0.58s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+body[data-theme="dark"][data-style="ios26"] {
+    --bg-color: #08111c;
+    --main-container-bg: rgba(15, 23, 38, 0.72);
+    --text-primary: #eef4ff;
+    --text-secondary: #a7b6d0;
+    --accent: #63b3ff;
+    --accent-soft: rgba(99, 179, 255, 0.16);
+    --card-border: rgba(183, 214, 255, 0.14);
+    --card-shadow: 0 20px 46px rgba(0, 0, 0, 0.36);
+    --card-hover-shadow: 0 26px 62px rgba(0, 0, 0, 0.42);
+    --glass-bg: rgba(18, 28, 44, 0.54);
+    --glass-border: rgba(185, 218, 255, 0.16);
+    --modal-overlay: rgba(5, 12, 20, 0.68);
+    --page-gradient: radial-gradient(circle at top left, rgba(40, 74, 125, 0.35), rgba(8, 17, 28, 0.94) 44%, rgba(5, 10, 18, 1));
+}
+
+body[data-style="material"] {
+    --bg-color: #f6f0ff;
+    --main-container-bg: #fffbff;
+    --text-primary: #1d1b20;
+    --text-secondary: #625b71;
+    --accent: #6750a4;
+    --accent-soft: rgba(103, 80, 164, 0.12);
+    --work-bg: #e8def8;
+    --work-text: #1d192b;
+    --off-bg: #4f8d57;
+    --off-text: #ffffff;
+    --holiday-color: #ba1a1a;
+    --card-border: rgba(121, 116, 126, 0.16);
+    --card-shadow: 0 6px 18px rgba(103, 80, 164, 0.12);
+    --card-hover-shadow: 0 10px 22px rgba(103, 80, 164, 0.18);
+    --modal-overlay: rgba(29, 27, 32, 0.26);
+    --font-family: "Google Sans", "Noto Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --page-gradient: linear-gradient(180deg, rgba(253, 247, 255, 1), rgba(244, 237, 255, 1));
+    --noise-opacity: 0;
+    --panel-hover-transform: translateY(-1px);
+    --icon-hover-transform: translateY(-1px);
+    --button-hover-transform: translateY(-1px);
+    --theme-toggle-hover-transform: scale(1.03);
+    --weather-refresh-hover-transform: scale(1.04);
+    --calendar-day-hover-transform: translateY(-2px);
+    --control-transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1), color 0.2s cubic-bezier(0.2, 0, 0, 1), border-color 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1), transform 0.2s cubic-bezier(0.2, 0, 0, 1), opacity 0.2s cubic-bezier(0.2, 0, 0, 1), filter 0.2s cubic-bezier(0.2, 0, 0, 1);
+    --panel-transition: box-shadow 0.2s ease, transform 0.2s ease;
+    --modal-card-initial-transform: scale(0.96) translateY(18px);
+    --modal-card-transition: transform 0.28s cubic-bezier(0.2, 0, 0, 1), opacity 0.22s ease;
+    --calendar-enter-animation: materialFadeIn 0.34s cubic-bezier(0.2, 0, 0, 1) forwards;
+}
+
+body[data-theme="dark"][data-style="material"] {
+    --bg-color: #141218;
+    --main-container-bg: #1d1b20;
+    --text-primary: #e6e0e9;
+    --text-secondary: #cac4d0;
+    --accent: #cfbcff;
+    --accent-soft: rgba(207, 188, 255, 0.16);
+    --work-bg: #4a4458;
+    --work-text: #f4eff4;
+    --off-bg: #7cc684;
+    --off-text: #132116;
+    --holiday-color: #ffb4ab;
+    --card-border: rgba(202, 196, 208, 0.12);
+    --card-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
+    --card-hover-shadow: 0 14px 30px rgba(0, 0, 0, 0.38);
+    --modal-overlay: rgba(0, 0, 0, 0.46);
+    --page-gradient: linear-gradient(180deg, rgba(20, 18, 24, 1), rgba(28, 24, 34, 1));
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    font-family: var(--font-family);
+    outline: none;
+}
+
+body {
+    background-color: var(--bg-color);
+    background-image: var(--page-gradient);
+    color: var(--text-primary);
+    transition: background-color 0.5s ease, background-image 0.5s ease, color 0.3s ease;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 24px 16px;
+    font-size: var(--base-font-size);
+    line-height: 1.4;
+    overflow-x: hidden;
+    perspective: 1000px;
+}
+
+body.is-visual-switching *,
+body.is-visual-switching *::before,
+body.is-visual-switching *::after {
+    transition: none !important;
+    animation: none !important;
+}
+
+/* Текстура шуму для преміального вигляду */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    opacity: var(--noise-opacity);
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAtIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiPjxyZWN0IHdpZHRoPSI0MDAtIiBoZWlnaHQ9IjMwMCIgZmlsbD0id2hpdGUiLz48ZyBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjA1Ij48Y2lyY2xlIGN4PSIxMCIgY3k9IjEwIiByPSIwLjgiLz48Y2lyY2xlIGN4PSIzMCIgY3k9IjIwIiByPSIwLjUiLz48Y2lyY2xlIGN4PSIxNSIgY3k9IjMwIiByPSIwLjgiLz48Y2lyY2xlIGN4PSIzNSIgY3k9IjEwIiByPSIwLjYiLz48Y2lyY2xlIGN4PSIyNSIgY3k9IjMwIiByPSIwLjUiLz48Y2lyY2xlIGN4PSI1IiBjeT0iMjUiIHI9IjAuNyIvPjwvZz48L3N2Zz4=');
+    pointer-events: none;
+    z-index: 1000;
+}
