@@ -1,8 +1,57 @@
 let cachedCustomSettings = null;
 
+const DEFAULT_DAY_COLORS = {
+    current: {
+        light: { workColor: '#E5E5EA', offColor: '#34C759' },
+        dark: { workColor: '#2C2C2E', offColor: '#30D158' }
+    },
+    ios26: {
+        light: { workColor: '#E5E5EA', offColor: '#34C759' },
+        dark: { workColor: '#2C2C2E', offColor: '#30D158' }
+    },
+    material: {
+        light: { workColor: '#E8DEF8', offColor: '#4F8D57' },
+        dark: { workColor: '#4A4458', offColor: '#7CC684' }
+    }
+};
+
+const normalizeHexColor = (value, fallback = '#34C759') => {
+    if (typeof value !== 'string') return fallback;
+    const trimmed = value.trim();
+    if (!trimmed) return fallback;
+    if (trimmed.startsWith('#')) return trimmed.toUpperCase();
+    if (trimmed.startsWith('rgb')) {
+        const matches = trimmed.match(/\d+/g);
+        if (matches && matches.length >= 3) {
+            return '#' + matches.slice(0, 3).map((x) => Number.parseInt(x, 10).toString(16).padStart(2, '0')).join('').toUpperCase();
+        }
+    }
+    return fallback;
+};
+
+function getDefaultDayColors(stylePreset = 'current', themeName = 'light') {
+    const palette = DEFAULT_DAY_COLORS[stylePreset] || DEFAULT_DAY_COLORS.current;
+    return palette[themeName] || palette.light;
+}
+
+function matchesBuiltInPalette(workColor, offColor) {
+    const normalizedWork = normalizeHexColor(workColor, '#E5E5EA');
+    const normalizedOff = normalizeHexColor(offColor, '#34C759');
+
+    return Object.values(DEFAULT_DAY_COLORS).some((palette) => Object.values(palette).some((variant) => (
+        variant.workColor === normalizedWork && variant.offColor === normalizedOff
+    )));
+}
+
+function clearCustomColors() {
+    const styleEl = document.getElementById('custom-colors-style');
+    if (styleEl) {
+        styleEl.remove();
+    }
+}
+
 // --- Налаштування з localStorage ---
 function applyColors(workColor, offColor) {
-    // Створюємо/оновлюємо CSS правило з більшим пріоритетом для dark теми
     let styleEl = document.getElementById('custom-colors-style');
     if (!styleEl) {
         styleEl = document.createElement('style');
@@ -10,18 +59,30 @@ function applyColors(workColor, offColor) {
         document.head.appendChild(styleEl);
     }
 
-    // CSS з більшим пріоритетом для обох тем
     styleEl.textContent = `
-        :root {
-            --work-bg: ${workColor} !important;
-            --off-bg: ${offColor} !important;
-        }
-
-        [data-theme="dark"] {
-            --work-bg: ${workColor} !important;
-            --off-bg: ${offColor} !important;
+        body {
+            --work-bg: ${normalizeHexColor(workColor, '#E5E5EA')} !important;
+            --off-bg: ${normalizeHexColor(offColor, '#34C759')} !important;
         }
     `;
+}
+
+function syncColorInputsFromTheme() {
+    if (!settingsEls?.workColor || !settingsEls?.offColor) return;
+
+    const computedStyles = getComputedStyle(document.body);
+    const workColor = normalizeHexColor(computedStyles.getPropertyValue('--work-bg'), '#E5E5EA');
+    const offColor = normalizeHexColor(computedStyles.getPropertyValue('--off-bg'), '#34C759');
+
+    settingsEls.workColor.value = workColor;
+    settingsEls.offColor.value = offColor;
+
+    if (settingsEls.workPreview) {
+        settingsEls.workPreview.style.background = workColor;
+    }
+    if (settingsEls.offPreview) {
+        settingsEls.offPreview.style.background = offColor;
+    }
 }
 
 function loadCustomSettings() {
@@ -29,29 +90,65 @@ function loadCustomSettings() {
         const saved = localStorage.getItem('workCalendarSettings');
         if (saved) {
             const settings = JSON.parse(saved);
-            cachedCustomSettings = settings;
-            applyColors(settings.workColor, settings.offColor);
-            return settings;
+            if (!settings || !settings.workColor || !settings.offColor) {
+                cachedCustomSettings = null;
+                clearCustomColors();
+                return null;
+            }
+
+            const isLegacyDefault = settings.isCustomColors !== true && matchesBuiltInPalette(settings.workColor, settings.offColor);
+            if (isLegacyDefault || settings.isCustomColors === false) {
+                cachedCustomSettings = null;
+                clearCustomColors();
+                localStorage.removeItem('workCalendarSettings');
+                return null;
+            }
+
+            cachedCustomSettings = {
+                ...settings,
+                isCustomColors: true,
+                workColor: normalizeHexColor(settings.workColor, '#E5E5EA'),
+                offColor: normalizeHexColor(settings.offColor, '#34C759')
+            };
+            applyColors(cachedCustomSettings.workColor, cachedCustomSettings.offColor);
+            return cachedCustomSettings;
         }
     } catch (e) {
         console.warn('Не вдалось завантажити налаштування', e);
     }
     cachedCustomSettings = null;
+    clearCustomColors();
     return null;
 }
 
 function saveCustomSettings(workColor, offColor) {
     try {
+        const normalizedWork = normalizeHexColor(workColor, '#E5E5EA');
+        const normalizedOff = normalizeHexColor(offColor, '#34C759');
+        const currentStyle = document.body.getAttribute('data-style') || 'current';
+        const currentTheme = document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        const defaultColors = getDefaultDayColors(currentStyle, currentTheme);
+
+        if (normalizedWork === defaultColors.workColor && normalizedOff === defaultColors.offColor) {
+            cachedCustomSettings = null;
+            clearCustomColors();
+            localStorage.removeItem('workCalendarSettings');
+            return null;
+        }
+
         const settings = {
-            workColor: workColor || getComputedStyle(document.documentElement).getPropertyValue('--work-bg').trim(),
+            workColor: normalizedWork,
             workText: '#1d1d1f',
-            offColor: offColor || getComputedStyle(document.documentElement).getPropertyValue('--off-bg').trim(),
-            offText: '#ffffff'
+            offColor: normalizedOff,
+            offText: '#ffffff',
+            isCustomColors: true
         };
         cachedCustomSettings = settings;
         localStorage.setItem('workCalendarSettings', JSON.stringify(settings));
+        return settings;
     } catch (e) {
         console.warn('Не вдалось зберегти налаштування', e);
+        return null;
     }
 }
 
@@ -110,6 +207,10 @@ const setStylePreset = (stylePreset) => {
     settingsEls.stylePresetBtns.forEach((button) => {
         button.classList.toggle('active', button.dataset.style === stylePreset);
     });
+
+    if (!cachedCustomSettings) {
+        syncColorInputsFromTheme();
+    }
 };
 
 let selectedStylePreset = getSavedStylePreset();
@@ -155,11 +256,7 @@ const getHexColor = (rgbOrHex) => {
     return '#34C759';
 };
 
-const workBg = getComputedStyle(document.documentElement).getPropertyValue('--work-bg').trim();
-const offBg = getComputedStyle(document.documentElement).getPropertyValue('--off-bg').trim();
-
-settingsEls.workColor.value = getHexColor(workBg);
-settingsEls.offColor.value = getHexColor(offBg);
+syncColorInputsFromTheme();
 
 // Превью кольорів
 const updatePreview = () => {
@@ -230,6 +327,16 @@ const initTheme = () => {
     let isDark = false;
     let mediaListenerAttached = false;
 
+    const updateThemeToggleIcon = () => {
+        if (!themeBtn) return;
+        const nextIcon = themeMode === 'auto' ? '🌓' : (isDark ? '☀️' : '🌙');
+        themeBtn.textContent = nextIcon;
+        themeBtn.setAttribute('aria-label', themeMode === 'auto'
+            ? `Тема: авто (${isDark ? 'темна' : 'світла'})`
+            : `Тема: ${isDark ? 'темна' : 'світла'}`);
+        themeBtn.setAttribute('title', themeBtn.getAttribute('aria-label'));
+    };
+
     const persistThemeMode = () => {
         try {
             localStorage.setItem('themeMode', themeMode);
@@ -243,13 +350,17 @@ const initTheme = () => {
         }
     };
 
-    const setTheme = (isDark) => {
+    const setTheme = (nextIsDark) => {
+        isDark = nextIsDark;
         withVisualSwitchGuard();
         document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
-        themeBtn.innerHTML = themeMode === 'auto' ? '🌓' : (isDark ? '☀️' : '🌙');
+        updateThemeToggleIcon();
 
-        if (cachedCustomSettings) {
+        if (cachedCustomSettings?.isCustomColors) {
             applyColors(cachedCustomSettings.workColor, cachedCustomSettings.offColor);
+        } else {
+            clearCustomColors();
+            syncColorInputsFromTheme();
         }
     };
 
@@ -262,8 +373,7 @@ const initTheme = () => {
             if (darkModeQuery && !mediaListenerAttached) {
                 darkModeQuery.addEventListener('change', (e) => {
                     if (themeMode === 'auto') {
-                        isDark = e.matches;
-                        setTheme(isDark);
+                        setTheme(e.matches);
                     }
                 });
                 mediaListenerAttached = true;
@@ -289,8 +399,7 @@ const initTheme = () => {
     applyThemeMode();
 
     themeBtn.addEventListener('click', () => {
-        isDark = !isDark;
-        applySelectedThemeMode(isDark ? 'dark' : 'light');
+        applySelectedThemeMode(isDark ? 'light' : 'dark');
     });
 };
 
