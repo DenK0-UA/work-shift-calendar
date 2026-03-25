@@ -1,11 +1,11 @@
-# 📚 PAT-Project
+# 📚 work-shift-calendar
 
 Статичний веб-проєкт для планування змін, перегляду графіка роботи та ведення нотаток по днях.
 
 ## ✨ Що є в репозиторії
 
 ```text
-PAT-Project/
+work-shift-calendar/
 ├── work_calendar/
 │   ├── data/
 │   ├── js/
