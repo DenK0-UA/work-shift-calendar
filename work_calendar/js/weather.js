@@ -1,4 +1,8 @@
 let weatherForecastCache = null;
+let weatherForecastRange = null;
+let weatherLastUpdatedAt = null;
+let weatherState = 'idle';
+let weatherLastError = null;
 
 function getWeatherIcon(code, isDay = 1) {
     if (code === 0) return isDay ? '☀️' : '🌙';
@@ -105,23 +109,72 @@ function setModalWeather({ icon, summary, meta, hidden = false }) {
     document.getElementById('m-weather-meta').textContent = meta;
 }
 
-function updateModalWeather(year, month, day) {
+function getWeatherStateForDate(year, month, day) {
+    const dateKey = getWeatherDateKey(year, month, day);
     const weather = getWeatherForDate(year, month, day);
 
-    if (!weather) {
+    if (weather) {
+        return { type: 'ready', weather };
+    }
+
+    if (weatherState === 'loading' || weatherState === 'idle') {
+        return { type: 'loading' };
+    }
+
+    if (weatherForecastRange && (dateKey < weatherForecastRange.start || dateKey > weatherForecastRange.end)) {
+        return {
+            type: 'unavailable',
+            start: weatherForecastRange.start,
+            end: weatherForecastRange.end
+        };
+    }
+
+    if (weatherState === 'error') {
+        return { type: 'error', error: weatherLastError };
+    }
+
+    return {
+        type: 'unavailable',
+        start: weatherForecastRange?.start,
+        end: weatherForecastRange?.end
+    };
+}
+
+function updateModalWeather(year, month, day) {
+    const weatherView = getWeatherStateForDate(year, month, day);
+
+    if (weatherView.type === 'ready') {
+        const { weather } = weatherView;
+        const risk = getWeatherRisk(weather);
+        const feel = getWeatherFeel(weather);
+        const riskText = risk ? ` · ризик: ${risk}` : '';
+        const updatedAt = weatherLastUpdatedAt
+            ? formatWeatherUpdateTime(weatherLastUpdatedAt)
+            : formatWeatherUpdateTime();
+
+        setModalWeather({
+            icon: weather.icon,
+            summary: `${feel} · ${weather.label}`,
+            meta: `Бориспіль · ${weather.maxTemp}° / ${weather.minTemp}° · опади ${weather.precipitationProbability}%${riskText} · оновлено ${updatedAt}`
+        });
+        return;
+    }
+
+    if (weatherView.type === 'loading') {
+        setModalWeather({
+            icon: '⏳',
+            summary: 'Завантажуємо прогноз',
+            meta: 'Бориспіль · отримуємо дані для обраної дати'
+        });
+        return;
+    }
+
+    if (weatherView.type === 'unavailable') {
         setModalWeather({ hidden: true });
         return;
     }
 
-    const risk = getWeatherRisk(weather);
-    const feel = getWeatherFeel(weather);
-    const riskText = risk ? ` · ризик: ${risk}` : '';
-
-    setModalWeather({
-        icon: weather.icon,
-        summary: `${feel} · ${weather.label}`,
-        meta: `Бориспіль · ${weather.maxTemp}° / ${weather.minTemp}° · опади ${weather.precipitationProbability}%${riskText} · оновлено ${formatWeatherUpdateTime()}`
-    });
+    setModalWeather({ hidden: true });
 }
 
 async function fetchTodayWeather() {
@@ -129,6 +182,18 @@ async function fetchTodayWeather() {
     refreshButtons.forEach((button) => {
         button.disabled = true;
     });
+
+    weatherState = 'loading';
+    weatherLastError = null;
+
+    const modal = document.getElementById('modal');
+    if (modal.classList.contains('active')) {
+        updateModalWeather(
+            Number(modal.dataset.year),
+            Number(modal.dataset.month),
+            Number(modal.dataset.day)
+        );
+    }
 
     try {
         const lat = 50.35;
@@ -147,7 +212,13 @@ async function fetchTodayWeather() {
         }
 
         weatherForecastCache = buildWeatherForecastMap(data);
-        const modal = document.getElementById('modal');
+        weatherForecastRange = {
+            start: data.daily.time[0],
+            end: data.daily.time[data.daily.time.length - 1]
+        };
+        weatherLastUpdatedAt = new Date();
+        weatherState = 'ready';
+
         if (modal.classList.contains('active')) {
             updateModalWeather(
                 Number(modal.dataset.year),
@@ -156,8 +227,9 @@ async function fetchTodayWeather() {
             );
         }
     } catch (error) {
-        weatherForecastCache = null;
-        const modal = document.getElementById('modal');
+        weatherState = 'error';
+        weatherLastError = error;
+
         if (modal.classList.contains('active')) {
             updateModalWeather(
                 Number(modal.dataset.year),

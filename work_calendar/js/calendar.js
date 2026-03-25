@@ -206,6 +206,17 @@ function createDayCell(year, month, day, dayStatus, isToday, holidayName) {
     return dayEl;
 }
 
+function applyModalHolidayState(holidayName) {
+    if (holidayName) {
+        calendarEls.modalHoliday.textContent = `🎈 ${holidayName}`;
+        calendarEls.modalHoliday.classList.add('active');
+        return;
+    }
+
+    calendarEls.modalHoliday.textContent = '';
+    calendarEls.modalHoliday.classList.remove('active');
+}
+
 function updateLegendStats(stats) {
     calendarEls.statWork.textContent = String(stats.work);
     calendarEls.statOff.textContent = String(stats.off);
@@ -230,6 +241,7 @@ function applyActiveFilter() {
 
 // --- Рендер Календаря ---
 function renderCalendar(year, month) {
+    ensureHolidayDataForYear(year);
     queueCalendarEnterAnimation();
     renderedDayEls.length = 0;
     calendarEls.monthTitle.textContent = `${localeData.months[month]} ${year}`;
@@ -239,7 +251,6 @@ function renderCalendar(year, month) {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const paddingDays = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
     const stats = { work: 0, off: 0 };
-    const monthStr = String(month + 1).padStart(2, '0');
 
     for (let i = 0; i < paddingDays; i++) {
         const emptyDiv = document.createElement('div');
@@ -256,8 +267,7 @@ function renderCalendar(year, month) {
             month === DEMO_TODAY.getMonth() &&
             day === DEMO_TODAY.getDate()
         );
-        const dayStr = String(day).padStart(2, '0');
-        const holidayName = holidays[`${monthStr}-${dayStr}`] || '';
+        const holidayName = getHolidayName(year, month, day);
 
         fragment.appendChild(createDayCell(year, month, day, dayStatus, isToday, holidayName));
     }
@@ -269,6 +279,10 @@ function renderCalendar(year, month) {
         updatePeriodStatsPanel(window.activeStatsPeriod || 'month');
     }
     applyActiveFilter();
+
+    if (activeModalDate && calendarEls.modal.classList.contains('active')) {
+        applyModalHolidayState(getHolidayName(activeModalDate.year, activeModalDate.month, activeModalDate.day));
+    }
 }
 
 // --- 3D Ефекти ---
