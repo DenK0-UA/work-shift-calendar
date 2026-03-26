@@ -6,23 +6,21 @@
 
 ```text
 work-shift-calendar/
-├── work_calendar/
-│   ├── data/
-│   ├── js/
-│   │   ├── settings-state.js
-│   │   ├── schedule-ui.js
-│   │   ├── insights.js
-│   │   └── ...
-│   ├── styles/
-│   │   ├── theme.css
-│   │   ├── layout.css
-│   │   ├── calendar.css
-│   │   ├── modal-day.css
-│   │   ├── settings-panel.css
-│   │   ├── schedule-panel.css
-│   │   └── responsive.css
-│   ├── index.html
-│   └── index_old.html
+├── data/
+├── js/
+│   ├── settings-state.js
+│   ├── schedule-ui.js
+│   ├── insights.js
+│   └── ...
+├── styles/
+│   ├── theme.css
+│   ├── layout.css
+│   ├── calendar.css
+│   ├── modal-day.css
+│   ├── settings-panel.css
+│   ├── schedule-panel.css
+│   └── responsive.css
+├── index.html
 └── README.md
 ```
 
@@ -62,7 +60,7 @@ work-shift-calendar/
 Проєкт статичний, тому його достатньо просто відкрити в браузері.
 
 ```bash
-start work_calendar/index.html
+start index.html
 ```
 
 Альтернатива:
@@ -74,7 +72,7 @@ start work_calendar/index.html
 
 У репозиторії є workflow для публікації `GitHub Pages` прямо з гілки `main`.
 
-- деплоїться саме вміст папки `work_calendar/`
+- деплоїться корінь репозиторію
 - після push у `main` сайт оновлюється автоматично
 - у налаштуваннях репозиторію `Pages` треба вибрати джерело `GitHub Actions`
 
