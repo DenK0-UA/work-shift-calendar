@@ -94,6 +94,11 @@
     margin: 0;
 }
 
+.settings-device-id {
+    margin-top: 10px;
+    word-break: break-all;
+}
+
 .theme-mode-btn:disabled {
     opacity: 0.45;
     cursor: not-allowed;

@@ -29,6 +29,7 @@ const settingsEls = {
     appVersionTrigger: document.getElementById('app-version-trigger'),
     appVersionValue: document.getElementById('app-version-value'),
     appVersionHint: document.getElementById('app-version-hint'),
+    appInstallId: document.getElementById('app-install-id'),
     appUpdateChannelSummary: document.getElementById('app-update-channel-summary'),
     updateChannelGroup: document.getElementById('update-channel-group'),
     updateChannelBtns: document.querySelectorAll('#update-channel-switcher [data-update-channel]'),
@@ -45,11 +46,6 @@ let hardResetHoldTimer = null;
 let hardResetAnimationFrameId = null;
 let hardResetHoldStartedAt = 0;
 let applySelectedThemeMode = null;
-let appVersionTapCount = 0;
-let appVersionTapResetTimer = null;
-
-const APP_VERSION_UNLOCK_TAP_TARGET = 7;
-const APP_VERSION_UNLOCK_RESET_MS = 2200;
 
 const setSettingsOverlayOpen = (isOpen) => {
     if (!settingsEls.overlay) {
@@ -87,27 +83,27 @@ const setUpdateChannelUI = (channel) => {
     });
 };
 
-const resetAppVersionTapProgress = () => {
-    appVersionTapCount = 0;
-    if (appVersionTapResetTimer) {
-        clearTimeout(appVersionTapResetTimer);
-        appVersionTapResetTimer = null;
-    }
-};
-
-const refreshAppUpdateSettingsUI = () => {
+const refreshAppUpdateSettingsUI = async () => {
     if (!window.AppUpdate) {
         return;
     }
 
+    const betaAccessState = await window.AppUpdate.loadBetaAccessState?.();
     const currentChannel = window.AppUpdate.getSelectedChannel?.() || 'stable';
-    const betaUnlocked = window.AppUpdate.isBetaChannelUnlocked?.() === true;
-    const betaConfigured = window.AppUpdate.canUseBetaChannel?.() === true;
+    const betaAllowed = betaAccessState?.isAllowed === true;
+    const betaConfigured = betaAccessState?.isConfigured === true;
     const channelLabel = window.AppUpdate.getChannelLabel?.(currentChannel) || currentChannel;
     const appVersion = window.AppUpdate.getAppVersion?.() || APP_RELEASE_VERSION;
+    const installId = window.AppUpdate.getInstallId?.() || betaAccessState?.installId || '';
 
     if (settingsEls.appVersionValue) {
         settingsEls.appVersionValue.textContent = appVersion;
+    }
+
+    if (settingsEls.appInstallId) {
+        settingsEls.appInstallId.textContent = installId
+            ? `ID пристрою: ${installId}`
+            : 'ID пристрою: недоступний';
     }
 
     if (settingsEls.appUpdateChannelSummary) {
@@ -115,18 +111,18 @@ const refreshAppUpdateSettingsUI = () => {
     }
 
     if (settingsEls.updateChannelGroup) {
-        settingsEls.updateChannelGroup.hidden = !betaUnlocked;
+        settingsEls.updateChannelGroup.hidden = !betaAllowed;
     }
 
     settingsEls.updateChannelBtns.forEach((button) => {
         const isBetaButton = button.dataset.updateChannel === 'beta';
-        button.disabled = isBetaButton && !betaConfigured;
+        button.disabled = isBetaButton && !betaAllowed;
     });
     setUpdateChannelUI(currentChannel);
 
     if (settingsEls.updateChannelHelp) {
-        settingsEls.updateChannelHelp.textContent = !betaConfigured
-            ? 'Додайте beta-маніфест у config, щоб цей пристрій міг отримувати передрелізні APK.'
+        settingsEls.updateChannelHelp.textContent = !betaAllowed
+            ? 'Beta-перемикач з’являється тільки на пристроях, чий ID додано в allowlist.'
             : (currentChannel === 'beta'
                 ? 'Цей пристрій зараз отримує beta-оновлення. Інші користувачі залишаються на Stable.'
                 : 'Stable використовується для всіх. Beta можна вмикати тільки на цьому пристрої.');
@@ -136,20 +132,17 @@ const refreshAppUpdateSettingsUI = () => {
         return;
     }
 
-    if (betaUnlocked) {
-        settingsEls.appVersionHint.textContent = 'Beta-канал уже розблоковано на цьому пристрої. Можна безпечно перемикатися між Stable і Beta.';
-        return;
-    }
-
     if (!betaConfigured) {
-        settingsEls.appVersionHint.textContent = 'Додайте URL для beta-маніфесту в config, після цього тут можна буде розблокувати beta-канал.';
+        settingsEls.appVersionHint.textContent = 'Beta-доступ ще не налаштовано. Пристрій працює лише через Stable.';
         return;
     }
 
-    const remainingTaps = Math.max(APP_VERSION_UNLOCK_TAP_TARGET - appVersionTapCount, 0);
-    settingsEls.appVersionHint.textContent = remainingTaps === APP_VERSION_UNLOCK_TAP_TARGET
-        ? 'Натисніть 7 разів на блок версії, щоб відкрити beta-канал на цьому пристрої.'
-        : `Ще ${remainingTaps} натискань до розблокування beta-каналу.`;
+    if (betaAllowed) {
+        settingsEls.appVersionHint.textContent = 'Цей пристрій є в allowlist і може перемикатися між Stable та Beta.';
+        return;
+    }
+
+    settingsEls.appVersionHint.textContent = 'Цей пристрій не має beta-доступу. Щоб видати його, додайте цей ID у beta/access.json.';
 };
 
 let selectedStylePreset = getSavedStylePreset();
@@ -308,40 +301,6 @@ settingsEls.themeModeBtns.forEach((button) => {
         }
     });
 });
-
-if (settingsEls.appVersionTrigger) {
-    settingsEls.appVersionTrigger.addEventListener('click', () => {
-        if (!window.AppUpdate || window.AppUpdate.isBetaChannelUnlocked?.()) {
-            return;
-        }
-
-        if (!window.AppUpdate.canUseBetaChannel?.()) {
-            refreshAppUpdateSettingsUI();
-            return;
-        }
-
-        appVersionTapCount += 1;
-        refreshAppUpdateSettingsUI();
-
-        if (appVersionTapResetTimer) {
-            clearTimeout(appVersionTapResetTimer);
-        }
-
-        appVersionTapResetTimer = window.setTimeout(() => {
-            resetAppVersionTapProgress();
-            refreshAppUpdateSettingsUI();
-        }, APP_VERSION_UNLOCK_RESET_MS);
-
-        if (appVersionTapCount < APP_VERSION_UNLOCK_TAP_TARGET) {
-            return;
-        }
-
-        resetAppVersionTapProgress();
-        window.AppUpdate.unlockBetaChannel?.();
-        refreshAppUpdateSettingsUI();
-        alert('Beta-канал розблоковано тільки на цьому пристрої. Інші користувачі залишаються на Stable.');
-    });
-}
 
 settingsEls.updateChannelBtns.forEach((button) => {
     button.addEventListener('click', () => {

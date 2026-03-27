@@ -5,6 +5,7 @@ const APP_UPDATE_MANIFEST_URLS = {
     stable: 'https://denk0-ua.github.io/work-shift-calendar/stable/version.json',
     beta: 'https://denk0-ua.github.io/work-shift-calendar/beta/version.json'
 };
+const APP_UPDATE_BETA_ACCESS_URL = 'https://denk0-ua.github.io/work-shift-calendar/beta/access.json';
 const APP_UPDATE_CHECK_ENABLED = true;
 const APP_UPDATE_CHECK_TIMEOUT_MS = 5000;
 

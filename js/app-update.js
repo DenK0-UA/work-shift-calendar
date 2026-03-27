@@ -4,9 +4,17 @@ const APP_UPDATE_CHANNELS = {
 };
 
 const APP_UPDATE_STORAGE_KEYS = {
+    installId: 'appInstallId',
     selectedChannel: 'appUpdate:channel',
-    betaUnlocked: 'appUpdate:betaUnlocked',
     dismissedVersionPrefix: 'appUpdate:dismissed:'
+};
+
+const betaAccessState = {
+    installId: readOrCreateInstallId(),
+    isAllowed: false,
+    isConfigured: false,
+    isLoaded: false,
+    loadingPromise: null
 };
 
 const appUpdateEls = {
@@ -32,6 +40,34 @@ function getChannelLabel(channel) {
         : 'Stable';
 }
 
+function normalizeInstallId(value) {
+    return typeof value === 'string' ? value.trim() : '';
+}
+
+function createInstallId() {
+    if (window.crypto?.randomUUID) {
+        return window.crypto.randomUUID();
+    }
+
+    const randomPart = () => Math.random().toString(36).slice(2, 10);
+    return `${Date.now().toString(36)}-${randomPart()}-${randomPart()}`;
+}
+
+function readOrCreateInstallId() {
+    try {
+        const existingInstallId = normalizeInstallId(localStorage.getItem(APP_UPDATE_STORAGE_KEYS.installId));
+        if (existingInstallId) {
+            return existingInstallId;
+        }
+
+        const nextInstallId = createInstallId();
+        localStorage.setItem(APP_UPDATE_STORAGE_KEYS.installId, nextInstallId);
+        return nextInstallId;
+    } catch (error) {
+        return createInstallId();
+    }
+}
+
 function readConfiguredManifestUrls() {
     const configuredUrls =
         typeof APP_UPDATE_MANIFEST_URLS === 'object' && APP_UPDATE_MANIFEST_URLS
@@ -46,34 +82,37 @@ function readConfiguredManifestUrls() {
     };
 }
 
-function canUseBetaChannel() {
-    return Boolean(readConfiguredManifestUrls().beta);
+function readBetaAccessUrl() {
+    return typeof APP_UPDATE_BETA_ACCESS_URL === 'string'
+        ? APP_UPDATE_BETA_ACCESS_URL.trim()
+        : '';
+}
+
+function isBetaFeatureConfigured() {
+    const manifestUrls = readConfiguredManifestUrls();
+    return Boolean(manifestUrls.beta && readBetaAccessUrl());
+}
+
+function getBetaAccessSnapshot() {
+    return {
+        installId: betaAccessState.installId,
+        isAllowed: betaAccessState.isAllowed,
+        isConfigured: betaAccessState.isConfigured,
+        isLoaded: betaAccessState.isLoaded
+    };
+}
+
+function canAccessBetaChannel() {
+    return betaAccessState.isConfigured && betaAccessState.isAllowed;
 }
 
 function readConfiguredDefaultChannel() {
     const normalizedDefault = normalizeUpdateChannel(APP_UPDATE_CHANNEL_DEFAULT);
-    if (normalizedDefault === APP_UPDATE_CHANNELS.beta && !canUseBetaChannel()) {
+    if (normalizedDefault === APP_UPDATE_CHANNELS.beta && !canAccessBetaChannel()) {
         return APP_UPDATE_CHANNELS.stable;
     }
 
     return normalizedDefault;
-}
-
-function isBetaChannelUnlocked() {
-    try {
-        return localStorage.getItem(APP_UPDATE_STORAGE_KEYS.betaUnlocked) === '1';
-    } catch (error) {
-        return false;
-    }
-}
-
-function unlockBetaChannel() {
-    try {
-        localStorage.setItem(APP_UPDATE_STORAGE_KEYS.betaUnlocked, '1');
-        return true;
-    } catch (error) {
-        return false;
-    }
 }
 
 function normalizeVersionParts(version) {
@@ -113,10 +152,8 @@ function readSelectedChannel() {
         const storedChannel = localStorage.getItem(APP_UPDATE_STORAGE_KEYS.selectedChannel);
         const normalizedChannel = normalizeUpdateChannel(storedChannel || readConfiguredDefaultChannel());
 
-        if (normalizedChannel === APP_UPDATE_CHANNELS.beta) {
-            if (!isBetaChannelUnlocked() || !canUseBetaChannel()) {
-                return APP_UPDATE_CHANNELS.stable;
-            }
+        if (normalizedChannel === APP_UPDATE_CHANNELS.beta && !canAccessBetaChannel()) {
+            return APP_UPDATE_CHANNELS.stable;
         }
 
         return normalizedChannel;
@@ -128,7 +165,7 @@ function readSelectedChannel() {
 function writeSelectedChannel(channel) {
     const normalizedChannel = normalizeUpdateChannel(channel);
     const nextChannel =
-        normalizedChannel === APP_UPDATE_CHANNELS.beta && isBetaChannelUnlocked() && canUseBetaChannel()
+        normalizedChannel === APP_UPDATE_CHANNELS.beta && canAccessBetaChannel()
             ? APP_UPDATE_CHANNELS.beta
             : APP_UPDATE_CHANNELS.stable;
 
@@ -203,10 +240,8 @@ function showAppUpdateBanner(manifest) {
     appUpdateEls.banner.classList.add('active');
 }
 
-async function fetchAppUpdateManifest(channel) {
-    const manifestUrls = readConfiguredManifestUrls();
-    const manifestUrl = manifestUrls[normalizeUpdateChannel(channel)];
-    if (!manifestUrl) {
+async function fetchJsonWithTimeout(url) {
+    if (typeof url !== 'string' || !url.trim()) {
         return null;
     }
 
@@ -218,7 +253,7 @@ async function fetchAppUpdateManifest(channel) {
         : null;
 
     try {
-        const response = await fetch(manifestUrl, {
+        const response = await fetch(url, {
             cache: 'no-store',
             signal: controller?.signal
         });
@@ -227,22 +262,7 @@ async function fetchAppUpdateManifest(channel) {
             return null;
         }
 
-        const data = await response.json();
-        if (
-            !data ||
-            typeof data.version !== 'string' ||
-            typeof data.apkUrl !== 'string' ||
-            !data.apkUrl.trim()
-        ) {
-            return null;
-        }
-
-        return {
-            channel: normalizeUpdateChannel(channel),
-            version: data.version.trim(),
-            apkUrl: data.apkUrl.trim(),
-            notes: typeof data.notes === 'string' ? data.notes.trim() : ''
-        };
+        return await response.json();
     } catch (error) {
         return null;
     } finally {
@@ -252,10 +272,77 @@ async function fetchAppUpdateManifest(channel) {
     }
 }
 
+async function loadBetaAccessState(force = false) {
+    if (!force && betaAccessState.loadingPromise) {
+        return betaAccessState.loadingPromise;
+    }
+
+    const betaFeatureConfigured = isBetaFeatureConfigured();
+    betaAccessState.isConfigured = betaFeatureConfigured;
+
+    if (!betaFeatureConfigured) {
+        betaAccessState.isAllowed = false;
+        betaAccessState.isLoaded = true;
+        writeSelectedChannel(APP_UPDATE_CHANNELS.stable);
+        return getBetaAccessSnapshot();
+    }
+
+    betaAccessState.loadingPromise = (async () => {
+        const accessData = await fetchJsonWithTimeout(readBetaAccessUrl());
+        const allowedInstallIds = Array.isArray(accessData?.allowedInstallIds)
+            ? accessData.allowedInstallIds
+                .map((installId) => normalizeInstallId(installId))
+                .filter(Boolean)
+            : [];
+
+        betaAccessState.isAllowed = allowedInstallIds.includes(betaAccessState.installId);
+        betaAccessState.isLoaded = true;
+
+        if (!betaAccessState.isAllowed) {
+            writeSelectedChannel(APP_UPDATE_CHANNELS.stable);
+        }
+
+        return getBetaAccessSnapshot();
+    })();
+
+    try {
+        return await betaAccessState.loadingPromise;
+    } finally {
+        betaAccessState.loadingPromise = null;
+    }
+}
+
+async function fetchAppUpdateManifest(channel) {
+    const manifestUrls = readConfiguredManifestUrls();
+    const manifestUrl = manifestUrls[normalizeUpdateChannel(channel)];
+    if (!manifestUrl) {
+        return null;
+    }
+
+    const data = await fetchJsonWithTimeout(manifestUrl);
+    if (
+        !data ||
+        typeof data.version !== 'string' ||
+        typeof data.apkUrl !== 'string' ||
+        !data.apkUrl.trim()
+    ) {
+        return null;
+    }
+
+    return {
+        channel: normalizeUpdateChannel(channel),
+        version: data.version.trim(),
+        apkUrl: data.apkUrl.trim(),
+        notes: typeof data.notes === 'string' ? data.notes.trim() : ''
+    };
+}
+
 async function resolveAvailableAppUpdateManifest() {
+    await loadBetaAccessState();
+
     const selectedChannel = readSelectedChannel();
     const channelsToTry =
-        selectedChannel === APP_UPDATE_CHANNELS.beta
+        selectedChannel === APP_UPDATE_CHANNELS.beta && canAccessBetaChannel()
             ? [APP_UPDATE_CHANNELS.beta, APP_UPDATE_CHANNELS.stable]
             : [APP_UPDATE_CHANNELS.stable];
 
@@ -313,15 +400,18 @@ if (appUpdateEls.dismissBtn) {
     });
 }
 
+loadBetaAccessState();
+
 window.AppUpdate = {
     checkForAppUpdate,
     compareAppVersions,
-    canUseBetaChannel,
     getAppVersion: () => APP_RELEASE_VERSION,
+    getBetaAccessSnapshot,
     getChannelLabel,
+    getInstallId: () => betaAccessState.installId,
     getSelectedChannel: readSelectedChannel,
-    isBetaChannelUnlocked,
+    isBetaAllowedForThisInstall: canAccessBetaChannel,
     isNativeAndroidApp,
-    setSelectedChannel: writeSelectedChannel,
-    unlockBetaChannel
+    loadBetaAccessState,
+    setSelectedChannel: writeSelectedChannel
 };
