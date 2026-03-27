@@ -8,7 +8,8 @@
 
 .modal-overlay,
 .settings-overlay,
-.schedule-overlay {
+.schedule-overlay,
+.app-update-overlay {
     position: fixed;
     inset: 0;
     width: 100vw;
@@ -27,7 +28,8 @@
 
 .modal-overlay.active,
 .settings-overlay.active,
-.schedule-overlay.active {
+.schedule-overlay.active,
+.app-update-overlay.active {
     opacity: 1;
     pointer-events: auto;
     backdrop-filter: blur(12px);
@@ -36,7 +38,8 @@
 
 .modal-card,
 .settings-card,
-.schedule-card {
+.schedule-card,
+.app-update-card {
     position: relative;
     background: var(--main-container-bg);
     backdrop-filter: blur(16px) saturate(150%);
@@ -53,14 +56,16 @@
 
 .modal-overlay.active .modal-card,
 .settings-overlay.active .settings-card,
-.schedule-overlay.active .schedule-card {
+.schedule-overlay.active .schedule-card,
+.app-update-overlay.active .app-update-card {
     transform: var(--modal-card-active-transform);
     opacity: 1;
 }
 
 .modal-card::before,
 .settings-card::before,
-.schedule-card::before {
+.schedule-card::before,
+.app-update-card::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -209,18 +214,14 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
     gap: 10px;
 }
 
-.app-update-banner {
-    display: none;
-    gap: 16px;
-    align-items: center;
-    justify-content: space-between;
+.app-update-card {
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
     border: 1px solid var(--surface-panel-accent-border);
     background: var(--surface-panel-accent);
     box-shadow: var(--surface-panel-accent-shadow);
-}
-
-.app-update-banner.active {
-    display: flex;
 }
 
 .app-update-banner-copy {
@@ -247,7 +248,7 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
     display: flex;
     gap: 10px;
     align-items: center;
-    flex-shrink: 0;
+    justify-content: flex-end;
 }
 
 .weather-refresh {

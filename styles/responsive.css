@@ -398,9 +398,9 @@
         transform: scale(0.92) !important;
     }
 
-    .app-update-banner {
-        align-items: stretch;
-        flex-direction: column;
+    .app-update-card {
+        width: min(100%, 420px);
+        padding: 24px;
     }
 
     .app-update-banner-actions {
