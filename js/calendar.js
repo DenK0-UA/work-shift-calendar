@@ -423,6 +423,8 @@ function resetModalNote() {
 
 const closeModal = () => {
     resetModalNote();
+    activeModalDate = null;
+    activeModalStatusMeta = null;
     calendarEls.modal.classList.remove('active');
 };
 

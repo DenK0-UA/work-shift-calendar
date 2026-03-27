@@ -28,21 +28,6 @@
     const PUBLIC_STYLE_PRESETS = new Set(['current']);
     const FALLBACK_STYLE_PRESET = 'current';
 
-    const DEFAULT_DAY_COLORS = {
-        current: {
-            light: { workColor: '#DBE7F3', offColor: '#1F9D73' },
-            dark: { workColor: '#2A3B52', offColor: '#2AA876' }
-        },
-        ios26: {
-            light: { workColor: '#E5E5EA', offColor: '#34C759' },
-            dark: { workColor: '#2C2C2E', offColor: '#30D158' }
-        },
-        material: {
-            light: { workColor: '#E8DEF8', offColor: '#4F8D57' },
-            dark: { workColor: '#4A4458', offColor: '#7CC684' }
-        }
-    };
-
     const normalizeHexColor = (value, fallback = '#34C759') => {
         if (typeof value !== 'string') return fallback;
         const trimmed = value.trim();
@@ -113,9 +98,76 @@
         } catch (e) {}
     };
 
+    const getCustomColorsStyleElement = ({ create = false } = {}) => {
+        let styleEl = document.getElementById('custom-colors-style');
+        if (!styleEl && create) {
+            styleEl = document.createElement('style');
+            styleEl.id = 'custom-colors-style';
+            document.head.appendChild(styleEl);
+        }
+        return styleEl;
+    };
+
+    const getCustomColorsStyleText = () => getCustomColorsStyleElement()?.textContent || null;
+
+    const setCustomColorsStyleText = (text) => {
+        if (!text) return;
+        const styleEl = getCustomColorsStyleElement({ create: true });
+        styleEl.textContent = text;
+    };
+
+    const removeCustomColorsStyleElement = () => {
+        const styleEl = getCustomColorsStyleElement();
+        if (styleEl) {
+            styleEl.remove();
+        }
+    };
+
+    const readDayColorsFromComputedStyles = (computedStyles) => ({
+        workColor: normalizeHexColor(computedStyles.getPropertyValue('--work-bg'), '#DBE7F3'),
+        offColor: normalizeHexColor(computedStyles.getPropertyValue('--off-bg'), '#1F9D73')
+    });
+
+    const withTemporaryThemeContext = ({ stylePreset = 'current', themeName = 'light', ignoreCustomColors = true } = {}, callback) => {
+        const body = document.body;
+        if (!body || typeof callback !== 'function') {
+            return { workColor: '#DBE7F3', offColor: '#1F9D73' };
+        }
+
+        const previousState = {
+            stylePreset: body.getAttribute('data-style') || FALLBACK_STYLE_PRESET,
+            themeName: body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light',
+            customColorsText: ignoreCustomColors ? getCustomColorsStyleText() : null
+        };
+
+        if (ignoreCustomColors) {
+            removeCustomColorsStyleElement();
+        }
+
+        body.setAttribute('data-style', normalizePublicStylePreset(stylePreset));
+        body.setAttribute('data-theme', themeName === 'dark' ? 'dark' : 'light');
+
+        try {
+            return callback(getComputedStyle(body));
+        } finally {
+            body.setAttribute('data-style', previousState.stylePreset);
+            body.setAttribute('data-theme', previousState.themeName);
+
+            if (ignoreCustomColors) {
+                removeCustomColorsStyleElement();
+            }
+
+            if (ignoreCustomColors && previousState.customColorsText) {
+                setCustomColorsStyleText(previousState.customColorsText);
+            }
+        }
+    };
+
     const getDefaultDayColors = (stylePreset = 'current', themeName = 'light') => {
-        const palette = DEFAULT_DAY_COLORS[stylePreset] || DEFAULT_DAY_COLORS.current;
-        return palette[themeName] || palette.light;
+        return withTemporaryThemeContext(
+            { stylePreset, themeName, ignoreCustomColors: true },
+            readDayColorsFromComputedStyles
+        );
     };
 
     const normalizePublicStylePreset = (stylePreset) => (
@@ -126,28 +178,22 @@
         const normalizedWork = normalizeHexColor(workColor, '#E5E5EA');
         const normalizedOff = normalizeHexColor(offColor, '#34C759');
 
-        return Object.values(DEFAULT_DAY_COLORS).some((palette) =>
-            Object.values(palette).some((variant) =>
-                variant.workColor === normalizedWork && variant.offColor === normalizedOff
-            )
+        const stylePresets = ['current'];
+        const themeNames = ['light', 'dark'];
+
+        return stylePresets.some((stylePreset) =>
+            themeNames.some((themeName) => {
+                const variant = getDefaultDayColors(stylePreset, themeName);
+                return variant.workColor === normalizedWork && variant.offColor === normalizedOff;
+            })
         );
     };
 
     const clearCustomColors = () => {
-        const styleEl = document.getElementById('custom-colors-style');
-        if (styleEl) {
-            styleEl.remove();
-        }
+        removeCustomColorsStyleElement();
     };
 
     const applyColors = (workColor, offColor) => {
-        let styleEl = document.getElementById('custom-colors-style');
-        if (!styleEl) {
-            styleEl = document.createElement('style');
-            styleEl.id = 'custom-colors-style';
-            document.head.appendChild(styleEl);
-        }
-
         const normalizedWork = normalizeHexColor(workColor, '#E5E5EA');
         const normalizedOff = normalizeHexColor(offColor, '#34C759');
         const workRgb = hexToRgb(normalizedWork, '#E5E5EA');
@@ -160,7 +206,7 @@
         const workText = getContrastTextColor(normalizedWork);
         const offText = getContrastTextColor(normalizedOff);
 
-        styleEl.textContent = `
+        setCustomColorsStyleText(`
             body {
                 --work-bg: ${normalizedWork} !important;
                 --off-bg: ${normalizedOff} !important;
@@ -175,15 +221,14 @@
                 --day-work-hover-shadow: 0 14px 30px ${toRgba(workRgb, isDarkTheme ? 0.38 : 0.26)} !important;
                 --day-off-hover-shadow: 0 16px 32px ${toRgba(offRgb, isDarkTheme ? 0.42 : 0.32)} !important;
             }
-        `;
+        `);
     };
 
     const syncColorInputsFromTheme = (settingsEls) => {
         if (!settingsEls?.workColor || !settingsEls?.offColor) return;
 
         const computedStyles = getComputedStyle(document.body);
-        const workColor = normalizeHexColor(computedStyles.getPropertyValue('--work-bg'), '#E5E5EA');
-        const offColor = normalizeHexColor(computedStyles.getPropertyValue('--off-bg'), '#34C759');
+        const { workColor, offColor } = readDayColorsFromComputedStyles(computedStyles);
 
         settingsEls.workColor.value = workColor;
         settingsEls.offColor.value = offColor;
@@ -193,6 +238,14 @@
         }
         if (settingsEls.offPreview) {
             settingsEls.offPreview.style.background = offColor;
+        }
+    };
+
+    const syncStoredCustomColors = () => {
+        if (settingsState.customSettings?.isCustomColors) {
+            applyColors(settingsState.customSettings.workColor, settingsState.customSettings.offColor);
+        } else {
+            clearCustomColors();
         }
     };
 
@@ -245,11 +298,7 @@
 
         settingsState.hydrated = true;
 
-        if (settingsState.customSettings?.isCustomColors) {
-            applyColors(settingsState.customSettings.workColor, settingsState.customSettings.offColor);
-        } else {
-            clearCustomColors();
-        }
+        syncStoredCustomColors();
     };
 
     const loadCustomSettings = () => {
@@ -392,11 +441,7 @@
             document.body.setAttribute('data-theme', settingsState.isDark ? 'dark' : 'light');
             updateThemeToggleIcon();
 
-            if (settingsState.customSettings?.isCustomColors) {
-                applyColors(settingsState.customSettings.workColor, settingsState.customSettings.offColor);
-            } else {
-                clearCustomColors();
-            }
+            syncStoredCustomColors();
 
             if (typeof onThemeApplied === 'function') {
                 onThemeApplied({

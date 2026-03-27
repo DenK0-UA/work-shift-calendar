@@ -17,22 +17,14 @@
     isolation: isolate;
 }
 
-body[data-style="current"] .day {
+.day {
     --calendar-day-radius: 34%;
     border-width: 1px;
-    border-color: rgba(15, 108, 189, 0.08);
+    border-color: var(--calendar-day-border);
 }
 
-body[data-style="ios26"] .day {
-    --calendar-day-radius: 32%;
-    border: 1px solid rgba(255, 255, 255, 0.26);
-}
-
-body[data-style="material"] .day {
-    --calendar-day-radius: 28%;
+.day {
     box-shadow: none;
-    border-width: 1px;
-    border-color: rgba(103, 80, 164, 0.1);
 }
 
 /* Статуси */
@@ -89,44 +81,6 @@ body[data-style="material"] .day {
     box-shadow: var(--day-off-hover-shadow);
 }
 
-body[data-style="ios26"] .day[data-status="work"] {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.52), rgba(222, 228, 238, 0.88));
-}
-
-body[data-style="ios26"] .day[data-status="off"] {
-    background: linear-gradient(180deg, rgba(65, 215, 115, 0.96), rgba(42, 190, 94, 0.96));
-}
-
-body[data-theme="dark"][data-style="ios26"] .day[data-status="work"] {
-    background: linear-gradient(180deg, rgba(38, 54, 78, 0.92), rgba(24, 35, 52, 0.96));
-    color: #edf4ff;
-}
-
-body[data-theme="dark"][data-style="ios26"] .day[data-status="off"] {
-    background: linear-gradient(180deg, rgba(44, 178, 95, 0.94), rgba(27, 137, 71, 0.96));
-    color: #f3fff7;
-}
-
-body[data-style="material"] .day[data-status="work"] {
-    background: var(--work-bg);
-    box-shadow: none;
-}
-
-body[data-style="material"] .day[data-status="off"] {
-    background: var(--off-bg);
-    box-shadow: none;
-}
-
-body[data-theme="dark"][data-style="material"] .day[data-status="work"] {
-    background: #433d52;
-    color: #f1ecf4;
-}
-
-body[data-theme="dark"][data-style="material"] .day[data-status="off"] {
-    background: #7ac384;
-    color: #132116;
-}
-
 .day:active:not(.empty) {
     transform: scale(0.92) !important;
 }
@@ -147,19 +101,11 @@ body[data-theme="dark"][data-style="material"] .day[data-status="off"] {
 /* Поточний день */
 .day.today {
     border: 3px solid var(--accent);
-    box-shadow: 0 0px 0px 4px rgba(0, 122, 255, 0.12) !important;
+    box-shadow: var(--focus-ring-soft) !important;
 }
 
-body[data-style="current"] .day.today {
-    box-shadow: 0 0 0 4px rgba(15, 108, 189, 0.14), 0 10px 26px rgba(15, 108, 189, 0.12) !important;
-}
-
-body[data-theme="dark"][data-style="current"] .day.today {
-    box-shadow: 0 0 0 4px rgba(90, 176, 255, 0.16), 0 12px 28px rgba(0, 0, 0, 0.28) !important;
-}
-
-body[data-style="material"] .day.today {
-    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.42), 0 0 0 3px rgba(103, 80, 164, 0.18) !important;
+.day.today {
+    box-shadow: var(--calendar-today-shadow) !important;
 }
 
 .day.today .date-num {
@@ -215,11 +161,11 @@ body[data-style="material"] .day.today {
 }
 
 .stat-item:hover {
-    background: rgba(0, 0, 0, 0.03);
+    background: var(--surface-control-strong);
 }
 
 [data-theme="dark"] .stat-item:hover {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--surface-control);
 }
 
 .legend-circle {
@@ -266,11 +212,6 @@ body[data-style="material"] .day.today {
 
 .day.filtered {
     transform: scale(1.08) !important;
-    box-shadow: 0 8px 28px rgba(0, 122, 255, 0.3) !important;
+    box-shadow: var(--surface-button-accent-shadow) !important;
     z-index: 10;
 }
-
-body[data-style="material"] .day.filtered {
-    box-shadow: 0 0 0 2px rgba(103, 80, 164, 0.32) !important;
-}
-

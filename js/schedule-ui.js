@@ -15,7 +15,7 @@ const scheduleEls = {
 let isSetupPending = !hasPersistedScheduleConfig();
 let selectedSchedule = isSetupPending
     ? null
-    : (hasCustomDayOverrides() ? 'custom' : getScheduleConfig().type);
+    : getScheduleConfig().type;
 
 function updateScheduleApplyState() {
     scheduleEls.applyBtn.disabled = !selectedSchedule;
@@ -35,7 +35,7 @@ function openScheduleModal(options = {}) {
         selectedSchedule = null;
         syncScheduleControls(scheduleEls, selectedSchedule);
     } else {
-        selectedSchedule = hasCustomDayOverrides() ? 'custom' : getScheduleConfig().type;
+        selectedSchedule = getScheduleConfig().type;
         syncScheduleControls(scheduleEls, selectedSchedule);
     }
 
@@ -136,7 +136,7 @@ window.scheduleUI = {
     sync: () => {
         selectedSchedule = isSetupPending
             ? null
-            : (hasCustomDayOverrides() ? 'custom' : getScheduleConfig().type);
+            : getScheduleConfig().type;
         syncScheduleControls(scheduleEls, selectedSchedule);
         syncScheduleModalState();
     }

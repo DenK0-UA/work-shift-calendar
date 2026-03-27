@@ -23,16 +23,63 @@
     --card-hover-shadow: 0 18px 44px rgba(15, 23, 42, 0.14);
     --card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.72);
     --card-depth-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
+    --surface-control: rgba(255, 255, 255, 0.6);
+    --surface-control-hover: rgba(255, 255, 255, 0.82);
+    --surface-control-strong: rgba(0, 0, 0, 0.05);
+    --surface-control-strong-hover: rgba(0, 0, 0, 0.1);
+    --surface-shell-border: rgba(255, 255, 255, 0.15);
+    --surface-shell-shadow: var(--card-highlight), 0 2px 8px rgba(0, 0, 0, 0.08), 0 20px 60px rgba(0, 0, 0, 0.24), var(--card-depth-shadow);
+    --surface-shell-gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 26%);
+    --surface-shell-gloss-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0));
+    --surface-panel-elevated-shadow: var(--card-highlight), 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12), var(--card-depth-shadow);
+    --surface-panel-elevated-shadow-hover: 0 2px 8px rgba(15, 23, 42, 0.12), 0 16px 30px rgba(15, 23, 42, 0.1);
+    --surface-panel-gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 24%);
+    --surface-panel-accent: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(224, 238, 255, 0.42));
+    --surface-panel-accent-border: rgba(15, 108, 189, 0.14);
+    --surface-panel-accent-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.74), 0 12px 28px rgba(15, 108, 189, 0.08);
+    --surface-panel-subtle: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(246, 249, 253, 0.86));
+    --surface-panel-subtle-border: rgba(15, 23, 42, 0.05);
+    --surface-panel-subtle-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78), 0 8px 20px rgba(15, 23, 42, 0.04);
+    --surface-panel-muted: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 122, 255, 0.04));
+    --surface-panel-muted-border: var(--card-border);
+    --surface-panel-muted-shadow: var(--card-highlight), 0 10px 22px rgba(15, 23, 42, 0.05);
+    --surface-panel-danger: linear-gradient(180deg, rgba(255, 59, 48, 0.045), rgba(255, 255, 255, 0.72));
+    --surface-panel-danger-border: rgba(255, 59, 48, 0.14);
+    --surface-panel-danger-text: #d93025;
+    --surface-panel-danger-button: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 246, 246, 0.94));
+    --surface-panel-danger-button-hover: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 241, 241, 0.98));
+    --surface-panel-danger-button-border: rgba(255, 59, 48, 0.22);
+    --surface-input: rgba(255, 255, 255, 0.7);
+    --surface-badge: rgba(255, 255, 255, 0.68);
+    --surface-badge-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    --surface-danger-badge: rgba(255, 59, 48, 0.08);
+    --surface-button-accent: linear-gradient(180deg, #8eb8e9, #7ca9df);
+    --surface-button-accent-border: transparent;
+    --surface-button-accent-shadow: 0 10px 24px rgba(74, 136, 214, 0.28);
+    --field-radius: 16px;
+    --field-padding: 12px 14px;
+    --helper-text-size: 12px;
+    --helper-line-height: 1.55;
+    --focus-ring-soft: 0 0 0 4px rgba(15, 108, 189, 0.12);
+    --focus-ring-strong: 0 0 0 4px rgba(15, 108, 189, 0.14);
+    --text-on-accent: #ffffff;
+    --text-accent-strong: color-mix(in srgb, var(--accent) 88%, black);
     --modal-overlay: rgba(243, 247, 251, 0.7);
     --base-font-size: 16px;
-    --font-family-base: "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
-    --font-family-display: "Segoe UI Variable Display", "Segoe UI Variable", "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
-    --font-family-numeric: "Bahnschrift", "Segoe UI Variable Display", "Segoe UI Variable", "Segoe UI", "Arial Narrow", sans-serif;
+    --font-family-base: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
+    --font-family-display: "SF Pro Rounded", "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
+    --font-family-numeric: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
     --font-family: var(--font-family-base);
     --page-gradient: radial-gradient(circle at top, rgba(255, 255, 255, 0.96), rgba(236, 243, 248, 0.94) 46%, rgba(220, 231, 240, 0.92));
     --noise-opacity: 0.01;
     --calendar-day-gloss: rgba(255, 255, 255, 0.34);
     --calendar-day-shimmer: rgba(255, 255, 255, 0.2);
+    --calendar-day-border: rgba(15, 108, 189, 0.08);
+    --calendar-day-style-work-bg: linear-gradient(180deg, var(--work-bg-start), var(--work-bg-end));
+    --calendar-day-style-off-bg: linear-gradient(180deg, var(--off-bg-start), var(--off-bg-end));
+    --calendar-day-style-work-text: var(--work-text);
+    --calendar-day-style-off-text: var(--off-text);
+    --calendar-today-shadow: 0 0 0 4px rgba(15, 108, 189, 0.14), 0 10px 26px rgba(15, 108, 189, 0.12);
     --work-bg-start: #edf5fc;
     --work-bg-end: #dbe7f3;
     --off-bg-start: #2ab185;
@@ -79,11 +126,54 @@
     --card-hover-shadow: 0 18px 52px rgba(0, 0, 0, 0.44);
     --card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.05);
     --card-depth-shadow: 0 24px 44px rgba(0, 0, 0, 0.26);
+    --surface-control: rgba(255, 255, 255, 0.08);
+    --surface-control-hover: rgba(255, 255, 255, 0.15);
+    --surface-control-strong: rgba(255, 255, 255, 0.08);
+    --surface-control-strong-hover: rgba(255, 255, 255, 0.15);
+    --surface-shell-border: rgba(164, 197, 235, 0.08);
+    --surface-shell-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 20px 60px rgba(0, 0, 0, 0.5);
+    --surface-shell-gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 26%);
+    --surface-shell-gloss-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0));
+    --surface-panel-elevated-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.25);
+    --surface-panel-elevated-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.5), 0 16px 40px rgba(0, 0, 0, 0.4);
+    --surface-panel-gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 24%);
+    --surface-panel-accent: linear-gradient(180deg, rgba(24, 38, 58, 0.82), rgba(18, 28, 44, 0.72));
+    --surface-panel-accent-border: rgba(121, 189, 255, 0.18);
+    --surface-panel-accent-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 16px 34px rgba(0, 0, 0, 0.18);
+    --surface-panel-subtle: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03));
+    --surface-panel-subtle-border: rgba(255, 255, 255, 0.08);
+    --surface-panel-subtle-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 22px rgba(0, 0, 0, 0.16);
+    --surface-panel-muted: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(10, 132, 255, 0.08));
+    --surface-panel-muted-border: var(--card-border);
+    --surface-panel-muted-shadow: var(--card-highlight), 0 10px 22px rgba(0, 0, 0, 0.18);
+    --surface-panel-danger: linear-gradient(180deg, rgba(69, 24, 26, 0.42), rgba(28, 18, 23, 0.8));
+    --surface-panel-danger-border: rgba(255, 69, 58, 0.16);
+    --surface-panel-danger-text: #ff9a93;
+    --surface-panel-danger-button: linear-gradient(180deg, rgba(55, 28, 32, 0.88), rgba(43, 22, 26, 0.94));
+    --surface-panel-danger-button-hover: linear-gradient(180deg, rgba(64, 32, 37, 0.94), rgba(49, 24, 29, 0.98));
+    --surface-panel-danger-button-border: rgba(255, 69, 58, 0.22);
+    --surface-input: rgba(255, 255, 255, 0.08);
+    --surface-badge: rgba(255, 255, 255, 0.08);
+    --surface-badge-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    --surface-danger-badge: rgba(255, 69, 58, 0.12);
+    --surface-button-accent: linear-gradient(180deg, #6cbaff, #55aaf7);
+    --surface-button-accent-border: transparent;
+    --surface-button-accent-shadow: 0 12px 28px rgba(90, 176, 255, 0.26);
+    --field-radius: 16px;
+    --field-padding: 12px 14px;
+    --helper-text-size: 12px;
+    --helper-line-height: 1.55;
+    --focus-ring-soft: 0 0 0 4px rgba(90, 176, 255, 0.12);
+    --focus-ring-strong: 0 0 0 4px rgba(90, 176, 255, 0.16);
+    --text-on-accent: #ffffff;
+    --text-accent-strong: color-mix(in srgb, var(--accent) 84%, white);
     --modal-overlay: rgba(5, 10, 18, 0.72);
     --page-gradient: radial-gradient(circle at top, rgba(37, 62, 92, 0.34), rgba(11, 18, 32, 0.96) 44%, rgba(7, 12, 22, 1));
     --noise-opacity: 0.015;
     --calendar-day-gloss: rgba(255, 255, 255, 0.08);
     --calendar-day-shimmer: rgba(255, 255, 255, 0.12);
+    --calendar-day-border: rgba(164, 197, 235, 0.08);
+    --calendar-today-shadow: 0 0 0 4px rgba(90, 176, 255, 0.16), 0 12px 28px rgba(0, 0, 0, 0.28);
     --work-bg-start: #344969;
     --work-bg-end: #2a3b52;
     --off-bg-start: #33bc88;
@@ -92,104 +182,6 @@
     --day-off-shadow: 0 12px 28px rgba(23, 116, 82, 0.34);
     --day-work-hover-shadow: 0 16px 32px rgba(0, 0, 0, 0.38);
     --day-off-hover-shadow: 0 16px 34px rgba(12, 86, 60, 0.42);
-}
-
-body[data-style="ios26"] {
-    --bg-color: #edf4ff;
-    --main-container-bg: rgba(255, 255, 255, 0.72);
-    --text-primary: #15171c;
-    --text-secondary: #697287;
-    --accent: #1a8cff;
-    --accent-soft: rgba(26, 140, 255, 0.12);
-    --card-border: rgba(255, 255, 255, 0.55);
-    --card-shadow: 0 18px 40px rgba(72, 98, 148, 0.18);
-    --card-hover-shadow: 0 24px 54px rgba(72, 98, 148, 0.24);
-    --glass-bg: rgba(255, 255, 255, 0.44);
-    --glass-border: rgba(255, 255, 255, 0.68);
-    --modal-overlay: rgba(239, 245, 255, 0.62);
-    --page-gradient: radial-gradient(circle at top left, rgba(255, 255, 255, 0.96), rgba(221, 235, 255, 0.92) 45%, rgba(202, 224, 255, 0.86));
-    --noise-opacity: 0.01;
-    --panel-hover-transform: translateY(-4px) scale(1.01);
-    --icon-hover-transform: translateY(-2px) scale(1.04);
-    --button-hover-transform: translateY(-2px) scale(1.01);
-    --theme-toggle-hover-transform: rotate(10deg) scale(1.08);
-    --weather-refresh-hover-transform: rotate(16deg) scale(1.06);
-    --calendar-day-hover-transform: translateY(-4px) scale(1.03);
-    --control-transition: background-color 0.28s cubic-bezier(0.23, 1, 0.32, 1), color 0.28s cubic-bezier(0.23, 1, 0.32, 1), border-color 0.28s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.28s cubic-bezier(0.23, 1, 0.32, 1), transform 0.28s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.28s cubic-bezier(0.23, 1, 0.32, 1), filter 0.28s cubic-bezier(0.23, 1, 0.32, 1);
-    --panel-transition: box-shadow 0.4s cubic-bezier(0.23, 1, 0.32, 1), transform 0.28s cubic-bezier(0.23, 1, 0.32, 1);
-    --modal-card-initial-transform: scale(0.92) translateY(30px);
-    --modal-card-transition: transform 0.48s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.32s ease;
-    --calendar-enter-animation: glassRiseIn 0.58s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-}
-
-body[data-theme="dark"][data-style="ios26"] {
-    --bg-color: #08111c;
-    --main-container-bg: rgba(15, 23, 38, 0.72);
-    --text-primary: #eef4ff;
-    --text-secondary: #a7b6d0;
-    --accent: #63b3ff;
-    --accent-soft: rgba(99, 179, 255, 0.16);
-    --card-border: rgba(183, 214, 255, 0.14);
-    --card-shadow: 0 20px 46px rgba(0, 0, 0, 0.36);
-    --card-hover-shadow: 0 26px 62px rgba(0, 0, 0, 0.42);
-    --glass-bg: rgba(18, 28, 44, 0.54);
-    --glass-border: rgba(185, 218, 255, 0.16);
-    --modal-overlay: rgba(5, 12, 20, 0.68);
-    --page-gradient: radial-gradient(circle at top left, rgba(40, 74, 125, 0.35), rgba(8, 17, 28, 0.94) 44%, rgba(5, 10, 18, 1));
-}
-
-body[data-style="material"] {
-    --bg-color: #f6f0ff;
-    --main-container-bg: #fffbff;
-    --text-primary: #1d1b20;
-    --text-secondary: #625b71;
-    --accent: #6750a4;
-    --accent-soft: rgba(103, 80, 164, 0.12);
-    --work-bg: #e8def8;
-    --work-text: #1d192b;
-    --off-bg: #4f8d57;
-    --off-text: #ffffff;
-    --holiday-color: #ba1a1a;
-    --card-border: rgba(121, 116, 126, 0.16);
-    --card-shadow: 0 6px 18px rgba(103, 80, 164, 0.12);
-    --card-hover-shadow: 0 10px 22px rgba(103, 80, 164, 0.18);
-    --modal-overlay: rgba(29, 27, 32, 0.26);
-    --font-family-base: "Google Sans", "Noto Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --font-family-display: "Google Sans", "Noto Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --font-family-numeric: "Google Sans", "Noto Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --font-family: var(--font-family-base);
-    --page-gradient: linear-gradient(180deg, rgba(253, 247, 255, 1), rgba(244, 237, 255, 1));
-    --noise-opacity: 0;
-    --panel-hover-transform: translateY(-1px);
-    --icon-hover-transform: translateY(-1px);
-    --button-hover-transform: translateY(-1px);
-    --theme-toggle-hover-transform: scale(1.03);
-    --weather-refresh-hover-transform: scale(1.04);
-    --calendar-day-hover-transform: translateY(-2px);
-    --control-transition: background-color 0.2s cubic-bezier(0.2, 0, 0, 1), color 0.2s cubic-bezier(0.2, 0, 0, 1), border-color 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1), transform 0.2s cubic-bezier(0.2, 0, 0, 1), opacity 0.2s cubic-bezier(0.2, 0, 0, 1), filter 0.2s cubic-bezier(0.2, 0, 0, 1);
-    --panel-transition: box-shadow 0.2s ease, transform 0.2s ease;
-    --modal-card-initial-transform: scale(0.96) translateY(18px);
-    --modal-card-transition: transform 0.28s cubic-bezier(0.2, 0, 0, 1), opacity 0.22s ease;
-    --calendar-enter-animation: materialFadeIn 0.34s cubic-bezier(0.2, 0, 0, 1) forwards;
-}
-
-body[data-theme="dark"][data-style="material"] {
-    --bg-color: #141218;
-    --main-container-bg: #1d1b20;
-    --text-primary: #e6e0e9;
-    --text-secondary: #cac4d0;
-    --accent: #cfbcff;
-    --accent-soft: rgba(207, 188, 255, 0.16);
-    --work-bg: #4a4458;
-    --work-text: #f4eff4;
-    --off-bg: #7cc684;
-    --off-text: #132116;
-    --holiday-color: #ffb4ab;
-    --card-border: rgba(202, 196, 208, 0.12);
-    --card-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
-    --card-hover-shadow: 0 14px 30px rgba(0, 0, 0, 0.38);
-    --modal-overlay: rgba(0, 0, 0, 0.46);
-    --page-gradient: linear-gradient(180deg, rgba(20, 18, 24, 1), rgba(28, 24, 34, 1));
 }
 
 * {
@@ -214,6 +206,25 @@ body {
     line-height: 1.4;
     overflow-x: hidden;
     perspective: 1000px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+h1,
+.settings-title,
+.schedule-title,
+.panel-title {
+    font-family: var(--font-family-display);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+}
+
+.subtitle,
+.settings-label,
+.schedule-onboarding-kicker {
+    letter-spacing: 0.02em;
+    text-transform: none;
 }
 
 body.is-visual-switching *,
@@ -234,7 +245,7 @@ body::before {
     opacity: var(--noise-opacity);
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAtIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiPjxyZWN0IHdpZHRoPSI0MDAtIiBoZWlnaHQ9IjMwMCIgZmlsbD0id2hpdGUiLz48ZyBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjA1Ij48Y2lyY2xlIGN4PSIxMCIgY3k9IjEwIiByPSIwLjgiLz48Y2lyY2xlIGN4PSIzMCIgY3k9IjIwIiByPSIwLjUiLz48Y2lyY2xlIGN4PSIxNSIgY3k9IjMwIiByPSIwLjgiLz48Y2lyY2xlIGN4PSIzNSIgY3k9IjEwIiByPSIwLjYiLz48Y2lyY2xlIGN4PSIyNSIgY3k9IjMwIiByPSIwLjUiLz48Y2lyY2xlIGN4PSI1IiBjeT0iMjUiIHI9IjAuNyIvPjwvZz48L3N2Zz4=');
     pointer-events: none;
-    z-index: 1000;
+    z-index: -1;
 }
 
 @media (prefers-reduced-motion: reduce) {

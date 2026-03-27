@@ -21,53 +21,6 @@
     margin-bottom: 24px;
 }
 
-.settings-card .settings-group:first-of-type {
-    padding: 14px 16px;
-    border-radius: 18px;
-    background: linear-gradient(180deg, rgba(15, 108, 189, 0.06), rgba(15, 108, 189, 0.02));
-    border: 1px solid var(--card-border);
-}
-
-.settings-card .settings-group:first-of-type .settings-label {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0;
-    cursor: pointer;
-    user-select: none;
-}
-
-.settings-card .settings-group:first-of-type .settings-label::after {
-    content: 'Показати';
-    font-size: 11px;
-    font-weight: 800;
-    color: var(--accent);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-}
-
-.settings-card .settings-group:first-of-type .appearance-presets {
-    margin-top: 0;
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    transition: max-height 0.24s ease, opacity 0.2s ease, margin-top 0.2s ease;
-}
-
-.settings-card .settings-group:first-of-type.is-open .appearance-presets {
-    margin-top: 12px;
-    max-height: 180px;
-    opacity: 1;
-}
-
-.settings-card .settings-group:first-of-type.is-open .settings-label::after {
-    content: 'Сховати';
-}
-
-[data-theme="dark"] .settings-card .settings-group:first-of-type {
-    background: linear-gradient(180deg, rgba(90, 176, 255, 0.1), rgba(90, 176, 255, 0.03));
-}
-
 .settings-label {
     font-size: 13px;
     font-weight: 700;
@@ -115,66 +68,87 @@
     margin-top: 24px;
 }
 
-.settings-buttons .btn-apply {
-    width: 100%;
-}
-
 .settings-buttons .btn-reset {
-    flex: 0 0 auto;
-    align-self: flex-start;
-    width: auto;
-    padding: 0;
-    border: none;
-    background: transparent;
-    color: var(--text-secondary);
-    font-size: 12px;
+    width: 100%;
+    justify-content: center;
+    padding: 14px 18px;
+    border: 1px solid var(--surface-panel-accent-border);
+    background: var(--surface-panel-subtle);
+    color: var(--accent);
+    font-size: 13px;
     font-weight: 700;
-    letter-spacing: 0.02em;
+    letter-spacing: -0.01em;
     text-transform: none;
-    box-shadow: none;
+    box-shadow: var(--surface-panel-subtle-shadow);
 }
 
 .settings-buttons .btn-reset:hover {
-    background: transparent;
-    color: var(--accent);
+    border-color: var(--surface-panel-accent-border);
+    background: var(--surface-control-hover);
+    color: var(--text-accent-strong);
+    box-shadow: var(--surface-panel-elevated-shadow-hover);
+}
+
+.settings-buttons .btn-reset:active {
+    box-shadow: var(--surface-panel-elevated-shadow);
 }
 
 .settings-danger-zone {
-    margin-top: 18px;
-    padding-top: 18px;
-    border-top: 1px dashed rgba(255, 59, 48, 0.22);
+    position: relative;
+    margin-top: 20px;
+    padding: 18px;
+    border-radius: 22px;
+    border: 1px solid var(--surface-panel-danger-border);
+    background: var(--surface-panel-danger);
+    box-shadow: var(--surface-panel-subtle-shadow);
+}
+
+.settings-danger-zone::before {
+    content: "Небезпечна дія";
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 10px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: var(--surface-danger-badge);
+    color: var(--surface-panel-danger-text);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
 }
 
 .settings-danger-text {
-    font-size: 12px;
-    line-height: 1.55;
+    font-size: 13px;
+    line-height: 1.6;
     color: var(--text-secondary);
 }
 
 .settings-danger-btn {
     --hold-progress: 0%;
-    margin-top: 12px;
+    margin-top: 14px;
     position: relative;
     width: 100%;
     overflow: hidden;
     padding: 0;
-    border-radius: 16px;
-    border: 1px dashed rgba(255, 59, 48, 0.35);
-    background: rgba(255, 59, 48, 0.04);
-    color: #d93025;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    border-radius: 18px;
+    border: 1px solid var(--surface-panel-danger-button-border);
+    background: var(--surface-panel-danger-button);
+    color: var(--surface-panel-danger-text);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: none;
     cursor: pointer;
     transition: var(--control-transition);
+    box-shadow: var(--surface-panel-elevated-shadow);
 }
 
 .settings-danger-btn-fill {
     position: absolute;
     inset: 0 auto 0 0;
     width: var(--hold-progress);
-    background: linear-gradient(90deg, rgba(255, 59, 48, 0.2), rgba(255, 149, 0, 0.24));
+    background: linear-gradient(90deg, color-mix(in srgb, var(--surface-panel-danger-text) 22%, transparent), rgba(255, 149, 0, 0.2));
     transition: width 0.08s linear;
 }
 
@@ -189,47 +163,43 @@
 }
 
 .settings-danger-btn-title {
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: none;
     text-align: center;
 }
 
 .settings-danger-btn:hover {
-    background: rgba(255, 59, 48, 0.08);
-    border-color: rgba(255, 59, 48, 0.5);
+    border-color: var(--surface-panel-danger-button-border);
+    background: var(--surface-panel-danger-button-hover);
+    color: var(--surface-panel-danger-text);
+    box-shadow: var(--surface-panel-elevated-shadow-hover);
+    transform: var(--button-hover-transform);
 }
 
 .settings-danger-btn.is-holding {
-    background: linear-gradient(90deg, rgba(255, 59, 48, 0.14), rgba(255, 149, 0, 0.16));
-    border-color: rgba(255, 59, 48, 0.6);
-    box-shadow: 0 10px 24px rgba(255, 59, 48, 0.12);
+    border-color: color-mix(in srgb, var(--surface-panel-danger-text) 38%, transparent);
+    background:
+        linear-gradient(90deg, rgba(255, 244, 244, 0.96), rgba(255, 248, 240, 0.96));
+    box-shadow: var(--surface-panel-elevated-shadow-hover);
+    transform: translateY(0);
 }
 
-[data-theme="dark"] .settings-danger-zone {
-    border-top-color: rgba(255, 69, 58, 0.26);
-}
-
-[data-theme="dark"] .settings-danger-btn {
-    background: rgba(255, 69, 58, 0.08);
-    border-color: rgba(255, 69, 58, 0.34);
-    color: #ff8b84;
+[data-theme="dark"] .settings-danger-zone::before {
+    background: var(--surface-danger-badge);
+    color: var(--surface-panel-danger-text);
 }
 
 [data-theme="dark"] .settings-danger-btn-fill {
-    background: linear-gradient(90deg, rgba(255, 69, 58, 0.22), rgba(255, 159, 10, 0.22));
-}
-
-[data-theme="dark"] .settings-danger-btn:hover {
-    background: rgba(255, 69, 58, 0.14);
+    background: linear-gradient(90deg, color-mix(in srgb, var(--surface-panel-danger-text) 28%, transparent), rgba(255, 159, 10, 0.2));
 }
 
 [data-theme="dark"] .settings-danger-btn.is-holding {
-    background: linear-gradient(90deg, rgba(255, 69, 58, 0.18), rgba(255, 159, 10, 0.18));
+    background:
+        linear-gradient(90deg, rgba(74, 34, 39, 0.96), rgba(70, 43, 26, 0.94));
 }
 
 .btn-reset {
     box-shadow: none;
 }
-

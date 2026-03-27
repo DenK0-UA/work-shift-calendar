@@ -24,8 +24,8 @@
                     <p class="subtitle">Графік 5/5. Старт: сьогодні</p>
                 </div>
                 <div class="header-actions">
-                    <button class="settings-btn" id="schedule-btn" title="Графік">📅</button>
-                    <button class="settings-btn" id="settings-btn" title="Вигляд 🎨" aria-label="Вигляд 🎨">⚙️</button>
+                    <button class="settings-btn" id="schedule-btn" title="📅 Ваш графік" aria-label="📅 Ваш графік">📅</button>
+                    <button class="settings-btn" id="settings-btn" title="🎨 Вигляд" aria-label="🎨 Вигляд">⚙️</button>
                     <button class="theme-toggle" id="theme-btn">🌓</button>
                 </div>
             </div>
@@ -84,7 +84,7 @@
                     <button class="period-btn" type="button" data-period="quarter">3 міс</button>
                     <button class="period-btn" type="button" data-period="year">Рік</button>
                 </div>
-                <div class="period-stats-grid" id="period-stats-grid">
+                <div class="period-stats-grid">
                 <article class="period-stat-card">
                     <div class="period-stat-label">Робочі</div>
                     <div class="period-stat-value" id="period-stat-work">0</div>
@@ -121,25 +121,25 @@
                 <span id="m-status-text">Робочий день</span>
             </div>
 
-            <div class="modal-status-actions" id="m-status-actions">
+            <div class="modal-status-actions">
                 <button class="modal-status-action" id="m-set-work" type="button">Робочий</button>
                 <button class="modal-status-action" id="m-set-off" type="button">Вихідний</button>
                 <button class="modal-status-action modal-status-reset" id="m-reset-status" type="button">За графіком</button>
             </div>
-            <div class="modal-status-caption" id="m-status-caption">Статус визначено Вашим графіком</div>
+            <div class="modal-status-caption helper-text" id="m-status-caption">Статус визначено Вашим графіком</div>
 
             <div class="modal-weather" id="m-weather" hidden>
                 <div class="modal-weather-icon" id="m-weather-icon">⏳</div>
                 <div class="modal-weather-content">
                     <div class="modal-weather-summary" id="m-weather-summary">Завантажуємо прогноз...</div>
-                    <div class="modal-weather-meta" id="m-weather-meta">Бориспіль · прогноз для обраного дня</div>
+                    <div class="modal-weather-meta helper-text" id="m-weather-meta">Бориспіль · прогноз для обраного дня</div>
                 </div>
                 <button class="weather-refresh modal-weather-refresh" id="modal-weather-refresh" type="button" aria-label="Оновити погоду">↻</button>
             </div>
 
             <div class="modal-note" id="m-note-block">
                 <textarea
-                    class="modal-note-input modal-note-textarea"
+                    class="modal-note-input modal-note-textarea control-input"
                     id="m-note-input"
                     placeholder="Це нотатки"
                     maxlength="280"
@@ -163,25 +163,7 @@
     <div class="settings-overlay" id="settings-overlay">
         <div class="settings-card">
             <button class="settings-close" id="settings-overlay-close">✕</button>
-            <h2 class="settings-title">Вигляд 🎨</h2>
-
-            <div class="settings-group">
-                <label class="settings-label">Стиль інтерфейсу</label>
-                <div class="appearance-presets" id="appearance-presets">
-                    <button class="appearance-preset active" type="button" data-style="current">
-                        <strong>Current</strong>
-                        <span>Поточний стиль</span>
-                    </button>
-                    <button class="appearance-preset" type="button" data-style="ios26">
-                        <strong>iOS 26</strong>
-                        <span>Скло, м'які тіні</span>
-                    </button>
-                    <button class="appearance-preset" type="button" data-style="material">
-                        <strong>Android 16</strong>
-                        <span>Material, tonal surfaces</span>
-                    </button>
-                </div>
-            </div>
+            <h2 class="settings-title">🎨 Вигляд</h2>
 
             <div class="settings-group">
                 <label class="settings-label">Режим теми</label>
@@ -210,14 +192,13 @@
 
             <div class="settings-group">
                 <label class="settings-label">💡 Інформація</label>
-                <p class="settings-help-text">
+                <p class="settings-help-text helper-text">
                     Відкрийте день календаря, щоб змінити його статус вручну або повернути значення за графіком.
                 </p>
             </div>
 
             <div class="settings-buttons">
-                <button class="settings-btn-action btn-apply" id="apply-settings">Застосувати</button>
-                <button class="settings-btn-action btn-reset" id="reset-settings">Скидання</button>
+                <button class="settings-btn-action btn-reset" id="reset-settings">Скинути тему</button>
             </div>
 
             <div class="settings-danger-zone">
@@ -230,15 +211,17 @@
     <div class="schedule-overlay" id="schedule-overlay">
         <div class="schedule-card">
             <button class="schedule-close" id="schedule-overlay-close">✕</button>
-            <h2 class="schedule-title">Ваш Графік 📅</h2>
+            <div class="schedule-intro">
+                <h2 class="schedule-title"><span class="schedule-title-emoji" aria-hidden="true">📅</span><span>Ваш графік</span></h2>
 
-            <div class="schedule-onboarding" id="schedule-onboarding">
-                <span class="schedule-onboarding-kicker">Перший крок</span>
-                <p class="schedule-onboarding-text">Обери свій графік, щоб ми одразу показали правильний календар без порожнього екрана.</p>
-            </div>
+                <div class="schedule-onboarding" id="schedule-onboarding">
+                    <span class="schedule-onboarding-kicker">Перший крок</span>
+                    <p class="schedule-onboarding-text">Виберіть графік роботи для свого календаря.</p>
+                </div>
 
-            <div class="schedule-info">
-                ⏱️ Вибери готовий графік або налаштуй свій. Календар автоматично перераховується.
+                <div class="schedule-info helper-text helper-text-inline">
+                    Можна вибрати готовий варіант або налаштувати свій.
+                </div>
             </div>
 
             <div class="schedule-templates">
@@ -263,7 +246,7 @@
                     <span class="schedule-btn-label">2 роб. / 2 вих.</span>
                 </button>
                 <button class="schedule-btn" data-schedule="custom">
-                    <strong>⚙️</strong>
+                    <strong class="schedule-btn-icon">⚙️</strong>
                     <span class="schedule-btn-label">Кастомний</span>
                 </button>
             </div>
@@ -271,17 +254,17 @@
             <div class="schedule-custom" id="custom-schedule-form">
                 <div class="custom-input-group">
                     <label class="custom-input-label">Дні роботи</label>
-                    <input type="number" id="custom-work-days" class="custom-input" min="0" max="30" placeholder="Наприклад: 5">
+                    <input type="number" id="custom-work-days" class="custom-input control-input" min="0" max="30" placeholder="Наприклад: 5">
                 </div>
                 <div class="custom-input-group">
                     <label class="custom-input-label">Дні вихідних</label>
-                    <input type="number" id="custom-off-days" class="custom-input" min="0" max="30" placeholder="Наприклад: 2">
+                    <input type="number" id="custom-off-days" class="custom-input control-input" min="0" max="30" placeholder="Наприклад: 2">
                 </div>
             </div>
 
             <div class="custom-input-group">
                 <label class="custom-input-label">Початок циклу</label>
-                <input type="date" id="schedule-start-date" class="custom-input" />
+                <input type="date" id="schedule-start-date" class="custom-input control-input" />
             </div>
 
             <div class="schedule-buttons">

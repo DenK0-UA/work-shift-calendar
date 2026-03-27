@@ -209,10 +209,6 @@ function getCustomDayStatuses() {
     return cloneRecord(ensureCustomStatusesState());
 }
 
-function hasCustomDayOverrides() {
-    return Object.keys(ensureCustomStatusesState()).length > 0;
-}
-
 function clearCustomDayStatuses() {
     scheduleStore.customDayStatuses = {};
     persistCustomStatuses();
@@ -294,8 +290,7 @@ function updateSubtitle() {
             return `${day}.${month}.${year}`;
         })();
 
-    const scheduleLabel = hasCustomDayOverrides() ? 'custom' : schedule.type;
-    subtitle.textContent = `Графік ${scheduleLabel}. Старт: ${startDate}`;
+    subtitle.textContent = `Графік ${schedule.type}. Старт: ${startDate}`;
 }
 
 function getPeriodRange(period, year = currentState.year, month = currentState.month) {

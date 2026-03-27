@@ -54,6 +54,144 @@
         padding: 20px;
     }
 
+    .schedule-overlay {
+        padding: 10px;
+    }
+
+    .schedule-overlay.setup-mode {
+        align-items: center;
+        justify-content: center;
+    }
+
+    .schedule-card {
+        max-width: min(100vw - 16px, 420px);
+        padding: 20px 18px 22px;
+        border-radius: 24px;
+    }
+
+    .schedule-overlay.setup-mode .schedule-card {
+        max-width: min(100vw - 16px, 420px);
+        max-height: calc(100dvh - 20px);
+        border-radius: 28px;
+        padding: 24px 20px 24px;
+    }
+
+    .schedule-title {
+        font-size: 21px;
+        margin-bottom: 0;
+    }
+
+    .schedule-overlay.setup-mode .schedule-title {
+        font-size: 24px;
+        line-height: 1.14;
+        margin-bottom: 0;
+    }
+
+    .schedule-intro {
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .schedule-onboarding {
+        margin-bottom: 0;
+        padding: 15px 15px 14px;
+        border-radius: 16px;
+    }
+
+    .schedule-onboarding-text {
+        max-width: none;
+        font-size: 14px;
+        line-height: 1.34;
+        text-align: left;
+    }
+
+    .schedule-info {
+        margin: 0;
+        padding: 0;
+        max-width: none;
+        font-size: 10.5px;
+        line-height: 1.28;
+        justify-content: flex-start;
+        text-align: left;
+        white-space: nowrap;
+    }
+
+    .schedule-templates {
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .schedule-btn {
+        min-height: 92px;
+        padding: 12px 10px;
+        border-radius: 14px;
+        gap: 6px;
+    }
+
+    .schedule-btn strong {
+        font-size: 19px;
+    }
+
+    .schedule-btn-icon {
+        font-size: 16px;
+    }
+
+    .schedule-btn-label {
+        font-size: 11px;
+        line-height: 1.28;
+    }
+
+    .schedule-custom {
+        padding: 14px;
+        margin-bottom: 18px;
+        border-radius: 14px;
+    }
+
+    .custom-input-group {
+        margin-bottom: 10px;
+    }
+
+    .schedule-buttons {
+        gap: 10px;
+        padding-top: 12px;
+        margin-top: 8px;
+    }
+
+    .schedule-btn-action {
+        padding: 13px 16px;
+        font-size: 12px;
+        border-radius: 14px;
+    }
+
+    .custom-input-label {
+        font-size: 11px;
+        margin-bottom: 6px;
+    }
+
+    .custom-input.control-input {
+        padding: 12px 14px;
+        font-size: 13px;
+    }
+
+    .schedule-onboarding-kicker {
+        margin-bottom: 8px;
+        font-size: 10px;
+        letter-spacing: 0.06em;
+    }
+
+    .schedule-info::before {
+        font-size: 11px;
+    }
+
+    .settings-group {
+        margin-bottom: 20px;
+    }
+
+    .settings-danger-zone {
+        padding: 16px;
+        border-radius: 20px;
+    }
+
     .stat-item {
         padding: 4px 8px;
         font-size: 14px;
@@ -101,27 +239,6 @@
         justify-content: space-between;
     }
 
-    .appearance-presets {
-        display: grid;
-        grid-auto-flow: column;
-        grid-auto-columns: minmax(108px, 120px);
-        grid-template-columns: none;
-        overflow-x: auto;
-        gap: 8px;
-        padding-bottom: 4px;
-        scroll-snap-type: x proximity;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .appearance-presets::-webkit-scrollbar {
-        display: none;
-    }
-
-    .appearance-preset {
-        min-height: 72px;
-        scroll-snap-align: start;
-    }
-
     .theme-mode-switcher {
         width: 100%;
     }
@@ -154,6 +271,49 @@
     .schedule-overlay.active ~ .undo-toast,
     .settings-overlay.active ~ .undo-toast {
         bottom: calc(env(safe-area-inset-bottom, 0px) + 176px);
+    }
+}
+
+@media (max-height: 820px) and (min-width: 481px) {
+    .schedule-overlay.setup-mode .schedule-card {
+        max-height: min(94vh, 680px);
+        padding: 22px 22px 20px;
+    }
+
+    .schedule-overlay.setup-mode .schedule-title {
+        font-size: 27px;
+        margin-bottom: 12px;
+    }
+
+    .schedule-onboarding {
+        padding: 12px 14px 11px;
+        margin-bottom: 8px;
+    }
+
+    .schedule-info {
+        margin-bottom: 12px;
+    }
+
+    .schedule-templates {
+        gap: 10px;
+        margin-bottom: 18px;
+    }
+
+    .schedule-btn {
+        min-height: 96px;
+        padding: 13px 10px;
+    }
+
+    .schedule-custom {
+        margin-bottom: 18px;
+    }
+
+    .custom-input-group {
+        margin-bottom: 10px;
+    }
+
+    .schedule-buttons {
+        padding-top: 12px;
     }
 }
 
@@ -238,10 +398,6 @@
         transform: scale(0.92) !important;
     }
 
-    /* Вимикаємо 3D ефекти на мобільних */
-    .day-hover-3d {
-        display: none;
-    }
 }
 
 /* Swipe анімація */

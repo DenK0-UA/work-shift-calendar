@@ -39,22 +39,16 @@
 .schedule-card {
     position: relative;
     background: var(--main-container-bg);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    backdrop-filter: blur(16px) saturate(150%);
+    -webkit-backdrop-filter: blur(16px) saturate(150%);
     width: 100%;
     border-radius: 26px;
     padding: 28px;
-    box-shadow: var(--card-highlight), 0 2px 8px rgba(0, 0, 0, 0.08), 0 20px 60px rgba(0, 0, 0, 0.24), var(--card-depth-shadow);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--card-border);
     transform: var(--modal-card-initial-transform);
     opacity: 0;
     transition: var(--modal-card-transition);
-}
-
-[data-theme="dark"] .modal-card,
-[data-theme="dark"] .settings-card,
-[data-theme="dark"] .schedule-card {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
 .modal-overlay.active .modal-card,
@@ -71,99 +65,25 @@
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 26%);
-    opacity: 0.85;
+    background: var(--surface-shell-gloss-strong);
+    opacity: 0.52;
 }
 
 .depth-panel {
     background: var(--main-container-bg);
     border-radius: 20px;
     padding: 20px;
-    box-shadow: var(--card-highlight), 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12), var(--card-depth-shadow);
-    border: none;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--card-border);
     position: relative;
     overflow: hidden;
     transition: var(--panel-transition);
     animation: panelLiftIn 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-body[data-style="current"] .depth-panel,
-body[data-style="current"] .settings-card,
-body[data-style="current"] .schedule-card,
-body[data-style="current"] .modal-card {
-    border-radius: 26px;
-    border: 1px solid var(--card-border);
-    box-shadow: var(--card-shadow);
-}
-
-body[data-style="current"] .depth-panel::before,
-body[data-style="current"] .settings-card::before,
-body[data-style="current"] .schedule-card::before,
-body[data-style="current"] .modal-card::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0));
-    opacity: 0.7;
-}
-
-body[data-theme="dark"][data-style="current"] .depth-panel::before,
-body[data-theme="dark"][data-style="current"] .settings-card::before,
-body[data-theme="dark"][data-style="current"] .schedule-card::before,
-body[data-theme="dark"][data-style="current"] .modal-card::before {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0));
-    opacity: 1;
-}
-
-body[data-style="ios26"] .depth-panel,
-body[data-style="ios26"] .settings-card,
-body[data-style="ios26"] .schedule-card,
-body[data-style="ios26"] .modal-card {
-    background: var(--main-container-bg);
-    border: 1px solid var(--glass-border);
-    backdrop-filter: blur(26px) saturate(170%);
-    -webkit-backdrop-filter: blur(26px) saturate(170%);
-    box-shadow: var(--card-shadow);
-}
-
-body[data-style="ios26"] .depth-panel {
-    border-radius: 28px;
-}
-
-body[data-style="material"] .depth-panel,
-body[data-style="material"] .settings-card,
-body[data-style="material"] .schedule-card,
-body[data-style="material"] .modal-card {
-    border-radius: 28px;
-    border: 1px solid var(--card-border);
-    box-shadow: var(--card-shadow);
-}
-
-body[data-style="material"] .depth-panel:hover {
-    box-shadow: var(--card-hover-shadow);
-}
-
 .depth-panel:hover {
     box-shadow: var(--card-hover-shadow);
     transform: var(--panel-hover-transform);
-}
-
-.depth-panel::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 24%);
-    opacity: 0.9;
-}
-
-[data-theme="dark"] .depth-panel {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.25);
-}
-
-[data-theme="dark"] .depth-panel:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 16px 40px rgba(0, 0, 0, 0.4);
 }
 
 header {
@@ -178,13 +98,13 @@ header {
     margin-bottom: 16px;
 }
 
-body[data-style="current"] h1 {
+h1 {
     font-family: var(--font-family-display);
     font-size: clamp(28px, 4vw, 34px);
     letter-spacing: -0.06em;
 }
 
-body[data-style="current"] .subtitle {
+.subtitle {
     font-size: clamp(13px, 2vw, 14px);
 }
 
@@ -216,9 +136,71 @@ body[data-style="current"] .subtitle {
 }
 
 .settings-help-text {
-    font-size: 12px;
+    font-size: var(--helper-text-size);
     color: var(--text-secondary);
-    line-height: 1.6;
+    line-height: var(--helper-line-height);
+}
+
+.settings-help-text.helper-text {
+    font-size: var(--helper-text-size);
+    color: var(--text-secondary);
+    line-height: var(--helper-line-height);
+}
+
+.helper-text {
+    font-size: var(--helper-text-size);
+    color: var(--text-secondary);
+    line-height: var(--helper-line-height);
+}
+
+.helper-text-inline {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+}
+
+.control-input {
+    width: 100%;
+    border: 1px solid var(--card-border);
+    background: var(--surface-input);
+    color: var(--text-primary);
+    border-radius: var(--field-radius);
+    padding: var(--field-padding);
+    font-size: 14px;
+    font-weight: 500;
+    transition: var(--control-transition);
+    outline: none;
+}
+
+input[type="date"].control-input {
+    min-height: 56px;
+    padding-right: 18px;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+input[type="date"].control-input::-webkit-calendar-picker-indicator {
+    opacity: 0.82;
+    cursor: pointer;
+    filter: contrast(0.92) saturate(0.82);
+}
+
+.control-input::placeholder {
+    color: var(--text-secondary);
+}
+
+.control-input:focus {
+    border-color: var(--accent);
+    box-shadow: var(--surface-badge-shadow), var(--focus-ring-soft);
+}
+
+.custom-input.control-input {
+    border-width: 2px;
+    font-weight: 600;
+}
+
+.schedule-info.helper-text {
+    max-width: 40ch;
 }
 
 .calendar-actions {
@@ -232,7 +214,7 @@ body[data-style="current"] .subtitle {
     height: 34px;
     border: none;
     border-radius: 12px;
-    background: rgba(255, 255, 255, 0.6);
+    background: var(--surface-control);
     color: var(--accent);
     font-size: 16px;
     font-weight: 700;
@@ -245,19 +227,15 @@ body[data-style="current"] .subtitle {
 }
 
 .weather-refresh:hover {
-    transform: var(--weather-refresh-hover-transform);
-    background: rgba(255, 255, 255, 0.82);
-    box-shadow: 0 8px 18px rgba(15, 108, 189, 0.14);
+    transform: var(--icon-hover-transform);
+    background: var(--surface-control-hover);
+    box-shadow: var(--surface-panel-elevated-shadow-hover);
 }
 
 .weather-refresh:disabled {
     opacity: 0.6;
     cursor: wait;
     transform: none;
-}
-
-[data-theme="dark"] .weather-refresh {
-    background: rgba(255, 255, 255, 0.08);
 }
 
 .weather-refresh.compact {
@@ -269,7 +247,7 @@ body[data-style="current"] .subtitle {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: rgba(0, 0, 0, 0.05);
+    background: var(--surface-control-strong);
     border: none;
     width: 40px;
     height: 40px;
@@ -283,25 +261,18 @@ body[data-style="current"] .subtitle {
     color: var(--text-primary);
 }
 
-[data-theme="dark"] .settings-close,
-[data-theme="dark"] .schedule-close {
-    background: rgba(255, 255, 255, 0.08);
-}
-
 .settings-close:hover,
 .schedule-close:hover {
-    background: rgba(0, 0, 0, 0.1);
-    transform: rotate(90deg) scale(1.04);
-}
-
-[data-theme="dark"] .settings-close:hover,
-[data-theme="dark"] .schedule-close:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--surface-control-strong-hover);
+    transform: var(--icon-hover-transform);
 }
 
 .settings-btn-action,
 .schedule-btn-action {
     flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 14px 20px;
     border: none;
     border-radius: 16px;
@@ -311,18 +282,22 @@ body[data-style="current"] .subtitle {
     transition: var(--control-transition);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    text-align: center;
 }
 
 .btn-apply,
 .schedule-btn-action.primary {
-    background: var(--accent);
-    color: #ffffff;
+    background: var(--surface-button-accent);
+    color: var(--text-on-accent);
+    border-color: var(--surface-button-accent-border);
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.14);
+    box-shadow: var(--surface-button-accent-shadow);
 }
 
 .btn-apply:hover,
 .schedule-btn-action.primary:hover {
     transform: var(--button-hover-transform);
-    box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
+    box-shadow: var(--surface-button-accent-shadow);
 }
 
 .btn-apply:active,
@@ -332,23 +307,13 @@ body[data-style="current"] .subtitle {
 
 .btn-reset,
 .schedule-btn-action.secondary {
-    background: rgba(0, 0, 0, 0.05);
+    background: var(--surface-control-strong);
     color: var(--text-primary);
-}
-
-[data-theme="dark"] .btn-reset,
-[data-theme="dark"] .schedule-btn-action.secondary {
-    background: rgba(255, 255, 255, 0.08);
 }
 
 .btn-reset:hover,
 .schedule-btn-action.secondary:hover {
-    background: rgba(0, 0, 0, 0.1);
-}
-
-[data-theme="dark"] .btn-reset:hover,
-[data-theme="dark"] .schedule-btn-action.secondary:hover {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--surface-control-strong-hover);
 }
 
 .schedule-btn-action:disabled {
@@ -358,16 +323,15 @@ body[data-style="current"] .subtitle {
     box-shadow: none;
 }
 
-body[data-style="current"] .weather-refresh,
-body[data-style="current"] .btn-icon,
-body[data-style="current"] .settings-btn,
-body[data-style="current"] .today-btn,
-body[data-style="current"] .appearance-preset,
-body[data-style="current"] .settings-btn-action,
-body[data-style="current"] .schedule-btn-action,
-body[data-style="current"] .schedule-btn,
-body[data-style="current"] .theme-mode-btn,
-body[data-style="current"] .period-btn {
+.weather-refresh,
+.btn-icon,
+.settings-btn,
+.today-btn,
+.settings-btn-action,
+.schedule-btn-action,
+.schedule-btn,
+.theme-mode-btn,
+.period-btn {
     border-radius: 18px;
 }
 
@@ -379,147 +343,6 @@ body[data-style="current"] .period-btn {
 .modal-weather[hidden] {
     display: none;
 }
-
-body[data-style="material"] .weather-refresh,
-body[data-style="material"] .today-btn,
-body[data-style="material"] .btn-icon,
-body[data-style="material"] .settings-btn,
-body[data-style="material"] .theme-toggle,
-body[data-style="material"] .period-btn.active {
-    border-radius: 18px;
-}
-
-body[data-style="ios26"] .weather-refresh,
-body[data-style="ios26"] .btn-icon,
-body[data-style="ios26"] .settings-btn,
-body[data-style="ios26"] .theme-toggle,
-body[data-style="ios26"] .today-btn,
-body[data-style="ios26"] .period-btn,
-body[data-style="ios26"] .appearance-preset,
-body[data-style="ios26"] .schedule-btn,
-body[data-style="ios26"] .settings-btn-action,
-body[data-style="ios26"] .schedule-btn-action,
-body[data-style="ios26"] .modal-close,
-body[data-style="ios26"] .settings-close,
-body[data-style="ios26"] .schedule-close {
-    background: rgba(255, 255, 255, 0.48);
-    border: 1px solid rgba(255, 255, 255, 0.42);
-    box-shadow: 0 10px 24px rgba(95, 120, 170, 0.12);
-    backdrop-filter: blur(18px) saturate(160%);
-    -webkit-backdrop-filter: blur(18px) saturate(160%);
-}
-
-body[data-style="ios26"] .period-btn.active,
-body[data-style="ios26"] .schedule-btn.active,
-body[data-style="ios26"] .btn-apply,
-body[data-style="ios26"] .schedule-btn-action.primary {
-    background: linear-gradient(180deg, rgba(79, 173, 255, 0.92), rgba(19, 128, 255, 0.94));
-    color: #ffffff;
-    border-color: rgba(255, 255, 255, 0.2);
-    box-shadow: 0 14px 30px rgba(26, 140, 255, 0.26);
-}
-
-body[data-theme="dark"][data-style="ios26"] .weather-refresh,
-body[data-theme="dark"][data-style="ios26"] .btn-icon,
-body[data-theme="dark"][data-style="ios26"] .settings-btn,
-body[data-theme="dark"][data-style="ios26"] .theme-toggle,
-body[data-theme="dark"][data-style="ios26"] .today-btn,
-body[data-theme="dark"][data-style="ios26"] .period-btn,
-body[data-theme="dark"][data-style="ios26"] .appearance-preset,
-body[data-theme="dark"][data-style="ios26"] .schedule-btn,
-body[data-theme="dark"][data-style="ios26"] .settings-btn-action,
-body[data-theme="dark"][data-style="ios26"] .schedule-btn-action,
-body[data-theme="dark"][data-style="ios26"] .modal-close,
-body[data-theme="dark"][data-style="ios26"] .settings-close,
-body[data-theme="dark"][data-style="ios26"] .schedule-close {
-    background: rgba(23, 34, 52, 0.72);
-    border-color: rgba(173, 210, 255, 0.12);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
-}
-
-body[data-theme="dark"][data-style="ios26"] .weather-refresh:hover,
-body[data-theme="dark"][data-style="ios26"] .btn-icon:hover,
-body[data-theme="dark"][data-style="ios26"] .settings-btn:hover,
-body[data-theme="dark"][data-style="ios26"] .theme-toggle:hover,
-body[data-theme="dark"][data-style="ios26"] .today-btn:hover,
-body[data-theme="dark"][data-style="ios26"] .modal-close:hover,
-body[data-theme="dark"][data-style="ios26"] .settings-close:hover,
-body[data-theme="dark"][data-style="ios26"] .schedule-close:hover {
-    background: rgba(30, 44, 66, 0.84);
-}
-
-
-
-body[data-style="material"] .weather-refresh,
-body[data-style="material"] .btn-icon,
-body[data-style="material"] .settings-btn,
-body[data-style="material"] .theme-toggle,
-body[data-style="material"] .today-btn,
-body[data-style="material"] .period-btn,
-body[data-style="material"] .appearance-preset,
-body[data-style="material"] .schedule-btn,
-body[data-style="material"] .settings-btn-action,
-body[data-style="material"] .schedule-btn-action,
-body[data-style="material"] .modal-close,
-body[data-style="material"] .settings-close,
-body[data-style="material"] .schedule-close {
-    background: rgba(103, 80, 164, 0.08);
-    border: 1px solid rgba(103, 80, 164, 0.16);
-    box-shadow: none;
-}
-
-body[data-style="material"] .period-btn.active,
-body[data-style="material"] .schedule-btn.active,
-body[data-style="material"] .btn-apply,
-body[data-style="material"] .schedule-btn-action.primary {
-    background: var(--accent);
-    color: #ffffff;
-    border-color: transparent;
-    box-shadow: none;
-}
-
-body[data-theme="dark"][data-style="material"] .weather-refresh,
-body[data-theme="dark"][data-style="material"] .btn-icon,
-body[data-theme="dark"][data-style="material"] .settings-btn,
-body[data-theme="dark"][data-style="material"] .theme-toggle,
-body[data-theme="dark"][data-style="material"] .today-btn,
-body[data-theme="dark"][data-style="material"] .period-btn,
-body[data-theme="dark"][data-style="material"] .appearance-preset,
-body[data-theme="dark"][data-style="material"] .schedule-btn,
-body[data-theme="dark"][data-style="material"] .settings-btn-action,
-body[data-theme="dark"][data-style="material"] .schedule-btn-action,
-body[data-theme="dark"][data-style="material"] .modal-close,
-body[data-theme="dark"][data-style="material"] .settings-close,
-body[data-theme="dark"][data-style="material"] .schedule-close {
-    background: rgba(230, 224, 233, 0.06);
-    border-color: rgba(202, 196, 208, 0.14);
-    color: var(--text-primary);
-}
-
-body[data-theme="dark"][data-style="material"] .weather-refresh:hover,
-body[data-theme="dark"][data-style="material"] .btn-icon:hover,
-body[data-theme="dark"][data-style="material"] .settings-btn:hover,
-body[data-theme="dark"][data-style="material"] .theme-toggle:hover,
-body[data-theme="dark"][data-style="material"] .today-btn:hover,
-body[data-theme="dark"][data-style="material"] .appearance-preset:hover,
-body[data-theme="dark"][data-style="material"] .schedule-btn:hover,
-body[data-theme="dark"][data-style="material"] .modal-close:hover,
-body[data-theme="dark"][data-style="material"] .settings-close:hover,
-body[data-theme="dark"][data-style="material"] .schedule-close:hover,
-body[data-theme="dark"][data-style="material"] .schedule-btn-action.secondary:hover,
-body[data-theme="dark"][data-style="material"] .btn-reset:hover {
-    background: rgba(230, 224, 233, 0.1);
-}
-
-body[data-theme="dark"][data-style="material"] .period-btn.active,
-body[data-theme="dark"][data-style="material"] .schedule-btn.active,
-body[data-theme="dark"][data-style="material"] .btn-apply,
-body[data-theme="dark"][data-style="material"] .schedule-btn-action.primary {
-    background: #cfbcff;
-    color: #2b2438;
-}
-
-
 
 .insights-panel {
     display: flex;
@@ -570,20 +393,42 @@ body[data-theme="dark"][data-style="material"] .schedule-btn-action.primary {
 }
 
 .panel-toggle-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 999px;
+    background: var(--surface-control);
+    border: 1px solid var(--surface-panel-muted-border);
+    box-shadow: var(--surface-panel-elevated-shadow);
     color: var(--accent);
-    opacity: 1;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
     transform: rotate(90deg);
+    opacity: 1;
     flex-shrink: 0;
+    align-self: start;
+    transition: var(--control-transition);
 }
 
 .panel-heading-toggle:hover .panel-toggle-icon {
-    background: #ffffff;
+    background: var(--surface-control-hover);
     color: var(--accent);
     transform: rotate(90deg) translateY(-1px);
+    border-color: var(--surface-panel-muted-border);
+    box-shadow: var(--surface-panel-elevated-shadow-hover);
 }
 
 [data-theme="dark"] .panel-heading-toggle:hover .panel-toggle-icon {
-    background: rgba(0, 0, 0, 0.4);
+    background: var(--surface-control-hover);
+}
+
+[data-theme="dark"] .panel-toggle-icon {
+    background: var(--surface-control);
+    border-color: var(--surface-panel-muted-border);
+    box-shadow: var(--surface-panel-elevated-shadow);
 }
 
 .insights-content {
@@ -630,12 +475,13 @@ body[data-theme="dark"][data-style="material"] .schedule-btn-action.primary {
     font-weight: 700;
     cursor: pointer;
     transition: var(--control-transition);
+    text-align: center;
 }
 
 .period-btn.active {
     background: var(--main-container-bg);
     color: var(--accent);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--surface-panel-elevated-shadow);
 }
 
 .period-btn:hover {
@@ -648,34 +494,18 @@ body[data-theme="dark"][data-style="material"] .schedule-btn-action.primary {
     gap: 10px;
 }
 
-.period-stat-card.period-stat-card-wide {
-    grid-column: span 2;
-}
-
 .period-stat-card {
     padding: 14px;
     border-radius: 18px;
-    background: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 122, 255, 0.04));
-    border: 1px solid var(--card-border);
-    box-shadow: var(--card-highlight), 0 10px 22px rgba(15, 23, 42, 0.05);
+    background: var(--surface-panel-muted);
+    border: 1px solid var(--surface-panel-muted-border);
+    box-shadow: var(--surface-panel-muted-shadow);
     transition: var(--control-transition);
 }
 
 .period-stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: var(--card-highlight), 0 16px 30px rgba(15, 23, 42, 0.1);
-}
-
-body[data-style="current"] .period-stat-card {
-    background: linear-gradient(180deg, rgba(15, 108, 189, 0.07), rgba(15, 108, 189, 0.015));
-}
-
-body[data-theme="dark"][data-style="current"] .period-stat-card {
-    background: linear-gradient(180deg, rgba(90, 176, 255, 0.12), rgba(90, 176, 255, 0.03));
-}
-
-[data-theme="dark"] .period-stat-card {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(10, 132, 255, 0.08));
+    box-shadow: var(--surface-panel-elevated-shadow-hover);
 }
 
 .period-stat-label {
@@ -692,61 +522,6 @@ body[data-theme="dark"][data-style="current"] .period-stat-card {
     letter-spacing: -0.05em;
     color: var(--text-primary);
     font-variant-numeric: tabular-nums;
-}
-
-.empty-state {
-    padding: 14px;
-    border-radius: 16px;
-    color: var(--text-secondary);
-    background: var(--accent-soft);
-    font-size: 13px;
-}
-
-.appearance-presets {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 10px;
-}
-
-.appearance-preset {
-    border: 1px solid var(--card-border);
-    background: rgba(0, 0, 0, 0.03);
-    color: var(--text-primary);
-    border-radius: 16px;
-    padding: 10px 10px;
-    text-align: left;
-    cursor: pointer;
-    transition: var(--control-transition);
-}
-
-[data-theme="dark"] .appearance-preset {
-    background: rgba(255, 255, 255, 0.04);
-}
-
-.appearance-preset:hover {
-    transform: var(--button-hover-transform);
-    border-color: var(--accent);
-    background: var(--accent-soft);
-}
-
-.appearance-preset.active {
-    border-color: var(--accent);
-    background: var(--accent-soft);
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
-}
-
-.appearance-preset strong {
-    display: block;
-    font-size: 11px;
-    font-weight: 800;
-}
-
-.appearance-preset span {
-    display: block;
-    margin-top: 3px;
-    font-size: 10px;
-    line-height: 1.25;
-    color: var(--text-secondary);
 }
 
 .theme-mode-switcher {
@@ -778,7 +553,7 @@ body[data-theme="dark"][data-style="current"] .period-stat-card {
 .theme-mode-btn.active {
     background: var(--main-container-bg);
     color: var(--accent);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--surface-panel-elevated-shadow);
 }
 
 h1 {
@@ -811,43 +586,11 @@ h1 {
     color: var(--accent);
 }
 
-body[data-style="current"] .month-switcher,
-body[data-style="current"] .period-switcher {
-    background: linear-gradient(180deg, rgba(15, 108, 189, 0.11), rgba(15, 108, 189, 0.06));
-    border: 1px solid rgba(15, 108, 189, 0.08);
+.month-switcher,
+.period-switcher {
+    background: var(--surface-panel-muted);
+    border: 1px solid var(--surface-panel-muted-border);
     border-radius: 20px;
-}
-
-body[data-theme="dark"][data-style="current"] .month-switcher,
-body[data-theme="dark"][data-style="current"] .period-switcher {
-    background: linear-gradient(180deg, rgba(90, 176, 255, 0.14), rgba(90, 176, 255, 0.06));
-    border-color: rgba(90, 176, 255, 0.12);
-}
-
-body[data-style="ios26"] .month-switcher,
-body[data-style="ios26"] .period-switcher {
-    background: rgba(255, 255, 255, 0.54);
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
-}
-
-body[data-theme="dark"][data-style="ios26"] .month-switcher,
-body[data-theme="dark"][data-style="ios26"] .period-switcher {
-    background: rgba(20, 31, 48, 0.78);
-    border-color: rgba(174, 209, 255, 0.12);
-    box-shadow: inset 0 1px 0 rgba(160, 208, 255, 0.08);
-}
-
-body[data-style="material"] .month-switcher,
-body[data-style="material"] .period-switcher {
-    background: rgba(103, 80, 164, 0.1);
-    border-radius: 20px;
-}
-
-body[data-theme="dark"][data-style="material"] .month-switcher,
-body[data-theme="dark"][data-style="material"] .period-switcher {
-    background: rgba(207, 188, 255, 0.08);
-    border: 1px solid rgba(202, 196, 208, 0.1);
 }
 
 .month-title {
@@ -861,7 +604,6 @@ body[data-theme="dark"][data-style="material"] .period-switcher {
 
 .btn-icon,
 .settings-btn,
-.panel-heading.panel-heading-toggle .panel-toggle-icon,
 .today-btn,
 .theme-toggle {
     cursor: pointer;
@@ -873,15 +615,14 @@ body[data-theme="dark"][data-style="material"] .period-switcher {
 }
 
 .btn-icon,
-.settings-btn,
-.panel-heading.panel-heading-toggle .panel-toggle-icon {
-    background: rgba(255, 255, 255, 0.85);
+.settings-btn {
+    background: var(--surface-control);
     width: 36px;
     height: 36px;
     border-radius: 10px;
     color: var(--accent);
     font-size: 18px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 4px 14px rgba(0, 0, 0, 0.06);
+    box-shadow: var(--surface-panel-elevated-shadow);
     border: none;
     cursor: pointer;
     transition: var(--control-transition);
@@ -893,44 +634,31 @@ body[data-theme="dark"][data-style="material"] .period-switcher {
     flex-shrink: 0;
 }
 
-body[data-style="current"] .btn-icon,
-body[data-style="current"] .settings-btn,
-body[data-style="current"] .panel-heading.panel-heading-toggle .panel-toggle-icon,
-body[data-style="current"] .theme-toggle,
-body[data-style="current"] .weather-refresh {
-    background: rgba(255, 255, 255, 0.92);
-    border: 1px solid rgba(15, 108, 189, 0.08);
-}
-
-body[data-theme="dark"][data-style="current"] .btn-icon,
-body[data-theme="dark"][data-style="current"] .settings-btn,
-body[data-theme="dark"][data-style="current"] .panel-heading.panel-heading-toggle .panel-toggle-icon,
-body[data-theme="dark"][data-style="current"] .theme-toggle,
-body[data-theme="dark"][data-style="current"] .weather-refresh {
-    background: rgba(18, 32, 50, 0.92);
-    border-color: rgba(90, 176, 255, 0.12);
+.btn-icon,
+.settings-btn,
+.theme-toggle,
+.weather-refresh {
+    background: var(--surface-control-hover);
+    border: 1px solid var(--surface-panel-muted-border);
 }
 
 [data-theme="dark"] .btn-icon,
-[data-theme="dark"] .settings-btn,
-[data-theme="dark"] .panel-heading.panel-heading-toggle .panel-toggle-icon {
-    background: rgba(0, 0, 0, 0.3);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), 0 4px 14px rgba(0, 0, 0, 0.3);
+[data-theme="dark"] .settings-btn {
+    background: var(--surface-control);
+    box-shadow: var(--surface-panel-elevated-shadow);
 }
 
 .btn-icon:hover,
-.settings-btn:hover,
-.panel-heading.panel-heading-toggle:hover .panel-toggle-icon {
+.settings-btn:hover {
     transform: var(--icon-hover-transform);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.14), 0 8px 24px rgba(0, 0, 0, 0.1);
-    background: #ffffff;
+    box-shadow: var(--surface-panel-elevated-shadow-hover);
+    background: var(--surface-control-hover);
 }
 
 [data-theme="dark"] .btn-icon:hover,
-[data-theme="dark"] .settings-btn:hover,
-[data-theme="dark"] .panel-heading.panel-heading-toggle:hover .panel-toggle-icon {
-    background: rgba(0, 0, 0, 0.4);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5), 0 8px 24px rgba(0, 0, 0, 0.4);
+[data-theme="dark"] .settings-btn:hover {
+    background: var(--surface-control-hover);
+    box-shadow: var(--surface-panel-elevated-shadow-hover);
 }
 
 .btn-icon:active,
@@ -940,6 +668,9 @@ body[data-theme="dark"][data-style="current"] .weather-refresh {
 }
 
 .today-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: var(--main-container-bg);
     border: 1px solid var(--card-border);
     color: var(--text-primary);
@@ -947,11 +678,12 @@ body[data-theme="dark"][data-style="current"] .weather-refresh {
     font-size: 14px;
     padding: 12px 20px;
     border-radius: 16px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+    box-shadow: var(--surface-panel-elevated-shadow);
     white-space: nowrap;
+    text-align: center;
 }
 
-body[data-style="current"] .today-btn {
+.today-btn {
     font-weight: 700;
     letter-spacing: 0.01em;
 }
@@ -960,7 +692,7 @@ body[data-style="current"] .today-btn {
     border-color: var(--accent);
     color: var(--accent);
     transform: var(--button-hover-transform);
-    box-shadow: 0 10px 20px rgba(15, 108, 189, 0.1);
+    box-shadow: var(--surface-button-accent-shadow);
 }
 
 .today-btn:active {
@@ -969,17 +701,13 @@ body[data-style="current"] .today-btn {
 }
 
 .theme-toggle {
-    background: rgba(255, 255, 255, 0.7);
+    background: var(--surface-control);
     width: 42px;
     height: 42px;
     border-radius: 50%;
     font-size: 18px;
     color: var(--text-primary);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-}
-
-[data-theme="dark"] .theme-toggle {
-    background: rgba(0, 0, 0, 0.3);
+    box-shadow: var(--surface-panel-elevated-shadow);
 }
 
 .theme-toggle:hover {
@@ -1038,4 +766,3 @@ body[data-style="current"] .today-btn {
         transform: none !important;
     }
 }
-

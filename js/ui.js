@@ -19,35 +19,44 @@ const settingsEls = {
     overlay: document.getElementById('settings-overlay'),
     settingsBtn: document.getElementById('settings-btn'),
     closeBtn: document.getElementById('settings-overlay-close'),
-    styleSection: document.getElementById('appearance-presets')?.closest('.settings-group') ?? null,
-    stylePresetBtns: document.querySelectorAll('.appearance-preset'),
     themeModeBtns: document.querySelectorAll('.theme-mode-btn'),
     workColor: document.getElementById('work-color'),
     offColor: document.getElementById('off-color'),
     workPreview: document.getElementById('work-preview'),
     offPreview: document.getElementById('off-preview'),
-    applyBtn: document.getElementById('apply-settings'),
     resetBtn: document.getElementById('reset-settings'),
     hardResetBtn: document.getElementById('hard-reset-btn')
 };
 
 if (settingsEls.resetBtn) {
-    settingsEls.resetBtn.textContent = '\u0421\u043a\u0438\u043d\u0443\u0442\u0438 \u0432\u0438\u0433\u043b\u044f\u0434';
-    settingsEls.resetBtn.title = '\u0421\u043a\u0438\u043d\u0443\u0442\u0438 \u043b\u0438\u0448\u0435 \u0442\u0435\u043c\u0443, \u043a\u043e\u043b\u044c\u043e\u0440\u0438 \u0442\u0430 \u043e\u0444\u043e\u0440\u043c\u043b\u0435\u043d\u043d\u044f';
+    settingsEls.resetBtn.textContent = '\u0421\u043a\u0438\u043d\u0443\u0442\u0438 \u0442\u0435\u043c\u0443';
+    settingsEls.resetBtn.title = '\u0421\u043a\u0438\u043d\u0443\u0442\u0438 \u0442\u0435\u043c\u0443, \u043a\u043e\u043b\u044c\u043e\u0440\u0438 \u0442\u0430 \u043e\u0444\u043e\u0440\u043c\u043b\u0435\u043d\u043d\u044f';
 }
 
-if (settingsEls.styleSection) {
-    settingsEls.styleSection.hidden = true;
-}
-
-const HARD_RESET_HOLD_MS = 2000;
+const HARD_RESET_HOLD_MS = 1500;
 let hardResetHoldTimer = null;
 let hardResetAnimationFrameId = null;
 let hardResetHoldStartedAt = 0;
 let applySelectedThemeMode = null;
 
+const setSettingsOverlayOpen = (isOpen) => {
+    if (!settingsEls.overlay) {
+        return;
+    }
+
+    if (isOpen) {
+        settingsEls.overlay.classList.add('active');
+        clearHardResetHold();
+        return;
+    }
+
+    clearHardResetHold();
+    settingsEls.overlay.classList.remove('active');
+};
+
 const applyStylePreset = (stylePreset) => {
-    setStylePreset(stylePreset, settingsEls.stylePresetBtns);
+    setStylePreset(stylePreset);
+    persistStylePreset(stylePreset);
 
     if (!hasCustomColors()) {
         syncColorInputsFromTheme(settingsEls);
@@ -84,6 +93,28 @@ const updatePreview = () => {
     if (settingsEls.offPreview && settingsEls.offColor) {
         settingsEls.offPreview.style.background = settingsEls.offColor.value;
     }
+};
+
+const applyColorSelection = () => {
+    if (!settingsEls.workColor || !settingsEls.offColor) {
+        return;
+    }
+
+    const workColor = settingsEls.workColor.value;
+    const offColor = settingsEls.offColor.value;
+
+    updatePreview();
+    applyColors(workColor, offColor);
+    saveCustomSettings(workColor, offColor);
+};
+
+const bindLiveColorInput = (inputEl) => {
+    if (!inputEl) {
+        return;
+    }
+
+    inputEl.addEventListener('input', applyColorSelection);
+    inputEl.addEventListener('change', applyColorSelection);
 };
 
 const setHardResetButtonState = (title, progressPercent) => {
@@ -161,69 +192,38 @@ const startHardResetHold = () => {
     }, HARD_RESET_HOLD_MS);
 };
 
-if (settingsEls.workColor) {
-    settingsEls.workColor.addEventListener('change', updatePreview);
-}
-
-if (settingsEls.offColor) {
-    settingsEls.offColor.addEventListener('change', updatePreview);
-}
+bindLiveColorInput(settingsEls.workColor);
+bindLiveColorInput(settingsEls.offColor);
 
 if (settingsEls.settingsBtn && settingsEls.overlay) {
     settingsEls.settingsBtn.addEventListener('click', () => {
-        settingsEls.overlay.classList.add('active');
-        clearHardResetHold();
+        setSettingsOverlayOpen(true);
     });
 }
 
 if (settingsEls.closeBtn && settingsEls.overlay) {
     settingsEls.closeBtn.addEventListener('click', () => {
-        clearHardResetHold();
-        settingsEls.overlay.classList.remove('active');
+        setSettingsOverlayOpen(false);
     });
 }
 
 if (settingsEls.overlay) {
     settingsEls.overlay.addEventListener('click', (event) => {
         if (event.target === settingsEls.overlay) {
-            clearHardResetHold();
-            settingsEls.overlay.classList.remove('active');
+            setSettingsOverlayOpen(false);
         }
     });
 }
-
-settingsEls.stylePresetBtns.forEach((button) => {
-    button.addEventListener('click', () => {
-        selectedStylePreset = button.dataset.style;
-        applyStylePreset(selectedStylePreset);
-    });
-});
 
 settingsEls.themeModeBtns.forEach((button) => {
     button.addEventListener('click', () => {
         selectedThemeMode = button.dataset.themeMode;
         setThemeModeUI(selectedThemeMode);
-    });
-});
-
-if (settingsEls.applyBtn && settingsEls.workColor && settingsEls.offColor) {
-    settingsEls.applyBtn.addEventListener('click', () => {
-        const workColor = settingsEls.workColor.value;
-        const offColor = settingsEls.offColor.value;
-
-        applyColors(workColor, offColor);
-        saveCustomSettings(workColor, offColor);
-        persistStylePreset(selectedStylePreset);
-
         if (applySelectedThemeMode) {
             applySelectedThemeMode(selectedThemeMode);
         }
-
-        if (settingsEls.overlay) {
-            settingsEls.overlay.classList.remove('active');
-        }
     });
-}
+});
 
 if (settingsEls.resetBtn) {
     settingsEls.resetBtn.addEventListener('click', (event) => {
