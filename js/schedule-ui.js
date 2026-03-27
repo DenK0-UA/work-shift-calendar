@@ -4,6 +4,7 @@ const scheduleEls = {
     closeBtn: document.getElementById('schedule-overlay-close'),
     closeBtn2: document.getElementById('schedule-overlay-close2'),
     applyBtn: document.getElementById('apply-schedule'),
+    onboarding: document.getElementById('schedule-onboarding'),
     templateBtns: document.querySelectorAll('.schedule-btn'),
     customForm: document.getElementById('custom-schedule-form'),
     customWorkDays: document.getElementById('custom-work-days'),
@@ -11,22 +12,54 @@ const scheduleEls = {
     startDate: document.getElementById('schedule-start-date')
 };
 
-let selectedSchedule = hasCustomDayOverrides() ? 'custom' : getScheduleConfig().type;
+let isSetupPending = !hasPersistedScheduleConfig();
+let selectedSchedule = isSetupPending
+    ? null
+    : (hasCustomDayOverrides() ? 'custom' : getScheduleConfig().type);
+
+function updateScheduleApplyState() {
+    scheduleEls.applyBtn.disabled = !selectedSchedule;
+}
+
+function syncScheduleModalState() {
+    scheduleEls.overlay.classList.toggle('setup-mode', isSetupPending);
+    document.body.classList.toggle('app-setup-pending', isSetupPending);
+    updateScheduleApplyState();
+}
+
+function openScheduleModal(options = {}) {
+    const setupMode = options.setupMode === true;
+    isSetupPending = setupMode;
+
+    if (setupMode) {
+        selectedSchedule = null;
+        syncScheduleControls(scheduleEls, selectedSchedule);
+    } else {
+        selectedSchedule = hasCustomDayOverrides() ? 'custom' : getScheduleConfig().type;
+        syncScheduleControls(scheduleEls, selectedSchedule);
+    }
+
+    syncScheduleModalState();
+    scheduleEls.overlay.classList.add('active');
+}
 
 scheduleEls.templateBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
         selectedSchedule = btn.dataset.schedule;
-        syncScheduleControls(scheduleEls, selectedSchedule);
+        syncScheduleControls(scheduleEls, selectedSchedule, { preserveDraft: true });
+        updateScheduleApplyState();
     });
 });
 
 scheduleEls.scheduleBtn.addEventListener('click', () => {
-    selectedSchedule = hasCustomDayOverrides() ? 'custom' : getScheduleConfig().type;
-    syncScheduleControls(scheduleEls, selectedSchedule);
-    scheduleEls.overlay.classList.add('active');
+    openScheduleModal();
 });
 
 const closeScheduleModal = () => {
+    if (isSetupPending) {
+        return;
+    }
+
     scheduleEls.overlay.classList.remove('active');
 };
 
@@ -37,6 +70,11 @@ scheduleEls.overlay.addEventListener('click', (e) => {
 });
 
 scheduleEls.applyBtn.addEventListener('click', () => {
+    if (!selectedSchedule) {
+        alert('Спочатку оберіть свій графік.');
+        return;
+    }
+
     let config = null;
 
     if (selectedSchedule === 'custom') {
@@ -55,7 +93,7 @@ scheduleEls.applyBtn.addEventListener('click', () => {
         }
 
         const startDateValue = scheduleEls.startDate.value;
-        const startDate = startDateValue ? new Date(startDateValue).toISOString() : DEFAULT_SHIFT_START_DATE.toISOString();
+        const startDate = parseDateInputValueAsUtcIso(startDateValue);
         config = {
             type: selectedSchedule === 'custom' ? 'custom' : selectedSchedule,
             workDays,
@@ -67,7 +105,7 @@ scheduleEls.applyBtn.addEventListener('click', () => {
         let workDays = Number.isNaN(work) ? 5 : work;
         let offDays = Number.isNaN(off) ? 5 : off;
         const startDateValue = scheduleEls.startDate.value;
-        const startDate = startDateValue ? new Date(startDateValue).toISOString() : DEFAULT_SHIFT_START_DATE.toISOString();
+        const startDate = parseDateInputValueAsUtcIso(startDateValue);
 
         if (workDays + offDays <= 0) {
             alert('Невірний цикл графіку. Використано 5/5 за замовчуванням.');
@@ -82,16 +120,24 @@ scheduleEls.applyBtn.addEventListener('click', () => {
     setScheduleConfig(config);
     clearCustomDayStatuses();
     selectedSchedule = config.type;
+    isSetupPending = false;
     syncScheduleControls(scheduleEls, selectedSchedule);
+    syncScheduleModalState();
     updateSubtitle();
     updatePeriodStatsPanel(window.activeStatsPeriod || 'month');
     renderCalendar(currentState.year, currentState.month);
+    fetchTodayWeather();
     closeScheduleModal();
 });
 
 window.scheduleUI = {
+    isSetupPending: () => isSetupPending,
+    openOnboarding: () => openScheduleModal({ setupMode: true }),
     sync: () => {
-        selectedSchedule = hasCustomDayOverrides() ? 'custom' : getScheduleConfig().type;
+        selectedSchedule = isSetupPending
+            ? null
+            : (hasCustomDayOverrides() ? 'custom' : getScheduleConfig().type);
         syncScheduleControls(scheduleEls, selectedSchedule);
+        syncScheduleModalState();
     }
 };

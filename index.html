@@ -21,11 +21,11 @@
             <div class="header-top">
                 <div>
                     <h1>Ваша Зміна</h1>
-                    <p class="subtitle">Графік 5/5. Старт: 27.03.2026</p>
+                    <p class="subtitle">Графік 5/5. Старт: сьогодні</p>
                 </div>
                 <div class="header-actions">
                     <button class="settings-btn" id="schedule-btn" title="Графік">📅</button>
-                    <button class="settings-btn" id="settings-btn">⚙️</button>
+                    <button class="settings-btn" id="settings-btn" title="Вигляд 🎨" aria-label="Вигляд 🎨">⚙️</button>
                     <button class="theme-toggle" id="theme-btn">🌓</button>
                 </div>
             </div>
@@ -163,7 +163,7 @@
     <div class="settings-overlay" id="settings-overlay">
         <div class="settings-card">
             <button class="settings-close" id="settings-overlay-close">✕</button>
-            <h2 class="settings-title">Налаштування 🎨</h2>
+            <h2 class="settings-title">Вигляд 🎨</h2>
 
             <div class="settings-group">
                 <label class="settings-label">Стиль інтерфейсу</label>
@@ -177,8 +177,8 @@
                         <span>Скло, м'які тіні</span>
                     </button>
                     <button class="appearance-preset" type="button" data-style="material">
-                        <strong>Material 3</strong>
-                        <span>Surface, tonal colors</span>
+                        <strong>Android 16</strong>
+                        <span>Material, tonal surfaces</span>
                     </button>
                 </div>
             </div>
@@ -219,6 +219,11 @@
                 <button class="settings-btn-action btn-apply" id="apply-settings">Застосувати</button>
                 <button class="settings-btn-action btn-reset" id="reset-settings">Скидання</button>
             </div>
+
+            <div class="settings-danger-zone">
+                <p class="settings-danger-text">Hard reset очистить графік, ручні зміни, нотатки, кеш свят і всі візуальні налаштування.</p>
+                <button class="settings-danger-btn" id="hard-reset-btn" type="button">Утримуй для hard reset</button>
+            </div>
         </div>
     </div>
 
@@ -226,6 +231,11 @@
         <div class="schedule-card">
             <button class="schedule-close" id="schedule-overlay-close">✕</button>
             <h2 class="schedule-title">Ваш Графік 📅</h2>
+
+            <div class="schedule-onboarding" id="schedule-onboarding">
+                <span class="schedule-onboarding-kicker">Перший крок</span>
+                <p class="schedule-onboarding-text">Обери свій графік, щоб ми одразу показали правильний календар без порожнього екрана.</p>
+            </div>
 
             <div class="schedule-info">
                 ⏱️ Вибери готовий графік або налаштуй свій. Календар автоматично перераховується.

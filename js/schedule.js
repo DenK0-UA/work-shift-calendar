@@ -24,8 +24,49 @@ function safeReadJson(key, fallback) {
     }
 }
 
+function hasPersistedScheduleConfig() {
+    try {
+        return Boolean(localStorage.getItem(SCHEDULE_STORAGE_KEYS.scheduleConfig));
+    } catch (e) {
+        return false;
+    }
+}
+
 function cloneRecord(record) {
     return { ...record };
+}
+
+function parseDateInputValueAsUtcIso(dateValue) {
+    if (typeof dateValue !== 'string' || !dateValue) {
+        return DEFAULT_SHIFT_START_DATE.toISOString();
+    }
+
+    const [year, month, day] = dateValue.split('-').map(Number);
+    if (
+        !Number.isInteger(year) ||
+        !Number.isInteger(month) ||
+        !Number.isInteger(day)
+    ) {
+        return DEFAULT_SHIFT_START_DATE.toISOString();
+    }
+
+    return new Date(Date.UTC(year, month - 1, day)).toISOString();
+}
+
+function formatScheduleStartDateForInput(startDate) {
+    if (!startDate) {
+        return DEFAULT_SHIFT_START_DATE.toISOString().slice(0, 10);
+    }
+
+    const parsed = new Date(startDate);
+    if (Number.isNaN(parsed.getTime())) {
+        return DEFAULT_SHIFT_START_DATE.toISOString().slice(0, 10);
+    }
+
+    const year = parsed.getUTCFullYear();
+    const month = String(parsed.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(parsed.getUTCDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 function getNormalizedScheduleConfig(config) {
@@ -37,7 +78,9 @@ function getNormalizedScheduleConfig(config) {
         type: config?.type || fallback.type,
         workDays,
         offDays,
-        startDate: config?.startDate || DEFAULT_SHIFT_START_DATE.toISOString()
+        startDate: config?.startDate
+            ? parseDateInputValueAsUtcIso(formatScheduleStartDateForInput(config.startDate))
+            : DEFAULT_SHIFT_START_DATE.toISOString()
     };
 }
 
@@ -213,19 +256,21 @@ function toggleDayStatus(year, month, day) {
     renderCalendar(currentState.year, currentState.month);
 }
 
-function syncScheduleControls(scheduleEls, selectedSchedule) {
+function syncScheduleControls(scheduleEls, selectedSchedule, options = {}) {
     const schedule = ensureScheduleConfigState();
+    const preserveDraft = options.preserveDraft === true;
 
     scheduleEls.templateBtns.forEach((btn) => {
         btn.classList.toggle('active', btn.dataset.schedule === selectedSchedule);
     });
 
     scheduleEls.customForm.classList.toggle('active', selectedSchedule === 'custom');
-    scheduleEls.customWorkDays.value = schedule.workDays;
-    scheduleEls.customOffDays.value = schedule.offDays;
-    scheduleEls.startDate.value = schedule.startDate
-        ? schedule.startDate.slice(0, 10)
-        : DEFAULT_SHIFT_START_DATE.toISOString().slice(0, 10);
+
+    if (!preserveDraft) {
+        scheduleEls.customWorkDays.value = schedule.workDays;
+        scheduleEls.customOffDays.value = schedule.offDays;
+        scheduleEls.startDate.value = formatScheduleStartDateForInput(schedule.startDate);
+    }
 }
 
 function updateSubtitle() {
@@ -241,7 +286,13 @@ function updateSubtitle() {
             const day = String(date.getUTCDate()).padStart(2, '0');
             return `${day}.${month}.${year}`;
         })()
-        : '27.03.2026';
+        : (() => {
+            const today = DEFAULT_SHIFT_START_DATE;
+            const year = today.getUTCFullYear();
+            const month = String(today.getUTCMonth() + 1).padStart(2, '0');
+            const day = String(today.getUTCDate()).padStart(2, '0');
+            return `${day}.${month}.${year}`;
+        })();
 
     const scheduleLabel = hasCustomDayOverrides() ? 'custom' : schedule.type;
     subtitle.textContent = `Графік ${scheduleLabel}. Старт: ${startDate}`;

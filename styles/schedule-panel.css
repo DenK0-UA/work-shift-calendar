@@ -25,6 +25,17 @@
     -webkit-backdrop-filter: blur(12px);
 }
 
+body.app-setup-pending .main-container {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: scale(0.98) translateY(12px);
+}
+
+.schedule-overlay.setup-mode {
+    z-index: 120;
+}
+
 .schedule-card {
     background: var(--main-container-bg);
     backdrop-filter: blur(20px) saturate(180%);
@@ -56,6 +67,53 @@
     font-weight: 800;
     margin-bottom: 24px;
     text-align: center;
+}
+
+.schedule-onboarding {
+    display: none;
+    margin-bottom: 18px;
+    padding: 18px 18px 16px;
+    border-radius: 20px;
+    background:
+        radial-gradient(circle at top right, rgba(0, 122, 255, 0.18), transparent 42%),
+        linear-gradient(180deg, rgba(0, 122, 255, 0.08), rgba(0, 122, 255, 0.03));
+    border: 1px solid rgba(0, 122, 255, 0.14);
+}
+
+.schedule-overlay.setup-mode .schedule-onboarding {
+    display: block;
+}
+
+.schedule-onboarding-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.6);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.schedule-onboarding-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .schedule-onboarding {
+    background:
+        radial-gradient(circle at top right, rgba(10, 132, 255, 0.28), transparent 44%),
+        linear-gradient(180deg, rgba(10, 132, 255, 0.12), rgba(10, 132, 255, 0.05));
+    border-color: rgba(121, 189, 255, 0.18);
+}
+
+[data-theme="dark"] .schedule-onboarding-kicker {
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .schedule-templates {
@@ -171,6 +229,10 @@
     line-height: 1.6;
 }
 
+.schedule-overlay.setup-mode .schedule-info {
+    margin-bottom: 18px;
+}
+
 body[data-theme="dark"][data-style="material"] .schedule-info,
 body[data-theme="dark"][data-style="material"] .schedule-custom,
 body[data-theme="dark"][data-style="material"] .period-stat-card {
@@ -181,6 +243,11 @@ body[data-theme="dark"][data-style="material"] .period-stat-card {
 .schedule-buttons {
     display: flex;
     gap: 12px;
+    position: sticky;
+    bottom: -28px;
+    padding-top: 14px;
+    margin-top: 8px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0), var(--main-container-bg) 36%);
 }
 
 .schedule-btn-action {
@@ -206,6 +273,13 @@ body[data-theme="dark"][data-style="material"] .period-stat-card {
     box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
 }
 
+.schedule-btn-action:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
 .schedule-btn-action.secondary {
     background: rgba(0, 0, 0, 0.05);
     color: var(--text-primary);
@@ -221,6 +295,10 @@ body[data-theme="dark"][data-style="material"] .period-stat-card {
 
 [data-theme="dark"] .schedule-btn-action.secondary:hover {
     background: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .schedule-buttons {
+    background: linear-gradient(180deg, rgba(18, 26, 40, 0), var(--main-container-bg) 36%);
 }
 
 .schedule-close {
@@ -251,6 +329,52 @@ body[data-theme="dark"][data-style="material"] .period-stat-card {
 
 [data-theme="dark"] .schedule-close:hover {
     background: rgba(255, 255, 255, 0.15);
+}
+
+.schedule-overlay.setup-mode .schedule-close,
+.schedule-overlay.setup-mode .schedule-btn-action.secondary {
+    display: none;
+}
+
+.schedule-overlay.setup-mode .schedule-card {
+    max-width: 440px;
+    max-height: min(92vh, 760px);
+}
+
+.schedule-overlay.setup-mode .schedule-title {
+    font-size: 30px;
+    line-height: 1.1;
+    margin-bottom: 18px;
+}
+
+body[data-style="ios26"] .schedule-onboarding {
+    background:
+        radial-gradient(circle at top right, rgba(77, 174, 255, 0.24), transparent 46%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(183, 221, 255, 0.22));
+    border: 1px solid rgba(255, 255, 255, 0.42);
+    box-shadow: 0 12px 30px rgba(52, 104, 180, 0.12);
+}
+
+body[data-theme="dark"][data-style="ios26"] .schedule-onboarding {
+    background:
+        radial-gradient(circle at top right, rgba(89, 177, 255, 0.24), transparent 42%),
+        linear-gradient(180deg, rgba(24, 38, 58, 0.82), rgba(18, 28, 44, 0.74));
+    border-color: rgba(183, 214, 255, 0.14);
+}
+
+body[data-style="material"] .schedule-onboarding {
+    background:
+        radial-gradient(circle at top right, rgba(103, 80, 164, 0.14), transparent 42%),
+        linear-gradient(180deg, rgba(103, 80, 164, 0.08), rgba(103, 80, 164, 0.03));
+    border-color: rgba(103, 80, 164, 0.16);
+    box-shadow: none;
+}
+
+body[data-theme="dark"][data-style="material"] .schedule-onboarding {
+    background:
+        radial-gradient(circle at top right, rgba(207, 188, 255, 0.16), transparent 40%),
+        linear-gradient(180deg, rgba(230, 224, 233, 0.08), rgba(230, 224, 233, 0.03));
+    border-color: rgba(202, 196, 208, 0.14);
 }
 
 

@@ -106,6 +106,53 @@ body[data-theme="dark"][data-style="material"] .depth-panel {
     margin-bottom: 24px;
 }
 
+.settings-card .settings-group:first-of-type {
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: linear-gradient(180deg, rgba(15, 108, 189, 0.06), rgba(15, 108, 189, 0.02));
+    border: 1px solid var(--card-border);
+}
+
+.settings-card .settings-group:first-of-type .settings-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.settings-card .settings-group:first-of-type .settings-label::after {
+    content: 'Показати';
+    font-size: 11px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.settings-card .settings-group:first-of-type .appearance-presets {
+    margin-top: 0;
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: max-height 0.24s ease, opacity 0.2s ease, margin-top 0.2s ease;
+}
+
+.settings-card .settings-group:first-of-type.is-open .appearance-presets {
+    margin-top: 12px;
+    max-height: 180px;
+    opacity: 1;
+}
+
+.settings-card .settings-group:first-of-type.is-open .settings-label::after {
+    content: 'Сховати';
+}
+
+[data-theme="dark"] .settings-card .settings-group:first-of-type {
+    background: linear-gradient(180deg, rgba(90, 176, 255, 0.1), rgba(90, 176, 255, 0.03));
+}
+
 .settings-label {
     font-size: 13px;
     font-weight: 700;
@@ -148,8 +195,123 @@ body[data-theme="dark"][data-style="material"] .depth-panel {
 
 .settings-buttons {
     display: flex;
-    gap: 12px;
+    flex-direction: column;
+    gap: 10px;
     margin-top: 24px;
+}
+
+.settings-buttons .btn-apply {
+    width: 100%;
+}
+
+.settings-buttons .btn-reset {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    width: auto;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: none;
+    box-shadow: none;
+}
+
+.settings-buttons .btn-reset:hover {
+    background: transparent;
+    color: var(--accent);
+}
+
+.settings-danger-zone {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px dashed rgba(255, 59, 48, 0.22);
+}
+
+.settings-danger-text {
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+
+.settings-danger-btn {
+    --hold-progress: 0%;
+    margin-top: 12px;
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding: 0;
+    border-radius: 16px;
+    border: 1px dashed rgba(255, 59, 48, 0.35);
+    background: rgba(255, 59, 48, 0.04);
+    color: #d93025;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: var(--control-transition);
+}
+
+.settings-danger-btn-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: var(--hold-progress);
+    background: linear-gradient(90deg, rgba(255, 59, 48, 0.2), rgba(255, 149, 0, 0.24));
+    transition: width 0.08s linear;
+}
+
+.settings-danger-btn-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 12px 16px;
+}
+
+.settings-danger-btn-title {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.settings-danger-btn:hover {
+    background: rgba(255, 59, 48, 0.08);
+    border-color: rgba(255, 59, 48, 0.5);
+}
+
+.settings-danger-btn.is-holding {
+    background: linear-gradient(90deg, rgba(255, 59, 48, 0.14), rgba(255, 149, 0, 0.16));
+    border-color: rgba(255, 59, 48, 0.6);
+    box-shadow: 0 10px 24px rgba(255, 59, 48, 0.12);
+}
+
+[data-theme="dark"] .settings-danger-zone {
+    border-top-color: rgba(255, 69, 58, 0.26);
+}
+
+[data-theme="dark"] .settings-danger-btn {
+    background: rgba(255, 69, 58, 0.08);
+    border-color: rgba(255, 69, 58, 0.34);
+    color: #ff8b84;
+}
+
+[data-theme="dark"] .settings-danger-btn-fill {
+    background: linear-gradient(90deg, rgba(255, 69, 58, 0.22), rgba(255, 159, 10, 0.22));
+}
+
+[data-theme="dark"] .settings-danger-btn:hover {
+    background: rgba(255, 69, 58, 0.14);
+}
+
+[data-theme="dark"] .settings-danger-btn.is-holding {
+    background: linear-gradient(90deg, rgba(255, 69, 58, 0.18), rgba(255, 159, 10, 0.18));
 }
 
 .settings-btn-action {

@@ -1,29 +1,29 @@
 :root {
     /* Palette - Ultra Modern / Apple-like */
-    --bg-color: #f0f2f5;
-    --main-container-bg: #ffffff;
-    --text-primary: #121214;
-    --text-secondary: #6e6e73;
-    --accent: #007aff;
-    --accent-soft: rgba(0, 122, 255, 0.08);
+    --bg-color: #eef3f7;
+    --main-container-bg: #fbfdff;
+    --text-primary: #17212b;
+    --text-secondary: #64748b;
+    --accent: #0f6cbd;
+    --accent-soft: rgba(15, 108, 189, 0.1);
 
     /* Нові кольори: Сірий для роботи, Зелений для вихідних */
-    --work-bg: #e5e5ea;
-    --work-text: #1d1d1f;
-    --off-bg: #34c759;
+    --work-bg: #dbe7f3;
+    --work-text: #122033;
+    --off-bg: #1f9d73;
     --off-text: #ffffff;
 
-    --holiday-color: #ff3b30;
-    --glass-bg: rgba(255, 255, 255, 0.4);
-    --glass-border: rgba(255, 255, 255, 0.8);
-    --card-border: rgba(0, 0, 0, 0.04);
-    --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
-    --card-hover-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-    --modal-overlay: rgba(255, 255, 255, 0.6);
+    --holiday-color: #d13438;
+    --glass-bg: rgba(255, 255, 255, 0.56);
+    --glass-border: rgba(255, 255, 255, 0.72);
+    --card-border: rgba(15, 23, 42, 0.06);
+    --card-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+    --card-hover-shadow: 0 18px 44px rgba(15, 23, 42, 0.14);
+    --modal-overlay: rgba(243, 247, 251, 0.7);
     --base-font-size: 16px;
-    --font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    --page-gradient: radial-gradient(circle at top, rgba(255, 255, 255, 0.9), rgba(240, 242, 245, 0.94) 46%, rgba(226, 231, 238, 0.92));
-    --noise-opacity: 0.015;
+    --font-family: "Segoe UI Variable", "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    --page-gradient: radial-gradient(circle at top, rgba(255, 255, 255, 0.96), rgba(236, 243, 248, 0.94) 46%, rgba(220, 231, 240, 0.92));
+    --noise-opacity: 0.01;
     --panel-hover-transform: translateY(-2px);
     --icon-hover-transform: translateY(-4px);
     --button-hover-transform: translateY(-1px);
@@ -39,28 +39,28 @@
 }
 
 [data-theme="dark"] {
-    --bg-color: #08080a;
-    --main-container-bg: #111113;
-    --text-primary: #f5f5f7;
-    --text-secondary: #a1a1a6;
-    --accent: #0a84ff;
-    --accent-soft: rgba(10, 132, 255, 0.15);
+    --bg-color: #0b1220;
+    --main-container-bg: #121a28;
+    --text-primary: #eef4fb;
+    --text-secondary: #93a4b8;
+    --accent: #5ab0ff;
+    --accent-soft: rgba(90, 176, 255, 0.16);
 
     /* Темна тема кольорів */
-    --work-bg: #2c2c2e;
-    --work-text: #f5f5f7;
-    --off-bg: #30d158;
+    --work-bg: #2a3b52;
+    --work-text: #eef4fb;
+    --off-bg: #2aa876;
     --off-text: #ffffff;
 
-    --holiday-color: #ff453a;
-    --glass-bg: rgba(20, 20, 22, 0.5);
-    --glass-border: rgba(255, 255, 255, 0.05);
-    --card-border: rgba(255, 255, 255, 0.06);
-    --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    --card-hover-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
-    --modal-overlay: rgba(0, 0, 0, 0.6);
-    --page-gradient: radial-gradient(circle at top, rgba(34, 34, 40, 0.5), rgba(8, 8, 10, 0.96) 46%, rgba(5, 5, 8, 1));
-    --noise-opacity: 0.02;
+    --holiday-color: #ff6b6b;
+    --glass-bg: rgba(14, 24, 38, 0.56);
+    --glass-border: rgba(164, 197, 235, 0.08);
+    --card-border: rgba(164, 197, 235, 0.08);
+    --card-shadow: 0 14px 40px rgba(0, 0, 0, 0.34);
+    --card-hover-shadow: 0 18px 52px rgba(0, 0, 0, 0.44);
+    --modal-overlay: rgba(5, 10, 18, 0.72);
+    --page-gradient: radial-gradient(circle at top, rgba(37, 62, 92, 0.34), rgba(11, 18, 32, 0.96) 44%, rgba(7, 12, 22, 1));
+    --noise-opacity: 0.015;
 }
 
 body[data-style="ios26"] {

@@ -33,7 +33,6 @@
 
     .day {
         aspect-ratio: 1;
-        border-radius: 12px;
         padding: 8px;
     }
 
@@ -167,10 +166,6 @@
     .main-container {
         max-width: 540px;
         gap: 14px;
-    }
-
-    .day {
-        border-radius: 14px;
     }
 
     .depth-panel {

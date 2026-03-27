@@ -5,6 +5,16 @@
         theme: 'theme',
         themeMode: 'themeMode'
     };
+    const APP_STORAGE_KEYS = [
+        STORAGE_KEYS.settings,
+        STORAGE_KEYS.stylePreset,
+        STORAGE_KEYS.theme,
+        STORAGE_KEYS.themeMode,
+        'scheduleConfig',
+        'customDayStatuses',
+        'dayNotes'
+    ];
+    const APP_STORAGE_PREFIXES = ['holidayData:'];
 
     const settingsState = {
         customSettings: null,
@@ -15,11 +25,13 @@
     };
 
     let visualSwitchTimeoutId = null;
+    const PUBLIC_STYLE_PRESETS = new Set(['current']);
+    const FALLBACK_STYLE_PRESET = 'current';
 
     const DEFAULT_DAY_COLORS = {
         current: {
-            light: { workColor: '#E5E5EA', offColor: '#34C759' },
-            dark: { workColor: '#2C2C2E', offColor: '#30D158' }
+            light: { workColor: '#DBE7F3', offColor: '#1F9D73' },
+            dark: { workColor: '#2A3B52', offColor: '#2AA876' }
         },
         ios26: {
             light: { workColor: '#E5E5EA', offColor: '#34C759' },
@@ -75,6 +87,10 @@
         const palette = DEFAULT_DAY_COLORS[stylePreset] || DEFAULT_DAY_COLORS.current;
         return palette[themeName] || palette.light;
     };
+
+    const normalizePublicStylePreset = (stylePreset) => (
+        PUBLIC_STYLE_PRESETS.has(stylePreset) ? stylePreset : FALLBACK_STYLE_PRESET
+    );
 
     const matchesBuiltInPalette = (workColor, offColor) => {
         const normalizedWork = normalizeHexColor(workColor, '#E5E5EA');
@@ -135,7 +151,11 @@
 
         const savedStylePreset = safeStorageGet(STORAGE_KEYS.stylePreset);
         if (savedStylePreset) {
-            settingsState.savedStylePreset = savedStylePreset;
+            settingsState.savedStylePreset = normalizePublicStylePreset(savedStylePreset);
+
+            if (settingsState.savedStylePreset !== savedStylePreset) {
+                safeStorageSet(STORAGE_KEYS.stylePreset, settingsState.savedStylePreset);
+            }
         }
 
         const savedThemeMode = safeStorageGet(STORAGE_KEYS.themeMode);
@@ -189,7 +209,9 @@
         hydrateSettingsState();
         const normalizedWork = normalizeHexColor(workColor, '#E5E5EA');
         const normalizedOff = normalizeHexColor(offColor, '#34C759');
-        const currentStyle = document.body.getAttribute('data-style') || settingsState.savedStylePreset;
+        const currentStyle = normalizePublicStylePreset(
+            document.body.getAttribute('data-style') || settingsState.savedStylePreset
+        );
         const currentTheme = document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
         const defaultColors = getDefaultDayColors(currentStyle, currentTheme);
 
@@ -214,13 +236,13 @@
 
     const getSavedStylePreset = () => {
         hydrateSettingsState();
-        return settingsState.savedStylePreset;
+        return normalizePublicStylePreset(settingsState.savedStylePreset);
     };
 
     const persistStylePreset = (stylePreset) => {
         hydrateSettingsState();
-        settingsState.savedStylePreset = stylePreset;
-        safeStorageSet(STORAGE_KEYS.stylePreset, stylePreset);
+        settingsState.savedStylePreset = normalizePublicStylePreset(stylePreset);
+        safeStorageSet(STORAGE_KEYS.stylePreset, settingsState.savedStylePreset);
     };
 
     const getSavedThemeMode = () => {
@@ -233,6 +255,26 @@
         safeStorageRemove(STORAGE_KEYS.stylePreset);
         safeStorageRemove(STORAGE_KEYS.theme);
         safeStorageRemove(STORAGE_KEYS.themeMode);
+        location.reload();
+    };
+
+    const hardResetAllData = () => {
+        try {
+            APP_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+
+            const keysToRemove = [];
+            for (let index = 0; index < localStorage.length; index++) {
+                const key = localStorage.key(index);
+                if (key && APP_STORAGE_PREFIXES.some((prefix) => key.startsWith(prefix))) {
+                    keysToRemove.push(key);
+                }
+            }
+
+            keysToRemove.forEach((key) => localStorage.removeItem(key));
+        } catch (e) {
+            console.warn('Не вдалося виконати hard reset', e);
+        }
+
         location.reload();
     };
 
@@ -249,12 +291,14 @@
     };
 
     const setStylePreset = (stylePreset, stylePresetBtns) => {
+        const normalizedStylePreset = normalizePublicStylePreset(stylePreset);
+
         withVisualSwitchGuard();
-        document.body.setAttribute('data-style', stylePreset);
+        document.body.setAttribute('data-style', normalizedStylePreset);
 
         if (stylePresetBtns) {
             stylePresetBtns.forEach((button) => {
-                button.classList.toggle('active', button.dataset.style === stylePreset);
+                button.classList.toggle('active', button.dataset.style === normalizedStylePreset);
             });
         }
     };
@@ -363,6 +407,7 @@
         loadCustomSettings,
         saveCustomSettings,
         resetSettings,
+        hardResetAllData,
         getSavedStylePreset,
         getSavedThemeMode,
         setStylePreset,

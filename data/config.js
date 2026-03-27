@@ -1,7 +1,11 @@
 // --- Дані та Налаштування ---
-const DEFAULT_SHIFT_START_DATE = new Date(Date.UTC(2026, 2, 27)); // 27 березня 2026
-let shiftStartDateUTC = Date.UTC(2026, 2, 27);
 const DEMO_TODAY = new Date();
+const DEFAULT_SHIFT_START_DATE = new Date(Date.UTC(
+    DEMO_TODAY.getFullYear(),
+    DEMO_TODAY.getMonth(),
+    DEMO_TODAY.getDate()
+));
+let shiftStartDateUTC = DEFAULT_SHIFT_START_DATE.getTime();
 
 function getDefaultScheduleConfig() {
     return {
@@ -10,6 +14,14 @@ function getDefaultScheduleConfig() {
         offDays: 5,
         startDate: DEFAULT_SHIFT_START_DATE.toISOString()
     };
+}
+
+function isLegacyDefaultStartDate(startDate) {
+    if (typeof startDate !== 'string' || !startDate) {
+        return false;
+    }
+
+    return startDate.startsWith('2025-03-27T') || startDate.startsWith('2026-03-27T');
 }
 
 function getShiftStartDateUTC() {
@@ -31,7 +43,11 @@ function getShiftStartDateUTC() {
 // якщо з localStorage приходить некоректна дата, нормалізуєм
 function normalizeStartDate() {
     const schedule = getScheduleConfig();
-    if (!schedule.startDate || Number.isNaN(new Date(schedule.startDate).getTime())) {
+    if (
+        !schedule.startDate ||
+        Number.isNaN(new Date(schedule.startDate).getTime()) ||
+        isLegacyDefaultStartDate(schedule.startDate)
+    ) {
         schedule.startDate = DEFAULT_SHIFT_START_DATE.toISOString();
         setScheduleConfig(schedule);
     }
