@@ -46,6 +46,7 @@ let hardResetHoldTimer = null;
 let hardResetAnimationFrameId = null;
 let hardResetHoldStartedAt = 0;
 let applySelectedThemeMode = null;
+let installIdHintResetTimer = null;
 
 const setSettingsOverlayOpen = (isOpen) => {
     if (!settingsEls.overlay) {
@@ -104,6 +105,9 @@ const refreshAppUpdateSettingsUI = async () => {
         settingsEls.appInstallId.textContent = installId
             ? `ID пристрою: ${installId}`
             : 'ID пристрою: недоступний';
+        settingsEls.appInstallId.title = installId
+            ? 'Натисніть, щоб скопіювати ID'
+            : 'ID пристрою недоступний';
     }
 
     if (settingsEls.appUpdateChannelSummary) {
@@ -122,7 +126,7 @@ const refreshAppUpdateSettingsUI = async () => {
 
     if (settingsEls.updateChannelHelp) {
         settingsEls.updateChannelHelp.textContent = !betaAllowed
-            ? 'Beta-перемикач з’являється тільки на пристроях, чий ID додано в allowlist.'
+            ? 'Beta-перемикач доступний тільки для дозволених пристроїв.'
             : (currentChannel === 'beta'
                 ? 'Цей пристрій зараз отримує beta-оновлення. Інші користувачі залишаються на Stable.'
                 : 'Stable використовується для всіх. Beta можна вмикати тільки на цьому пристрої.');
@@ -142,7 +146,7 @@ const refreshAppUpdateSettingsUI = async () => {
         return;
     }
 
-    settingsEls.appVersionHint.textContent = 'Цей пристрій не має beta-доступу. Щоб видати його, додайте цей ID у beta/access.json.';
+    settingsEls.appVersionHint.textContent = 'Цей пристрій не має beta-доступу.';
 };
 
 let selectedStylePreset = getSavedStylePreset();
@@ -301,6 +305,47 @@ settingsEls.themeModeBtns.forEach((button) => {
         }
     });
 });
+
+if (settingsEls.appInstallId) {
+    settingsEls.appInstallId.addEventListener('click', async () => {
+        const installId = window.AppUpdate?.getInstallId?.();
+        if (!installId) {
+            return;
+        }
+
+        try {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(installId);
+            } else {
+                const tempTextArea = document.createElement('textarea');
+                tempTextArea.value = installId;
+                tempTextArea.setAttribute('readonly', '');
+                tempTextArea.style.position = 'absolute';
+                tempTextArea.style.left = '-9999px';
+                document.body.appendChild(tempTextArea);
+                tempTextArea.select();
+                document.execCommand('copy');
+                tempTextArea.remove();
+            }
+
+            if (installIdHintResetTimer) {
+                clearTimeout(installIdHintResetTimer);
+            }
+
+            if (settingsEls.appVersionHint) {
+                settingsEls.appVersionHint.textContent = 'ID пристрою скопійовано.';
+                installIdHintResetTimer = window.setTimeout(() => {
+                    installIdHintResetTimer = null;
+                    refreshAppUpdateSettingsUI();
+                }, 1800);
+            }
+        } catch (error) {
+            if (settingsEls.appVersionHint) {
+                settingsEls.appVersionHint.textContent = 'Не вдалося скопіювати ID.';
+            }
+        }
+    });
+}
 
 settingsEls.updateChannelBtns.forEach((button) => {
     button.addEventListener('click', () => {
