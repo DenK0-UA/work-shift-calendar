@@ -129,7 +129,7 @@ const refreshAppUpdateSettingsUI = async () => {
             ? 'Beta-перемикач доступний тільки для дозволених пристроїв.'
             : (currentChannel === 'beta'
                 ? 'Цей пристрій зараз отримує beta-оновлення. Інші користувачі залишаються на Stable.'
-                : 'Stable використовується для всіх. Beta можна вмикати тільки на цьому пристрої.');
+                : '');
     }
 
     if (!settingsEls.appVersionHint) {
@@ -142,7 +142,7 @@ const refreshAppUpdateSettingsUI = async () => {
     }
 
     if (betaAllowed) {
-        settingsEls.appVersionHint.textContent = 'Цей пристрій є в allowlist і може перемикатися між Stable та Beta.';
+        settingsEls.appVersionHint.textContent = 'Цей пристрій є в beta списку і може перемикатися між Stable та Beta.';
         return;
     }
 

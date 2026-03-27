@@ -200,6 +200,20 @@ npm run android:live
 
 ### Як далі збирати APK
 
+Перед новою збіркою, якщо правка має піти на телефон як окрема версія, спочатку оновіть номер версії однією командою:
+
+```bash
+npm run version:set -- 1.0.1
+```
+
+Це синхронно оновлює:
+
+- `package.json`
+- `data/config.js`
+- `android/app/build.gradle`
+- `beta/version.json`
+- `stable/version.json`
+
 1. Запустіть `npm run cap:android`
 2. Відкрийте Android Studio через `npm run android:open`
 3. Дочекайтесь Gradle Sync
@@ -215,7 +229,7 @@ cd android
 Готовий debug APK зазвичай буде тут:
 
 ```text
-android/app/build/outputs/apk/debug/app-debug.apk
+android/app/build/outputs/apk/debug/work-shift-calendar-beta.apk
 ```
 
 ### Важливо
@@ -236,10 +250,11 @@ android/app/build/outputs/apk/debug/app-debug.apk
 Рекомендований флоу:
 
 1. локально перевіряєте UI через `npm run dev:web` + `npm run android:live`
-2. коли потрібен APK для особистої перевірки, публікуєте його в `beta`
-3. `Beta` доступний тільки на пристроях, чий `installId` є в allowlist
-4. після апруву переносите реліз у `stable`
-5. усі інші пристрої отримують звичне сповіщення про нову версію
+2. коли правка готова до тесту на телефоні, піднімаєте версію через `npm run version:set -- 1.0.1`
+3. збираєте `work-shift-calendar-beta.apk` і публікуєте його в `beta`
+4. `Beta` доступний тільки на пристроях, чий `installId` є в allowlist
+5. після апруву або публікуєте той самий білд у `stable`, або збираєте `work-shift-calendar.apk`
+6. усі інші пристрої отримують звичне сповіщення про нову версію
 
 Щоб його увімкнути в реальному середовищі:
 
@@ -296,7 +311,7 @@ const APP_UPDATE_BETA_ACCESS_URL = 'https://<user>.github.io/work-shift-calendar
 - якщо пристрій є в allowlist, він може перейти на `beta` і перевіряти `beta/version.json`
 - якщо у вибраному каналі версія новіша за `APP_RELEASE_VERSION`, показується кнопка `Завантажити APK`
 - якщо натиснути `Пізніше`, банер сховається для цієї версії й повернеться лише після виходу новішого APK
-- при кожному релізі нового `APK` потрібно оновити і `APP_RELEASE_VERSION`, і відповідний `version.json`
+- при кожному релізі нового `APK` достатньо запустити `npm run version:set -- x.y.z`, щоб синхронно оновити версію в проєкті й маніфестах
 - `beta` можна використовувати для особистої перевірки до того, як реліз піде на всіх
 - якщо `version.json` або `apkUrl` лежать на іншому домені, той домен має дозволяти `CORS`; найпростіше тримати маніфест на тому ж хостингу, що й сайт
 
