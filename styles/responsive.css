@@ -398,6 +398,20 @@
         transform: scale(0.92) !important;
     }
 
+    .app-update-banner {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .app-update-banner-actions {
+        width: 100%;
+        flex-direction: column-reverse;
+    }
+
+    .app-update-banner-actions .schedule-btn-action {
+        width: 100%;
+    }
+
 }
 
 /* Swipe анімація */

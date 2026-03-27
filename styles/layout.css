@@ -209,6 +209,47 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
     gap: 10px;
 }
 
+.app-update-banner {
+    display: none;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid var(--surface-panel-accent-border);
+    background: var(--surface-panel-accent);
+    box-shadow: var(--surface-panel-accent-shadow);
+}
+
+.app-update-banner.active {
+    display: flex;
+}
+
+.app-update-banner-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.app-update-banner-title {
+    font-family: var(--font-family-display);
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.app-update-banner-text {
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.app-update-banner-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+}
+
 .weather-refresh {
     width: 34px;
     height: 34px;

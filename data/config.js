@@ -1,4 +1,9 @@
 // --- Дані та Налаштування ---
+const APP_RELEASE_VERSION = '1.0.0';
+const APP_UPDATE_MANIFEST_URL = '';
+const APP_UPDATE_CHECK_ENABLED = true;
+const APP_UPDATE_CHECK_TIMEOUT_MS = 5000;
+
 const DEMO_TODAY = new Date();
 const DEFAULT_SHIFT_START_DATE = new Date(Date.UTC(
     DEMO_TODAY.getFullYear(),

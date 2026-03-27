@@ -80,6 +80,136 @@ start index.html
 - відкрити `index.html` напряму в браузері
 - запустити через `Live Server` у редакторі
 
+## Android через Capacitor
+
+Проєкт підготовлено для запуску як Android-застосунок через `Capacitor`.
+
+### Що вже додано
+
+- `package.json` зі скриптами для підготовки веб-асетів
+- `capacitor.config.json`
+- Android-проєкт у папці `android/`
+- проміжна папка `www/` генерується автоматично зі статичних файлів
+
+### Встановлення
+
+Потрібні:
+
+- `Node.js 18+`
+- `Java (JDK 17 рекомендовано)`
+- `Android Studio`
+
+Перший запуск:
+
+```bash
+npm install
+npm run cap:android
+npm run android:open
+```
+
+### Перший запуск в Android Studio
+
+Для першої збірки краще спочатку відкрити Android Studio, а вже потім користуватись `gradlew`.
+
+1. Встановіть `Android Studio` для `Apple Silicon`, якщо у вас Mac на `M1/M2/M3`
+2. Під час першого запуску дозвольте встановити:
+   - `Android SDK`
+   - `Android SDK Platform`
+   - `Android SDK Build-Tools`
+   - `Android SDK Command-line Tools`
+   - `Android Emulator`
+3. Відкрийте Android-проєкт через:
+
+```bash
+npm run android:open
+```
+
+4. Дочекайтесь `Gradle Sync`
+5. Після цього можна збирати `APK` як з Android Studio, так і з термінала
+
+### Корисні команди
+
+Зібрати веб-частину для Capacitor:
+
+```bash
+npm run build:web
+```
+
+Синхронізувати зміни в Android-проєкт:
+
+```bash
+npm run cap:android
+```
+
+Відкрити нативний Android-проєкт в Android Studio:
+
+```bash
+npm run android:open
+```
+
+### Як далі збирати APK
+
+1. Запустіть `npm run cap:android`
+2. Відкрийте Android Studio через `npm run android:open`
+3. Дочекайтесь Gradle Sync
+4. Зберіть `APK` або `AAB` через меню `Build`
+
+Або з термінала:
+
+```bash
+cd android
+./gradlew assembleDebug
+```
+
+Готовий debug APK зазвичай буде тут:
+
+```text
+android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+### Важливо
+
+- папка `www/` не комітиться, вона генерується автоматично
+- після змін у `index.html`, `js/`, `styles/` або `data/` потрібно знову запускати `npm run cap:android`
+- локальні дані застосунку, як і раніше, зберігаються локально на пристрої
+- вихідники для Android-іконки та splash лежать у `assets/android/`
+
+### Перевірка нової версії APK
+
+У застосунку є банер перевірки оновлень для Android.
+
+Щоб його увімкнути в реальному середовищі:
+
+1. У `data/config.js` задайте актуальну версію:
+
+```js
+const APP_RELEASE_VERSION = '1.0.0';
+```
+
+2. Там само вкажіть URL маніфесту оновлень:
+
+```js
+const APP_UPDATE_MANIFEST_URL = 'https://example.com/work-shift-calendar/version.json';
+```
+
+3. Розмістіть на сервері або `GitHub Pages` файл `version.json` такого формату:
+
+```json
+{
+  "version": "1.0.1",
+  "apkUrl": "https://example.com/work-shift-calendar/releases/work-shift-calendar-1.0.1.apk",
+  "notes": "Додано нові зміни та виправлення."
+}
+```
+
+Поведінка:
+
+- перевірка виконується при відкритті Android-застосунку
+- якщо версія з `version.json` новіша за `APP_RELEASE_VERSION`, показується кнопка `Завантажити APK`
+- якщо натиснути `Пізніше`, банер сховається для цієї версії й повернеться лише після виходу новішого APK
+- при кожному релізі нового `APK` потрібно оновити і `APP_RELEASE_VERSION`, і `version.json`
+- якщо `version.json` або `apkUrl` лежать на іншому домені, той домен має дозволяти `CORS`; найпростіше тримати маніфест на тому ж хостингу, що й сайт
+
 ## GitHub Pages
 
 У репозиторії є workflow для публікації через `GitHub Pages` з гілки `main`.

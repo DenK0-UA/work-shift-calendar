@@ -311,3 +311,7 @@ if (bootstrapSetupPending) {
 }
 
 document.body.classList.remove('app-shell-pending');
+
+if (window.AppUpdate?.checkForAppUpdate) {
+    window.AppUpdate.checkForAppUpdate();
+}

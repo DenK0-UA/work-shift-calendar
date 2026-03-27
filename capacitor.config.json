@@ -1,0 +1,8 @@
+{
+  "appId": "com.denk0.workshiftcalendar",
+  "appName": "Work Shift Calendar",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  }
+}
