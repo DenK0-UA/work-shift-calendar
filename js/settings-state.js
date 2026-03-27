@@ -61,6 +61,36 @@
         return fallback;
     };
 
+    const hexToRgb = (value, fallback = '#34C759') => {
+        const normalized = normalizeHexColor(value, fallback).replace('#', '');
+        const safeHex = normalized.length === 6 ? normalized : fallback.replace('#', '');
+        return {
+            r: Number.parseInt(safeHex.slice(0, 2), 16),
+            g: Number.parseInt(safeHex.slice(2, 4), 16),
+            b: Number.parseInt(safeHex.slice(4, 6), 16)
+        };
+    };
+
+    const mixHex = (value, targetHex, amount) => {
+        const source = hexToRgb(value, value);
+        const target = hexToRgb(targetHex, targetHex);
+        const factor = Math.min(Math.max(amount, 0), 1);
+        const channel = (from, to) => Math.round(from + (to - from) * factor);
+
+        return '#' + [channel(source.r, target.r), channel(source.g, target.g), channel(source.b, target.b)]
+            .map((part) => part.toString(16).padStart(2, '0'))
+            .join('')
+            .toUpperCase();
+    };
+
+    const toRgba = ({ r, g, b }, alpha) => `rgba(${r}, ${g}, ${b}, ${alpha})`;
+
+    const getContrastTextColor = (value) => {
+        const { r, g, b } = hexToRgb(value, '#34C759');
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        return brightness >= 150 ? '#142033' : '#FFFFFF';
+    };
+
     const safeStorageGet = (key) => {
         try {
             return localStorage.getItem(key);
@@ -118,10 +148,32 @@
             document.head.appendChild(styleEl);
         }
 
+        const normalizedWork = normalizeHexColor(workColor, '#E5E5EA');
+        const normalizedOff = normalizeHexColor(offColor, '#34C759');
+        const workRgb = hexToRgb(normalizedWork, '#E5E5EA');
+        const offRgb = hexToRgb(normalizedOff, '#34C759');
+        const isDarkTheme = document.body.getAttribute('data-theme') === 'dark';
+        const workStart = mixHex(normalizedWork, '#FFFFFF', isDarkTheme ? 0.12 : 0.34);
+        const workEnd = mixHex(normalizedWork, '#000000', isDarkTheme ? 0.14 : 0.04);
+        const offStart = mixHex(normalizedOff, '#FFFFFF', isDarkTheme ? 0.1 : 0.16);
+        const offEnd = mixHex(normalizedOff, '#000000', isDarkTheme ? 0.12 : 0.08);
+        const workText = getContrastTextColor(normalizedWork);
+        const offText = getContrastTextColor(normalizedOff);
+
         styleEl.textContent = `
             body {
-                --work-bg: ${normalizeHexColor(workColor, '#E5E5EA')} !important;
-                --off-bg: ${normalizeHexColor(offColor, '#34C759')} !important;
+                --work-bg: ${normalizedWork} !important;
+                --off-bg: ${normalizedOff} !important;
+                --work-text: ${workText} !important;
+                --off-text: ${offText} !important;
+                --work-bg-start: ${workStart} !important;
+                --work-bg-end: ${workEnd} !important;
+                --off-bg-start: ${offStart} !important;
+                --off-bg-end: ${offEnd} !important;
+                --day-work-shadow: 0 10px 22px ${toRgba(workRgb, isDarkTheme ? 0.28 : 0.18)} !important;
+                --day-off-shadow: 0 12px 24px ${toRgba(offRgb, isDarkTheme ? 0.34 : 0.24)} !important;
+                --day-work-hover-shadow: 0 14px 30px ${toRgba(workRgb, isDarkTheme ? 0.38 : 0.26)} !important;
+                --day-off-hover-shadow: 0 16px 32px ${toRgba(offRgb, isDarkTheme ? 0.42 : 0.32)} !important;
             }
         `;
     };
@@ -224,9 +276,9 @@
 
         settingsState.customSettings = {
             workColor: normalizedWork,
-            workText: '#1d1d1f',
+            workText: getContrastTextColor(normalizedWork),
             offColor: normalizedOff,
-            offText: '#ffffff',
+            offText: getContrastTextColor(normalizedOff),
             isCustomColors: true
         };
 

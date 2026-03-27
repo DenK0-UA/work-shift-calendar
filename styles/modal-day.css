@@ -1,56 +1,15 @@
 /* --- МОДАЛЬНЕ ВІКНО --- */
 .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: var(--modal-overlay);
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), backdrop-filter 0.4s ease;
     z-index: 100;
-    padding: 20px;
-}
-
-.modal-overlay.active {
-    opacity: 1;
-    pointer-events: auto;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
 }
 
 .modal-card {
-    background: var(--main-container-bg);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    width: 100%;
     max-width: 320px;
-    border-radius: 26px;
-    padding: 28px;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 20px 60px rgba(0, 0, 0, 0.24);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    transform: var(--modal-card-initial-transform);
-    opacity: 0;
-    transition: var(--modal-card-transition);
-}
-
-[data-theme="dark"] .modal-card {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 20px 60px rgba(0, 0, 0, 0.5);
-}
-
-.modal-overlay.active .modal-card {
-    transform: var(--modal-card-active-transform);
-    opacity: 1;
 }
 
 .modal-date {
+    font-family: var(--font-family-numeric);
     font-size: 56px;
     font-weight: 800;
     letter-spacing: -2px;

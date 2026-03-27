@@ -14,6 +14,7 @@
     transform: translateZ(0px);
     font-weight: 600;
     overflow: hidden;
+    isolation: isolate;
 }
 
 body[data-style="current"] .day {
@@ -36,43 +37,15 @@ body[data-style="material"] .day {
 
 /* Статуси */
 .day[data-status="work"] {
-    background-color: var(--work-bg);
+    background: linear-gradient(180deg, var(--work-bg-start), var(--work-bg-end));
     color: var(--work-text);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    box-shadow: var(--day-work-shadow);
 }
 
 .day[data-status="off"] {
-    background-color: var(--off-bg);
+    background: linear-gradient(180deg, var(--off-bg-start), var(--off-bg-end));
     color: var(--off-text);
-    box-shadow: 0 6px 20px rgba(52, 199, 89, 0.3);
-}
-
-body[data-style="current"] .day[data-status="work"] {
-    background: linear-gradient(180deg, rgba(235, 243, 251, 0.98), rgba(214, 228, 242, 0.98));
-    box-shadow: 0 10px 22px rgba(15, 108, 189, 0.08);
-}
-
-body[data-style="current"] .day[data-status="off"] {
-    background: linear-gradient(180deg, rgba(40, 173, 127, 0.96), rgba(28, 150, 108, 0.96));
-    box-shadow: 0 12px 24px rgba(31, 157, 115, 0.22);
-}
-
-[data-theme="dark"] .day[data-status="work"] {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-}
-
-[data-theme="dark"] .day[data-status="off"] {
-    box-shadow: 0 6px 20px rgba(52, 199, 89, 0.4);
-}
-
-body[data-theme="dark"][data-style="current"] .day[data-status="work"] {
-    background: linear-gradient(180deg, rgba(52, 72, 100, 0.96), rgba(38, 55, 79, 0.98));
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
-}
-
-body[data-theme="dark"][data-style="current"] .day[data-status="off"] {
-    background: linear-gradient(180deg, rgba(47, 184, 132, 0.94), rgba(34, 158, 112, 0.96));
-    box-shadow: 0 12px 28px rgba(23, 116, 82, 0.34);
+    box-shadow: var(--day-off-shadow);
 }
 
 /* Hover ефекти */
@@ -81,16 +54,39 @@ body[data-theme="dark"][data-style="current"] .day[data-status="off"] {
     z-index: 2;
 }
 
-.day[data-status="work"]:hover {
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+.day::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(180deg, var(--calendar-day-gloss), transparent 38%);
+    opacity: 0.9;
+    z-index: 0;
 }
 
-[data-theme="dark"] .day[data-status="work"]:hover {
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+.day::after {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    pointer-events: none;
+    background: linear-gradient(115deg, transparent 36%, var(--calendar-day-shimmer) 48%, transparent 60%);
+    opacity: 0;
+    transform: translateX(-22%) translateY(-6%);
+    transition: opacity 0.26s ease, transform 0.36s ease;
+    z-index: 0;
+}
+
+.day:hover:not(.empty)::after {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+}
+
+.day[data-status="work"]:hover {
+    box-shadow: var(--day-work-hover-shadow);
 }
 
 .day[data-status="off"]:hover {
-    box-shadow: 0 14px 32px rgba(52, 199, 89, 0.4);
+    box-shadow: var(--day-off-hover-shadow);
 }
 
 body[data-style="ios26"] .day[data-status="work"] {
@@ -136,9 +132,16 @@ body[data-theme="dark"][data-style="material"] .day[data-status="off"] {
 }
 
 .day.empty {
-    background: transparent;
-    box-shadow: none;
+    background: transparent !important;
+    border-color: transparent !important;
+    box-shadow: none !important;
     cursor: default;
+    pointer-events: none;
+}
+
+.day.empty::before,
+.day.empty::after {
+    display: none;
 }
 
 /* Поточний день */
@@ -164,21 +167,27 @@ body[data-style="material"] .day.today {
 }
 
 .date-num {
+    font-family: var(--font-family-numeric);
     font-size: clamp(16px, 2.4vw, 18px);
     font-weight: 600;
+    position: relative;
+    z-index: 1;
+}
+
+.holiday-marker {
+    z-index: 2;
 }
 
 /* Маркер свята */
 .holiday-marker {
     position: absolute;
-    top: 2px;
-    right: 2px;
-    width: 8px;
-    height: 8px;
+    top: 6px;
+    right: 6px;
+    width: 7px;
+    height: 7px;
     background-color: var(--holiday-color);
     border-radius: 50%;
-    border: 2px solid var(--main-container-bg);
-    /* Обводка кольором фону контейнера */
+    box-shadow: 0 0 0 2px var(--holiday-marker-ring), var(--holiday-marker-shadow);
 }
 
 /* --- ЛЕГЕНДА --- */
@@ -220,6 +229,7 @@ body[data-style="material"] .day.today {
 }
 
 .stat-num {
+    font-family: var(--font-family-numeric);
     font-size: 20px;
     font-weight: 700;
     font-variant-numeric: tabular-nums;
@@ -238,6 +248,7 @@ body[data-style="material"] .day.today {
 }
 
 .logo-area {
+    font-family: var(--font-family-display);
     font-size: 13px;
     font-weight: 800;
     color: var(--text-secondary);

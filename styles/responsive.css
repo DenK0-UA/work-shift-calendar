@@ -87,18 +87,13 @@
     }
 
     .panel-heading {
-        flex-direction: column;
+        grid-template-columns: minmax(0, 1fr);
         align-items: stretch;
     }
 
     .panel-heading.panel-heading-toggle {
-        flex-direction: row;
-        align-items: center;
-    }
-
-    .panel-heading-toggle {
-        flex-direction: row;
-        align-items: center;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: start;
     }
 
     .period-switcher {

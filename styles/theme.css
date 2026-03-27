@@ -14,16 +14,33 @@
     --off-text: #ffffff;
 
     --holiday-color: #d13438;
+    --holiday-marker-ring: rgba(251, 253, 255, 0.94);
+    --holiday-marker-shadow: 0 4px 10px rgba(209, 52, 56, 0.24);
     --glass-bg: rgba(255, 255, 255, 0.56);
     --glass-border: rgba(255, 255, 255, 0.72);
     --card-border: rgba(15, 23, 42, 0.06);
     --card-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
     --card-hover-shadow: 0 18px 44px rgba(15, 23, 42, 0.14);
+    --card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+    --card-depth-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
     --modal-overlay: rgba(243, 247, 251, 0.7);
     --base-font-size: 16px;
-    --font-family: "Segoe UI Variable", "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    --font-family-base: "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    --font-family-display: "Segoe UI Variable Display", "Segoe UI Variable", "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    --font-family-numeric: "Bahnschrift", "Segoe UI Variable Display", "Segoe UI Variable", "Segoe UI", "Arial Narrow", sans-serif;
+    --font-family: var(--font-family-base);
     --page-gradient: radial-gradient(circle at top, rgba(255, 255, 255, 0.96), rgba(236, 243, 248, 0.94) 46%, rgba(220, 231, 240, 0.92));
     --noise-opacity: 0.01;
+    --calendar-day-gloss: rgba(255, 255, 255, 0.34);
+    --calendar-day-shimmer: rgba(255, 255, 255, 0.2);
+    --work-bg-start: #edf5fc;
+    --work-bg-end: #dbe7f3;
+    --off-bg-start: #2ab185;
+    --off-bg-end: #1f9d73;
+    --day-work-shadow: 0 10px 22px rgba(15, 108, 189, 0.08);
+    --day-off-shadow: 0 12px 24px rgba(31, 157, 115, 0.22);
+    --day-work-hover-shadow: 0 14px 30px rgba(15, 108, 189, 0.16);
+    --day-off-hover-shadow: 0 16px 34px rgba(31, 157, 115, 0.3);
     --panel-hover-transform: translateY(-2px);
     --icon-hover-transform: translateY(-4px);
     --button-hover-transform: translateY(-1px);
@@ -53,14 +70,28 @@
     --off-text: #ffffff;
 
     --holiday-color: #ff6b6b;
+    --holiday-marker-ring: rgba(18, 26, 40, 0.96);
+    --holiday-marker-shadow: 0 4px 12px rgba(255, 107, 107, 0.28);
     --glass-bg: rgba(14, 24, 38, 0.56);
     --glass-border: rgba(164, 197, 235, 0.08);
     --card-border: rgba(164, 197, 235, 0.08);
     --card-shadow: 0 14px 40px rgba(0, 0, 0, 0.34);
     --card-hover-shadow: 0 18px 52px rgba(0, 0, 0, 0.44);
+    --card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    --card-depth-shadow: 0 24px 44px rgba(0, 0, 0, 0.26);
     --modal-overlay: rgba(5, 10, 18, 0.72);
     --page-gradient: radial-gradient(circle at top, rgba(37, 62, 92, 0.34), rgba(11, 18, 32, 0.96) 44%, rgba(7, 12, 22, 1));
     --noise-opacity: 0.015;
+    --calendar-day-gloss: rgba(255, 255, 255, 0.08);
+    --calendar-day-shimmer: rgba(255, 255, 255, 0.12);
+    --work-bg-start: #344969;
+    --work-bg-end: #2a3b52;
+    --off-bg-start: #33bc88;
+    --off-bg-end: #2aa876;
+    --day-work-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+    --day-off-shadow: 0 12px 28px rgba(23, 116, 82, 0.34);
+    --day-work-hover-shadow: 0 16px 32px rgba(0, 0, 0, 0.38);
+    --day-off-hover-shadow: 0 16px 34px rgba(12, 86, 60, 0.42);
 }
 
 body[data-style="ios26"] {
@@ -123,7 +154,10 @@ body[data-style="material"] {
     --card-shadow: 0 6px 18px rgba(103, 80, 164, 0.12);
     --card-hover-shadow: 0 10px 22px rgba(103, 80, 164, 0.18);
     --modal-overlay: rgba(29, 27, 32, 0.26);
-    --font-family: "Google Sans", "Noto Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-family-base: "Google Sans", "Noto Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-family-display: "Google Sans", "Noto Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-family-numeric: "Google Sans", "Noto Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --font-family: var(--font-family-base);
     --page-gradient: linear-gradient(180deg, rgba(253, 247, 255, 1), rgba(244, 237, 255, 1));
     --noise-opacity: 0;
     --panel-hover-transform: translateY(-1px);
@@ -201,4 +235,19 @@ body::before {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAtIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiPjxyZWN0IHdpZHRoPSI0MDAtIiBoZWlnaHQ9IjMwMCIgZmlsbD0id2hpdGUiLz48ZyBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjA1Ij48Y2lyY2xlIGN4PSIxMCIgY3k9IjEwIiByPSIwLjgiLz48Y2lyY2xlIGN4PSIzMCIgY3k9IjIwIiByPSIwLjUiLz48Y2lyY2xlIGN4PSIxNSIgY3k9IjMwIiByPSIwLjgiLz48Y2lyY2xlIGN4PSIzNSIgY3k9IjEwIiByPSIwLjYiLz48Y2lyY2xlIGN4PSIyNSIgY3k9IjMwIiByPSIwLjUiLz48Y2lyY2xlIGN4PSI1IiBjeT0iMjUiIHI9IjAuNyIvPjwvZz48L3N2Zz4=');
     pointer-events: none;
     z-index: 1000;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --panel-hover-transform: none;
+        --icon-hover-transform: none;
+        --button-hover-transform: none;
+        --theme-toggle-hover-transform: none;
+        --weather-refresh-hover-transform: none;
+        --calendar-day-hover-transform: none;
+        --panel-transition: none;
+        --control-transition: none;
+        --modal-card-transition: none;
+        --calendar-enter-animation: none;
+    }
 }

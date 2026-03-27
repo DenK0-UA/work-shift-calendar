@@ -27,7 +27,7 @@ function updatePeriodStatsPanel(period = window.activeStatsPeriod || 'month') {
     insightsEls.custom.textContent = stats.customCount;
 
     if (insightsEls.caption) {
-        insightsEls.caption.textContent = `Огляд періоду: ${stats.label} · ${stats.totalDays} днів`;
+        insightsEls.caption.textContent = `${stats.label} · ${stats.totalDays} днів`;
     }
 }
 
