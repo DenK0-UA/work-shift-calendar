@@ -102,9 +102,9 @@ const refreshAppUpdateSettingsUI = async () => {
     }
 
     if (settingsEls.appInstallId) {
-        settingsEls.appInstallId.textContent = installId
-            ? `ID пристрою: ${installId}`
-            : 'ID пристрою: недоступний';
+        settingsEls.appInstallId.innerHTML = installId
+            ? `<span class="settings-device-id-label">ID пристрою</span><span class="settings-device-id-value">${installId}</span>`
+            : '<span class="settings-device-id-label">ID пристрою</span><span class="settings-device-id-value">недоступний</span>';
         settingsEls.appInstallId.title = installId
             ? 'Натисніть, щоб скопіювати ID'
             : 'ID пристрою недоступний';
