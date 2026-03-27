@@ -68,19 +68,21 @@
 
 .modal-status-action {
     border: 1px solid var(--card-border);
-    background: var(--surface-control-strong);
+    background: var(--surface-control);
     color: var(--text-primary);
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 11px 10px;
     font-size: 12px;
     font-weight: 800;
     cursor: pointer;
     transition: var(--control-transition);
+    box-shadow: var(--surface-panel-subtle-shadow);
 }
 
 .modal-status-action:hover {
     transform: var(--button-hover-transform);
     border-color: var(--accent);
+    box-shadow: var(--surface-panel-elevated-shadow-hover);
 }
 
 .modal-status-action.active {
@@ -101,23 +103,9 @@
 }
 
 .modal-close {
-    background: var(--surface-control-strong);
-    color: var(--text-primary);
-    border: none;
     width: 100%;
-    padding: 14px;
-    border-radius: 16px;
     font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: var(--control-transition);
-    box-shadow: var(--surface-panel-elevated-shadow);
-}
-
-.modal-close:hover {
-    background: var(--surface-control-strong-hover);
-    box-shadow: var(--surface-panel-elevated-shadow-hover);
-    transform: var(--button-hover-transform);
+    letter-spacing: 0.01em;
 }
 
 .modal-close:active {
@@ -206,28 +194,16 @@
 }
 
 .modal-note-btn {
-    flex: 1;
-    border: none;
-    border-radius: 14px;
-    padding: 10px 12px;
-    font-size: 13px;
     font-weight: 800;
-    cursor: pointer;
-    transition: var(--control-transition);
-}
-
-.modal-note-btn:hover {
-    transform: var(--button-hover-transform);
+    padding: 10px 12px;
 }
 
 .modal-note-clear {
-    background: var(--surface-control-strong);
-    color: var(--text-primary);
+    box-shadow: var(--surface-panel-subtle-shadow);
 }
 
 .modal-note-save {
-    background: var(--surface-button-accent);
-    color: var(--text-on-accent);
+    box-shadow: var(--surface-button-accent-shadow);
 }
 
 .undo-toast {
@@ -270,20 +246,11 @@
 }
 
 .undo-toast-btn {
+    flex: 0 0 auto;
     flex-shrink: 0;
-    border: none;
-    background: var(--accent-soft);
-    color: var(--accent);
-    border-radius: 12px;
     padding: 9px 12px;
     font-size: 12px;
     font-weight: 800;
-    cursor: pointer;
-    transition: var(--control-transition);
-}
-
-.undo-toast-btn:hover {
-    transform: var(--button-hover-transform);
 }
 
 @keyframes fluidIn {

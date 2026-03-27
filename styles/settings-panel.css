@@ -72,24 +72,10 @@
     width: 100%;
     justify-content: center;
     padding: 14px 18px;
-    border: 1px solid var(--surface-panel-accent-border);
-    background: var(--surface-panel-subtle);
-    color: var(--accent);
     font-size: 13px;
     font-weight: 700;
     letter-spacing: -0.01em;
     text-transform: none;
-    box-shadow: var(--surface-panel-subtle-shadow);
-}
-
-.settings-buttons .btn-reset:hover {
-    border-color: var(--surface-panel-accent-border);
-    background: var(--surface-control-hover);
-    color: var(--text-accent-strong);
-    box-shadow: var(--surface-panel-elevated-shadow-hover);
-}
-
-.settings-buttons .btn-reset:active {
     box-shadow: var(--surface-panel-elevated-shadow);
 }
 
@@ -131,7 +117,7 @@
     width: 100%;
     overflow: hidden;
     padding: 0;
-    border-radius: 18px;
+    border-radius: 16px;
     border: 1px solid var(--surface-panel-danger-button-border);
     background: var(--surface-panel-danger-button);
     color: var(--surface-panel-danger-text);
@@ -158,7 +144,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 48px;
+    min-height: 50px;
     padding: 12px 16px;
 }
 
@@ -201,5 +187,5 @@
 }
 
 .btn-reset {
-    box-shadow: none;
+    box-shadow: var(--surface-panel-elevated-shadow);
 }

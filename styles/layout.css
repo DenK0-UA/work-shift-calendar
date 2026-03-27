@@ -238,8 +238,22 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
     transform: none;
 }
 
-.weather-refresh.compact {
-    border: 1px solid var(--card-border);
+.settings-close,
+.schedule-close,
+.panel-toggle-icon {
+    position: absolute;
+    background: var(--surface-control-strong);
+    border: 1px solid var(--surface-panel-muted-border);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    font-size: 19px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-primary);
+    box-shadow: var(--surface-panel-elevated-shadow);
+    transition: var(--control-transition);
 }
 
 .settings-close,
@@ -247,46 +261,39 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
     position: absolute;
     top: 20px;
     right: 20px;
-    background: var(--surface-control-strong);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    font-size: 20px;
+    border: 1px solid var(--surface-panel-muted-border);
     cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: var(--control-transition);
-    color: var(--text-primary);
 }
 
 .settings-close:hover,
-.schedule-close:hover {
-    background: var(--surface-control-strong-hover);
-    transform: var(--icon-hover-transform);
+.schedule-close:hover,
+.panel-heading-toggle:hover .panel-toggle-icon {
+    background: var(--surface-control-hover);
+    box-shadow: var(--surface-panel-elevated-shadow-hover);
 }
 
 .settings-btn-action,
-.schedule-btn-action {
+.schedule-btn-action,
+.modal-close,
+.modal-note-btn,
+.undo-toast-btn {
     flex: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 14px 20px;
-    border: none;
     border-radius: 16px;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 13px;
     cursor: pointer;
     transition: var(--control-transition);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
     text-align: center;
+    border: 1px solid transparent;
 }
 
 .btn-apply,
-.schedule-btn-action.primary {
+.schedule-btn-action.primary,
+.modal-note-save {
     background: var(--surface-button-accent);
     color: var(--text-on-accent);
     border-color: var(--surface-button-accent-border);
@@ -295,25 +302,37 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 }
 
 .btn-apply:hover,
-.schedule-btn-action.primary:hover {
+.schedule-btn-action.primary:hover,
+.modal-note-save:hover {
     transform: var(--button-hover-transform);
     box-shadow: var(--surface-button-accent-shadow);
 }
 
 .btn-apply:active,
-.schedule-btn-action.primary:active {
+.schedule-btn-action.primary:active,
+.modal-note-save:active {
     transform: translateY(0);
 }
 
 .btn-reset,
-.schedule-btn-action.secondary {
+.schedule-btn-action.secondary,
+.modal-close,
+.modal-note-clear,
+.undo-toast-btn {
     background: var(--surface-control-strong);
     color: var(--text-primary);
+    border-color: var(--surface-panel-muted-border);
+    box-shadow: var(--surface-panel-elevated-shadow);
 }
 
 .btn-reset:hover,
-.schedule-btn-action.secondary:hover {
-    background: var(--surface-control-strong-hover);
+.schedule-btn-action.secondary:hover,
+.modal-close:hover,
+.modal-note-clear:hover,
+.undo-toast-btn:hover {
+    background: var(--surface-control-hover);
+    box-shadow: var(--surface-panel-elevated-shadow-hover);
+    transform: var(--button-hover-transform);
 }
 
 .schedule-btn-action:disabled {
@@ -393,31 +412,25 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 }
 
 .panel-toggle-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 999px;
-    background: var(--surface-control);
-    border: 1px solid var(--surface-panel-muted-border);
-    box-shadow: var(--surface-panel-elevated-shadow);
+    position: static;
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    border-color: color-mix(in srgb, var(--surface-panel-muted-border) 82%, transparent);
+    box-shadow: var(--surface-panel-subtle-shadow);
     color: var(--accent);
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 700;
     line-height: 1;
     transform: rotate(90deg);
     opacity: 1;
     flex-shrink: 0;
-    align-self: start;
-    transition: var(--control-transition);
+    align-self: center;
+    cursor: pointer;
 }
 
 .panel-heading-toggle:hover .panel-toggle-icon {
-    background: var(--surface-control-hover);
-    color: var(--accent);
     transform: rotate(90deg) translateY(-1px);
-    border-color: var(--surface-panel-muted-border);
     box-shadow: var(--surface-panel-elevated-shadow-hover);
 }
 
@@ -427,8 +440,7 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 
 [data-theme="dark"] .panel-toggle-icon {
     background: var(--surface-control);
-    border-color: var(--surface-panel-muted-border);
-    box-shadow: var(--surface-panel-elevated-shadow);
+    box-shadow: var(--surface-panel-subtle-shadow);
 }
 
 .insights-content {
@@ -604,8 +616,7 @@ h1 {
 
 .btn-icon,
 .settings-btn,
-.today-btn,
-.theme-toggle {
+.today-btn {
     cursor: pointer;
     border: none;
     transition: var(--control-transition);
@@ -636,7 +647,6 @@ h1 {
 
 .btn-icon,
 .settings-btn,
-.theme-toggle,
 .weather-refresh {
     background: var(--surface-control-hover);
     border: 1px solid var(--surface-panel-muted-border);
@@ -698,20 +708,6 @@ h1 {
 .today-btn:active {
     transform: translateY(0);
     opacity: 0.8;
-}
-
-.theme-toggle {
-    background: var(--surface-control);
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    font-size: 18px;
-    color: var(--text-primary);
-    box-shadow: var(--surface-panel-elevated-shadow);
-}
-
-.theme-toggle:hover {
-    transform: var(--theme-toggle-hover-transform);
 }
 
 .calendar-section {

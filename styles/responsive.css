@@ -215,13 +215,13 @@
         font-size: 16px;
     }
 
+    .calendar-actions {
+        gap: 8px;
+    }
+
     .today-btn {
         font-size: 13px;
         padding: 8px 16px;
-    }
-
-    .calendar-actions {
-        gap: 8px;
     }
 
     .panel-heading {
