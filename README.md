@@ -135,6 +135,18 @@ npm run android:open
 npm run build:web
 ```
 
+Підняти локальний dev-сервер для live reload:
+
+```bash
+npm run dev:web
+```
+
+Запустити Android-застосунок на телефоні з live reload:
+
+```bash
+npm run android:live
+```
+
 Синхронізувати зміни в Android-проєкт:
 
 ```bash
@@ -145,6 +157,45 @@ npm run cap:android
 
 ```bash
 npm run android:open
+```
+
+### Швидкі візуальні правки без нового APK
+
+Для правок `HTML/CSS/JS` не потрібно щоразу збирати новий `APK`.
+
+1. Встановіть залежності:
+
+```bash
+npm install
+```
+
+2. У першому терміналі запустіть локальний сервер:
+
+```bash
+npm run dev:web
+```
+
+3. Підключіть телефон до тієї ж `Wi-Fi` мережі, що й комп'ютер.
+
+4. У другому терміналі запустіть:
+
+```bash
+npm run android:live
+```
+
+Поведінка:
+
+- застосунок відкриється на телефоні через локальний сервер
+- зміни у `index.html`, `js/`, `styles/` і `data/` будуть підтягуватись без нового `APK`
+- цей режим зручний саме для візуальних правок і швидкої перевірки UI
+- для релізної збірки, змін у `AndroidManifest`, іконках, splash або іншому нативному коді все ще потрібен звичайний `cap:android` / новий білд
+
+За потреби можна вручну задати IP або порт у `PowerShell`:
+
+```bash
+$env:CAP_LIVE_HOST="192.168.0.25"
+$env:CAP_LIVE_PORT="4173"
+npm run android:live
 ```
 
 ### Як далі збирати APK
@@ -171,12 +222,24 @@ android/app/build/outputs/apk/debug/app-debug.apk
 
 - папка `www/` не комітиться, вона генерується автоматично
 - після змін у `index.html`, `js/`, `styles/` або `data/` потрібно знову запускати `npm run cap:android`
+- для швидких UI-правок замість цього краще використовувати зв'язку `npm run dev:web` + `npm run android:live`
 - локальні дані застосунку, як і раніше, зберігаються локально на пристрої
 - вихідники для Android-іконки та splash лежать у `assets/android/`
 
 ### Перевірка нової версії APK
 
-У застосунку є банер перевірки оновлень для Android.
+У застосунку є банер перевірки оновлень для Android з двома каналами:
+
+- `stable` за замовчуванням для всіх користувачів
+- `beta` тільки для вашого пристрою після локального розблокування
+
+Рекомендований флоу:
+
+1. локально перевіряєте UI через `npm run dev:web` + `npm run android:live`
+2. коли потрібен APK для особистої перевірки, публікуєте його в `beta`
+3. на своєму телефоні відкриваєте `🎨 Вигляд` і натискаєте `7` разів на блок версії, щоб розблокувати `beta`
+4. після апруву переносите реліз у `stable`
+5. усі інші пристрої отримують звичне сповіщення про нову версію
 
 Щоб його увімкнути в реальному середовищі:
 
@@ -186,13 +249,22 @@ android/app/build/outputs/apk/debug/app-debug.apk
 const APP_RELEASE_VERSION = '1.0.0';
 ```
 
-2. Там само вкажіть URL маніфесту оновлень:
+2. Там само вкажіть канал за замовчуванням і URL маніфестів:
 
 ```js
-const APP_UPDATE_MANIFEST_URL = 'https://example.com/work-shift-calendar/version.json';
+const APP_UPDATE_CHANNEL_DEFAULT = 'stable';
+const APP_UPDATE_MANIFEST_URLS = {
+  stable: 'https://<user>.github.io/work-shift-calendar/stable/version.json',
+  beta: 'https://<user>.github.io/work-shift-calendar/beta/version.json'
+};
 ```
 
-3. Розмістіть на сервері або `GitHub Pages` файл `version.json` такого формату:
+3. Розмістіть на `GitHub Pages` два файли з однаковою структурою:
+
+- `stable/version.json`
+- `beta/version.json`
+
+Приклад для будь-якого каналу:
 
 ```json
 {
@@ -205,10 +277,26 @@ const APP_UPDATE_MANIFEST_URL = 'https://example.com/work-shift-calendar/version
 Поведінка:
 
 - перевірка виконується при відкритті Android-застосунку
-- якщо версія з `version.json` новіша за `APP_RELEASE_VERSION`, показується кнопка `Завантажити APK`
+- усі пристрої за замовчуванням перевіряють тільки `stable/version.json`
+- після прихованого розблокування ваш пристрій може перейти на `beta` і перевіряти `beta/version.json`
+- якщо у вибраному каналі версія новіша за `APP_RELEASE_VERSION`, показується кнопка `Завантажити APK`
 - якщо натиснути `Пізніше`, банер сховається для цієї версії й повернеться лише після виходу новішого APK
-- при кожному релізі нового `APK` потрібно оновити і `APP_RELEASE_VERSION`, і `version.json`
+- при кожному релізі нового `APK` потрібно оновити і `APP_RELEASE_VERSION`, і відповідний `version.json`
+- `beta` можна використовувати для особистої перевірки до того, як реліз піде на всіх
 - якщо `version.json` або `apkUrl` лежать на іншому домені, той домен має дозволяти `CORS`; найпростіше тримати маніфест на тому ж хостингу, що й сайт
+
+### GitHub-схема для релізів
+
+Зручно тримати:
+
+- `GitHub Pages` для `stable/version.json` і `beta/version.json`
+- `GitHub Releases` для самих `APK`
+
+Приклад:
+
+- beta маніфест веде на `beta`-APK, який бачите тільки ви на своєму пристрої
+- після апруву той самий або новий `APK` публікується як stable
+- усі пристрої на каналі `stable` отримують звичний банер оновлення
 
 ## GitHub Pages
 

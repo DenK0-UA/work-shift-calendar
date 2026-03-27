@@ -208,6 +208,28 @@
                 </p>
             </div>
 
+            <div class="settings-group">
+                <label class="settings-label">📦 Застосунок</label>
+                <button class="settings-meta-btn" id="app-version-trigger" type="button">
+                    <span class="settings-meta-title">Версія <span id="app-version-value">1.0.0</span></span>
+                    <span class="settings-meta-caption helper-text" id="app-update-channel-summary">Канал оновлень: Stable</span>
+                </button>
+                <p class="settings-help-text helper-text" id="app-version-hint">
+                    Натисніть 7 разів на блок версії, щоб відкрити beta-канал на цьому пристрої.
+                </p>
+            </div>
+
+            <div class="settings-group" id="update-channel-group" hidden>
+                <label class="settings-label">Канал оновлень</label>
+                <div class="theme-mode-switcher" id="update-channel-switcher">
+                    <button class="theme-mode-btn" type="button" data-update-channel="stable">Stable</button>
+                    <button class="theme-mode-btn" type="button" data-update-channel="beta">Beta</button>
+                </div>
+                <p class="settings-help-text helper-text" id="update-channel-help">
+                    Stable для всіх пристроїв. Beta призначений тільки для цього пристрою, поки ви не апрувнули реліз.
+                </p>
+            </div>
+
             <div class="settings-buttons">
                 <button class="settings-btn-action btn-reset" id="reset-settings">Скинути тему</button>
             </div>

@@ -19,13 +19,20 @@ const settingsEls = {
     overlay: document.getElementById('settings-overlay'),
     settingsBtn: document.getElementById('settings-btn'),
     closeBtn: document.getElementById('settings-overlay-close'),
-    themeModeBtns: document.querySelectorAll('.theme-mode-btn'),
+    themeModeBtns: document.querySelectorAll('#theme-mode-switcher .theme-mode-btn'),
     workColor: document.getElementById('work-color'),
     offColor: document.getElementById('off-color'),
     workPreview: document.getElementById('work-preview'),
     offPreview: document.getElementById('off-preview'),
     resetBtn: document.getElementById('reset-settings'),
-    hardResetBtn: document.getElementById('hard-reset-btn')
+    hardResetBtn: document.getElementById('hard-reset-btn'),
+    appVersionTrigger: document.getElementById('app-version-trigger'),
+    appVersionValue: document.getElementById('app-version-value'),
+    appVersionHint: document.getElementById('app-version-hint'),
+    appUpdateChannelSummary: document.getElementById('app-update-channel-summary'),
+    updateChannelGroup: document.getElementById('update-channel-group'),
+    updateChannelBtns: document.querySelectorAll('#update-channel-switcher [data-update-channel]'),
+    updateChannelHelp: document.getElementById('update-channel-help')
 };
 
 if (settingsEls.resetBtn) {
@@ -38,6 +45,11 @@ let hardResetHoldTimer = null;
 let hardResetAnimationFrameId = null;
 let hardResetHoldStartedAt = 0;
 let applySelectedThemeMode = null;
+let appVersionTapCount = 0;
+let appVersionTapResetTimer = null;
+
+const APP_VERSION_UNLOCK_TAP_TARGET = 7;
+const APP_VERSION_UNLOCK_RESET_MS = 2200;
 
 const setSettingsOverlayOpen = (isOpen) => {
     if (!settingsEls.overlay) {
@@ -67,6 +79,77 @@ const setThemeModeUI = (themeMode) => {
     settingsEls.themeModeBtns.forEach((button) => {
         button.classList.toggle('active', button.dataset.themeMode === themeMode);
     });
+};
+
+const setUpdateChannelUI = (channel) => {
+    settingsEls.updateChannelBtns.forEach((button) => {
+        button.classList.toggle('active', button.dataset.updateChannel === channel);
+    });
+};
+
+const resetAppVersionTapProgress = () => {
+    appVersionTapCount = 0;
+    if (appVersionTapResetTimer) {
+        clearTimeout(appVersionTapResetTimer);
+        appVersionTapResetTimer = null;
+    }
+};
+
+const refreshAppUpdateSettingsUI = () => {
+    if (!window.AppUpdate) {
+        return;
+    }
+
+    const currentChannel = window.AppUpdate.getSelectedChannel?.() || 'stable';
+    const betaUnlocked = window.AppUpdate.isBetaChannelUnlocked?.() === true;
+    const betaConfigured = window.AppUpdate.canUseBetaChannel?.() === true;
+    const channelLabel = window.AppUpdate.getChannelLabel?.(currentChannel) || currentChannel;
+    const appVersion = window.AppUpdate.getAppVersion?.() || APP_RELEASE_VERSION;
+
+    if (settingsEls.appVersionValue) {
+        settingsEls.appVersionValue.textContent = appVersion;
+    }
+
+    if (settingsEls.appUpdateChannelSummary) {
+        settingsEls.appUpdateChannelSummary.textContent = `Канал оновлень: ${channelLabel}`;
+    }
+
+    if (settingsEls.updateChannelGroup) {
+        settingsEls.updateChannelGroup.hidden = !betaUnlocked;
+    }
+
+    settingsEls.updateChannelBtns.forEach((button) => {
+        const isBetaButton = button.dataset.updateChannel === 'beta';
+        button.disabled = isBetaButton && !betaConfigured;
+    });
+    setUpdateChannelUI(currentChannel);
+
+    if (settingsEls.updateChannelHelp) {
+        settingsEls.updateChannelHelp.textContent = !betaConfigured
+            ? 'Додайте beta-маніфест у config, щоб цей пристрій міг отримувати передрелізні APK.'
+            : (currentChannel === 'beta'
+                ? 'Цей пристрій зараз отримує beta-оновлення. Інші користувачі залишаються на Stable.'
+                : 'Stable використовується для всіх. Beta можна вмикати тільки на цьому пристрої.');
+    }
+
+    if (!settingsEls.appVersionHint) {
+        return;
+    }
+
+    if (betaUnlocked) {
+        settingsEls.appVersionHint.textContent = 'Beta-канал уже розблоковано на цьому пристрої. Можна безпечно перемикатися між Stable і Beta.';
+        return;
+    }
+
+    if (!betaConfigured) {
+        settingsEls.appVersionHint.textContent = 'Додайте URL для beta-маніфесту в config, після цього тут можна буде розблокувати beta-канал.';
+        return;
+    }
+
+    const remainingTaps = Math.max(APP_VERSION_UNLOCK_TAP_TARGET - appVersionTapCount, 0);
+    settingsEls.appVersionHint.textContent = remainingTaps === APP_VERSION_UNLOCK_TAP_TARGET
+        ? 'Натисніть 7 разів на блок версії, щоб відкрити beta-канал на цьому пристрої.'
+        : `Ще ${remainingTaps} натискань до розблокування beta-каналу.`;
 };
 
 let selectedStylePreset = getSavedStylePreset();
@@ -194,6 +277,7 @@ const startHardResetHold = () => {
 
 bindLiveColorInput(settingsEls.workColor);
 bindLiveColorInput(settingsEls.offColor);
+refreshAppUpdateSettingsUI();
 
 if (settingsEls.settingsBtn && settingsEls.overlay) {
     settingsEls.settingsBtn.addEventListener('click', () => {
@@ -222,6 +306,53 @@ settingsEls.themeModeBtns.forEach((button) => {
         if (applySelectedThemeMode) {
             applySelectedThemeMode(selectedThemeMode);
         }
+    });
+});
+
+if (settingsEls.appVersionTrigger) {
+    settingsEls.appVersionTrigger.addEventListener('click', () => {
+        if (!window.AppUpdate || window.AppUpdate.isBetaChannelUnlocked?.()) {
+            return;
+        }
+
+        if (!window.AppUpdate.canUseBetaChannel?.()) {
+            refreshAppUpdateSettingsUI();
+            return;
+        }
+
+        appVersionTapCount += 1;
+        refreshAppUpdateSettingsUI();
+
+        if (appVersionTapResetTimer) {
+            clearTimeout(appVersionTapResetTimer);
+        }
+
+        appVersionTapResetTimer = window.setTimeout(() => {
+            resetAppVersionTapProgress();
+            refreshAppUpdateSettingsUI();
+        }, APP_VERSION_UNLOCK_RESET_MS);
+
+        if (appVersionTapCount < APP_VERSION_UNLOCK_TAP_TARGET) {
+            return;
+        }
+
+        resetAppVersionTapProgress();
+        window.AppUpdate.unlockBetaChannel?.();
+        refreshAppUpdateSettingsUI();
+        alert('Beta-канал розблоковано тільки на цьому пристрої. Інші користувачі залишаються на Stable.');
+    });
+}
+
+settingsEls.updateChannelBtns.forEach((button) => {
+    button.addEventListener('click', () => {
+        if (!window.AppUpdate) {
+            return;
+        }
+
+        const nextChannel = button.dataset.updateChannel;
+        window.AppUpdate.setSelectedChannel?.(nextChannel);
+        refreshAppUpdateSettingsUI();
+        window.AppUpdate.checkForAppUpdate?.();
     });
 });
 

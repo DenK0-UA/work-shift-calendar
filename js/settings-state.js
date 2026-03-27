@@ -14,7 +14,7 @@
         'customDayStatuses',
         'dayNotes'
     ];
-    const APP_STORAGE_PREFIXES = ['holidayData:'];
+    const APP_STORAGE_PREFIXES = ['holidayData:', 'appUpdate:'];
 
     const settingsState = {
         customSettings: null,
