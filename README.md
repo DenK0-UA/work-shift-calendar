@@ -328,6 +328,31 @@ const APP_UPDATE_BETA_ACCESS_URL = 'https://<user>.github.io/work-shift-calendar
 - після апруву той самий або новий `APK` публікується як stable
 - усі пристрої на каналі `stable` отримують звичний банер оновлення
 
+### Автоматичні релізи через GitHub Actions
+
+У репозиторії є два workflow:
+
+- `Release Beta APK` збирає новий підписаний `beta`-APK, створює `GitHub Release` з тегом `vX.Y.Z-beta` і сам оновлює `beta/version.json`
+- `Promote Beta To Stable` бере вже перевірений `beta`-APK, публікує його як stable-реліз з тегом `vX.Y.Z` і сам оновлює `stable/version.json`
+
+Практичний флоу:
+
+1. У GitHub відкрийте `Actions` -> `Release Beta APK`
+2. Вкажіть нову версію, наприклад `1.0.12`
+3. Дочекайтесь завершення workflow і перевірте beta-оновлення на телефоні
+4. Якщо все добре, відкрийте `Actions` -> `Promote Beta To Stable`
+5. Вкажіть ту саму версію, наприклад `1.0.12`
+6. Після завершення workflow stable-користувачі побачать оновлення в застосунку
+
+Для цього один раз треба додати GitHub Secrets:
+
+- `ANDROID_KEYSTORE_BASE64` - ваш release keystore у форматі base64
+- `ANDROID_KEYSTORE_PASSWORD`
+- `ANDROID_KEY_ALIAS`
+- `ANDROID_KEY_PASSWORD`
+
+Без цих секретів GitHub не зможе зібрати підписаний релізний `APK`.
+
 ## GitHub Pages
 
 У репозиторії є workflow для публікації через `GitHub Pages` з гілки `main`.

@@ -210,12 +210,29 @@ function clearDismissedAppUpdateVersion(channel) {
     dismissedAppUpdateVersionByChannel[normalizeUpdateChannel(channel)] = '';
 }
 
+function resolveManifestAssetUrl(manifestUrl, assetUrl) {
+    if (typeof assetUrl !== 'string') {
+        return '';
+    }
+
+    const normalizedAssetUrl = assetUrl.trim();
+    if (!normalizedAssetUrl) {
+        return '';
+    }
+
+    try {
+        return new URL(normalizedAssetUrl, manifestUrl).toString();
+    } catch (error) {
+        return normalizedAssetUrl;
+    }
+}
+
 function buildAppUpdateMessage(manifest) {
     const latestVersion = manifest.version;
     const notes = typeof manifest.notes === 'string' ? manifest.notes.trim() : '';
     const notesSuffix = notes ? ` ${notes}` : '';
-    const channelPrefix = manifest.channel === APP_UPDATE_CHANNELS.beta ? 'beta-' : '';
-    return `Доступна ${channelPrefix}версія ${latestVersion}. Поточна версія: ${APP_RELEASE_VERSION}.${notesSuffix}`;
+    const channelLabel = manifest.channel === APP_UPDATE_CHANNELS.beta ? 'beta' : 'stable';
+    return `Доступна новіша ${channelLabel}-версія ${latestVersion}. Поточна версія: ${APP_RELEASE_VERSION}.${notesSuffix}`;
 }
 
 function openApkDownload(url) {
@@ -373,7 +390,7 @@ async function fetchAppUpdateManifest(channel) {
     return {
         channel: normalizeUpdateChannel(channel),
         version: data.version.trim(),
-        apkUrl: data.apkUrl.trim(),
+        apkUrl: resolveManifestAssetUrl(manifestUrl, data.apkUrl),
         notes: typeof data.notes === 'string' ? data.notes.trim() : ''
     };
 }

@@ -8,6 +8,8 @@
     "build:web": "node scripts/build-web.mjs",
     "dev:web": "vite --host 0.0.0.0 --port 4173",
     "android:live": "node scripts/run-android-live.mjs",
+    "app:version:set": "node scripts/set-app-version.mjs",
+    "manifest:set": "node scripts/update-release-manifest.mjs",
     "version:set": "node scripts/set-version.mjs",
     "cap:sync": "npm run build:web && npx cap sync",
     "cap:android": "npm run build:web && npx cap sync android",
