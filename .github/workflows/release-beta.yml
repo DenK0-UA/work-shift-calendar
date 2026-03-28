@@ -12,6 +12,7 @@ on:
         default: Beta release channel.
 
 permissions:
+  actions: write
   contents: write
 
 jobs:
@@ -97,3 +98,8 @@ jobs:
           git add package.json data/config.js android/app/build.gradle beta/version.json
           git commit -m "chore: release beta ${{ github.event.inputs.version }}" || exit 0
           git push origin HEAD:${{ github.ref_name }}
+
+      - name: Trigger GitHub Pages deploy
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy-pages.yml --ref ${{ github.ref_name }}
