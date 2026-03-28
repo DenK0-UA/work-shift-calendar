@@ -5,8 +5,7 @@ const APP_UPDATE_CHANNELS = {
 
 const APP_UPDATE_STORAGE_KEYS = {
     installId: 'appInstallId',
-    selectedChannel: 'appUpdate:channel',
-    dismissedVersionPrefix: 'appUpdate:dismissed:'
+    selectedChannel: 'appUpdate:channel'
 };
 
 const betaAccessState = {
@@ -17,6 +16,11 @@ const betaAccessState = {
     lastResolvedAt: 0,
     lastError: false,
     loadingPromise: null
+};
+
+const dismissedAppUpdateVersionByChannel = {
+    stable: '',
+    beta: ''
 };
 
 const appUpdateEls = {
@@ -147,10 +151,6 @@ function compareAppVersions(left, right) {
     return 0;
 }
 
-function getDismissedVersionStorageKey(channel) {
-    return `${APP_UPDATE_STORAGE_KEYS.dismissedVersionPrefix}${normalizeUpdateChannel(channel)}`;
-}
-
 function readSelectedChannel() {
     try {
         const storedChannel = localStorage.getItem(APP_UPDATE_STORAGE_KEYS.selectedChannel);
@@ -181,23 +181,15 @@ function writeSelectedChannel(channel) {
 }
 
 function readDismissedAppUpdateVersion(channel) {
-    try {
-        return localStorage.getItem(getDismissedVersionStorageKey(channel)) || '';
-    } catch (error) {
-        return '';
-    }
+    return dismissedAppUpdateVersionByChannel[normalizeUpdateChannel(channel)] || '';
 }
 
 function writeDismissedAppUpdateVersion(channel, version) {
-    try {
-        localStorage.setItem(getDismissedVersionStorageKey(channel), version);
-    } catch (error) {}
+    dismissedAppUpdateVersionByChannel[normalizeUpdateChannel(channel)] = typeof version === 'string' ? version : '';
 }
 
 function clearDismissedAppUpdateVersion(channel) {
-    try {
-        localStorage.removeItem(getDismissedVersionStorageKey(channel));
-    } catch (error) {}
+    dismissedAppUpdateVersionByChannel[normalizeUpdateChannel(channel)] = '';
 }
 
 function buildAppUpdateMessage(manifest) {
