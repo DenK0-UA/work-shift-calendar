@@ -26,8 +26,9 @@ android {
     applicationVariants.configureEach { variant ->
         variant.outputs.configureEach { output ->
             def baseName = "work-shift-calendar"
-            def suffix = variant.buildType.name == "release" ? "" : "-beta"
-            outputFileName = "${baseName}${suffix}.apk"
+            def versionSuffix = "-${variant.versionName}"
+            def buildSuffix = variant.buildType.name == "release" ? "" : "-beta"
+            outputFileName = "${baseName}${buildSuffix}${versionSuffix}.apk"
         }
     }
 }
