@@ -10,6 +10,7 @@
         STORAGE_KEYS.stylePreset,
         STORAGE_KEYS.theme,
         STORAGE_KEYS.themeMode,
+        'appInstallId',
         'scheduleConfig',
         'customDayStatuses',
         'dayNotes'

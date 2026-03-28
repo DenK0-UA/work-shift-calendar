@@ -14,6 +14,8 @@ const betaAccessState = {
     isAllowed: false,
     isConfigured: false,
     isLoaded: false,
+    lastResolvedAt: 0,
+    lastError: false,
     loadingPromise: null
 };
 
@@ -98,7 +100,9 @@ function getBetaAccessSnapshot() {
         installId: betaAccessState.installId,
         isAllowed: betaAccessState.isAllowed,
         isConfigured: betaAccessState.isConfigured,
-        isLoaded: betaAccessState.isLoaded
+        isLoaded: betaAccessState.isLoaded,
+        lastResolvedAt: betaAccessState.lastResolvedAt,
+        lastError: betaAccessState.lastError
     };
 }
 
@@ -283,12 +287,20 @@ async function loadBetaAccessState(force = false) {
     if (!betaFeatureConfigured) {
         betaAccessState.isAllowed = false;
         betaAccessState.isLoaded = true;
+        betaAccessState.lastResolvedAt = 0;
+        betaAccessState.lastError = false;
         writeSelectedChannel(APP_UPDATE_CHANNELS.stable);
         return getBetaAccessSnapshot();
     }
 
     betaAccessState.loadingPromise = (async () => {
         const accessData = await fetchJsonWithTimeout(readBetaAccessUrl());
+        if (!accessData || !Array.isArray(accessData.allowedInstallIds)) {
+            betaAccessState.isLoaded = true;
+            betaAccessState.lastError = true;
+            return getBetaAccessSnapshot();
+        }
+
         const allowedInstallIds = Array.isArray(accessData?.allowedInstallIds)
             ? accessData.allowedInstallIds
                 .map((installId) => normalizeInstallId(installId))
@@ -297,6 +309,8 @@ async function loadBetaAccessState(force = false) {
 
         betaAccessState.isAllowed = allowedInstallIds.includes(betaAccessState.installId);
         betaAccessState.isLoaded = true;
+        betaAccessState.lastResolvedAt = Date.now();
+        betaAccessState.lastError = false;
 
         if (!betaAccessState.isAllowed) {
             writeSelectedChannel(APP_UPDATE_CHANNELS.stable);

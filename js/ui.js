@@ -125,11 +125,13 @@ const refreshAppUpdateSettingsUI = async () => {
     setUpdateChannelUI(currentChannel);
 
     if (settingsEls.updateChannelHelp) {
-        settingsEls.updateChannelHelp.textContent = !betaAllowed
-            ? 'Beta-перемикач доступний тільки для дозволених пристроїв.'
-            : (currentChannel === 'beta'
-                ? 'Цей пристрій зараз отримує beta-оновлення. Інші користувачі залишаються на Stable.'
-                : '');
+        settingsEls.updateChannelHelp.textContent = betaAccessState?.lastError
+            ? 'Не вдалося оновити beta-статус. Показано останній відомий стан.'
+            : (!betaAllowed
+                ? 'Beta-перемикач доступний тільки для дозволених пристроїв.'
+                : (currentChannel === 'beta'
+                    ? 'Цей пристрій зараз отримує beta-оновлення. Інші користувачі залишаються на Stable.'
+                    : ''));
     }
 
     if (!settingsEls.appVersionHint) {
