@@ -112,6 +112,35 @@
     opacity: 0.72;
 }
 
+.settings-check-update-btn {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    background: var(--surface-control);
+    color: var(--text-primary);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--control-transition);
+    box-shadow: var(--surface-panel-subtle-shadow);
+}
+
+.settings-check-update-btn:hover {
+    background: var(--surface-control-hover);
+    box-shadow: var(--surface-panel-elevated-shadow-hover);
+    transform: translateY(-1px);
+}
+
+.settings-update-debug {
+    margin-top: 10px;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+}
+
 .settings-device-id-label,
 .settings-device-id-value {
     display: block;

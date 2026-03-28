@@ -30,6 +30,14 @@ const appUpdateEls = {
     dismissBtn: document.getElementById('app-update-dismiss')
 };
 
+const appUpdateDebugState = {
+    checkedAt: 0,
+    channel: '',
+    manifestVersion: '',
+    status: 'idle',
+    message: ''
+};
+
 function isNativeAndroidApp() {
     return window.Capacitor?.getPlatform?.() === 'android';
 }
@@ -44,6 +52,16 @@ function getChannelLabel(channel) {
     return normalizeUpdateChannel(channel) === APP_UPDATE_CHANNELS.beta
         ? 'Beta'
         : 'Stable';
+}
+
+function setAppUpdateDebugState(patch) {
+    Object.assign(appUpdateDebugState, patch, {
+        checkedAt: Date.now()
+    });
+}
+
+function getAppUpdateDebugSnapshot() {
+    return { ...appUpdateDebugState };
 }
 
 function normalizeInstallId(value) {
@@ -322,6 +340,11 @@ async function fetchAppUpdateManifest(channel) {
     const manifestUrls = readConfiguredManifestUrls();
     const manifestUrl = manifestUrls[normalizeUpdateChannel(channel)];
     if (!manifestUrl) {
+        setAppUpdateDebugState({
+            channel: normalizeUpdateChannel(channel),
+            status: 'manifest-missing',
+            message: 'Маніфест каналу не налаштований.'
+        });
         return null;
     }
 
@@ -332,8 +355,20 @@ async function fetchAppUpdateManifest(channel) {
         typeof data.apkUrl !== 'string' ||
         !data.apkUrl.trim()
     ) {
+        setAppUpdateDebugState({
+            channel: normalizeUpdateChannel(channel),
+            status: 'manifest-unavailable',
+            message: 'Не вдалося завантажити маніфест оновлення.'
+        });
         return null;
     }
+
+    setAppUpdateDebugState({
+        channel: normalizeUpdateChannel(channel),
+        manifestVersion: data.version.trim(),
+        status: 'manifest-loaded',
+        message: `Знайдено маніфест ${data.version.trim()}.`
+    });
 
     return {
         channel: normalizeUpdateChannel(channel),
@@ -347,6 +382,12 @@ async function resolveAvailableAppUpdateManifest() {
     await loadBetaAccessState();
 
     const selectedChannel = readSelectedChannel();
+    setAppUpdateDebugState({
+        channel: selectedChannel,
+        status: 'checking',
+        message: `Перевіряємо канал ${getChannelLabel(selectedChannel)}.`
+    });
+
     const channelsToTry =
         selectedChannel === APP_UPDATE_CHANNELS.beta && canAccessBetaChannel()
             ? [APP_UPDATE_CHANNELS.beta, APP_UPDATE_CHANNELS.stable]
@@ -360,14 +401,40 @@ async function resolveAvailableAppUpdateManifest() {
 
         if (compareAppVersions(manifest.version, APP_RELEASE_VERSION) <= 0) {
             clearDismissedAppUpdateVersion(channel);
+            setAppUpdateDebugState({
+                channel,
+                manifestVersion: manifest.version,
+                status: 'up-to-date',
+                message: `Оновлень немає. Поточна версія ${APP_RELEASE_VERSION}.`
+            });
             continue;
         }
 
         if (readDismissedAppUpdateVersion(channel) === manifest.version) {
+            setAppUpdateDebugState({
+                channel,
+                manifestVersion: manifest.version,
+                status: 'dismissed',
+                message: `Оновлення ${manifest.version} тимчасово приховано.`
+            });
             continue;
         }
 
+        setAppUpdateDebugState({
+            channel,
+            manifestVersion: manifest.version,
+            status: 'update-available',
+            message: `Доступне оновлення ${manifest.version}.`
+        });
         return manifest;
+    }
+
+    if (appUpdateDebugState.status === 'checking') {
+        setAppUpdateDebugState({
+            channel: selectedChannel,
+            status: 'no-update',
+            message: 'Оновлення не знайдено.'
+        });
     }
 
     return null;
@@ -375,6 +442,12 @@ async function resolveAvailableAppUpdateManifest() {
 
 async function checkForAppUpdate() {
     if (!APP_UPDATE_CHECK_ENABLED || !isNativeAndroidApp()) {
+        setAppUpdateDebugState({
+            status: 'disabled',
+            message: !APP_UPDATE_CHECK_ENABLED
+                ? 'Перевірку оновлень вимкнено в конфігу.'
+                : 'Оновлення перевіряються тільки в Android-додатку.'
+        });
         hideAppUpdateBanner();
         return;
     }
@@ -386,6 +459,18 @@ async function checkForAppUpdate() {
     }
 
     showAppUpdateBanner(manifest);
+}
+
+function bindAutomaticAppUpdateChecks() {
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            checkForAppUpdate();
+        }
+    });
+
+    window.addEventListener('focus', () => {
+        checkForAppUpdate();
+    });
 }
 
 if (appUpdateEls.downloadBtn) {
@@ -407,10 +492,12 @@ if (appUpdateEls.dismissBtn) {
 }
 
 loadBetaAccessState();
+bindAutomaticAppUpdateChecks();
 
 window.AppUpdate = {
     checkForAppUpdate,
     compareAppVersions,
+    getDebugState: getAppUpdateDebugSnapshot,
     getAppVersion: () => APP_RELEASE_VERSION,
     getBetaAccessSnapshot,
     getChannelLabel,

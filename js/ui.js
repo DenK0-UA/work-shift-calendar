@@ -29,6 +29,8 @@ const settingsEls = {
     appVersionTrigger: document.getElementById('app-version-trigger'),
     appVersionValue: document.getElementById('app-version-value'),
     appVersionHint: document.getElementById('app-version-hint'),
+    appUpdateCheckNow: document.getElementById('app-update-check-now'),
+    appUpdateDebugStatus: document.getElementById('app-update-debug-status'),
     appInstallId: document.getElementById('app-install-id'),
     appUpdateChannelSummary: document.getElementById('app-update-channel-summary'),
     updateChannelGroup: document.getElementById('update-channel-group'),
@@ -112,6 +114,30 @@ const refreshAppUpdateSettingsUI = async () => {
 
     if (settingsEls.appUpdateChannelSummary) {
         settingsEls.appUpdateChannelSummary.textContent = `Канал оновлень: ${channelLabel}`;
+    }
+
+    if (settingsEls.appUpdateDebugStatus) {
+        const debugState = window.AppUpdate.getDebugState?.();
+        const checkedAt = debugState?.checkedAt
+            ? new Date(debugState.checkedAt).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+            : '';
+        const debugParts = [];
+
+        if (debugState?.message) {
+            debugParts.push(debugState.message);
+        }
+
+        if (debugState?.manifestVersion) {
+            debugParts.push(`Маніфест: ${debugState.manifestVersion}`);
+        }
+
+        if (checkedAt) {
+            debugParts.push(`Перевірено: ${checkedAt}`);
+        }
+
+        settingsEls.appUpdateDebugStatus.textContent = debugParts.length > 0
+            ? debugParts.join('\n')
+            : 'Статус перевірки оновлення: ще не запускалась.';
     }
 
     if (settingsEls.updateChannelGroup) {
@@ -361,6 +387,25 @@ settingsEls.updateChannelBtns.forEach((button) => {
         window.AppUpdate.checkForAppUpdate?.();
     });
 });
+
+if (settingsEls.appUpdateCheckNow) {
+    settingsEls.appUpdateCheckNow.addEventListener('click', async () => {
+        if (!window.AppUpdate) {
+            return;
+        }
+
+        settingsEls.appUpdateCheckNow.disabled = true;
+        settingsEls.appUpdateCheckNow.textContent = 'Перевіряємо...';
+
+        try {
+            await window.AppUpdate.checkForAppUpdate?.();
+            await refreshAppUpdateSettingsUI();
+        } finally {
+            settingsEls.appUpdateCheckNow.disabled = false;
+            settingsEls.appUpdateCheckNow.textContent = 'Перевірити оновлення';
+        }
+    });
+}
 
 if (settingsEls.resetBtn) {
     settingsEls.resetBtn.addEventListener('click', (event) => {
