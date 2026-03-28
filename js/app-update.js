@@ -58,6 +58,10 @@ function setAppUpdateDebugState(patch) {
     Object.assign(appUpdateDebugState, patch, {
         checkedAt: Date.now()
     });
+
+    document.dispatchEvent(new CustomEvent('app-update:state-changed', {
+        detail: getAppUpdateDebugSnapshot()
+    }));
 }
 
 function getAppUpdateDebugSnapshot() {

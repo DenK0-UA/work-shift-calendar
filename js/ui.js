@@ -304,6 +304,10 @@ bindLiveColorInput(settingsEls.workColor);
 bindLiveColorInput(settingsEls.offColor);
 refreshAppUpdateSettingsUI();
 
+document.addEventListener('app-update:state-changed', () => {
+    refreshAppUpdateSettingsUI();
+});
+
 if (settingsEls.settingsBtn && settingsEls.overlay) {
     settingsEls.settingsBtn.addEventListener('click', () => {
         setSettingsOverlayOpen(true);
