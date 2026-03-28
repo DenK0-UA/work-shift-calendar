@@ -26,6 +26,22 @@
     padding: 20px;
 }
 
+.modal-overlay {
+    z-index: 100;
+}
+
+.settings-overlay {
+    z-index: 110;
+}
+
+.schedule-overlay {
+    z-index: 120;
+}
+
+.app-update-overlay {
+    z-index: 140;
+}
+
 .modal-overlay.active,
 .settings-overlay.active,
 .schedule-overlay.active,
