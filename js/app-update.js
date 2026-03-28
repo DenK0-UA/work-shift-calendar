@@ -382,6 +382,7 @@ async function resolveAvailableAppUpdateManifest() {
     await loadBetaAccessState();
 
     const selectedChannel = readSelectedChannel();
+    let sawCurrentVersionInPreferredChannel = false;
     setAppUpdateDebugState({
         channel: selectedChannel,
         status: 'checking',
@@ -401,6 +402,9 @@ async function resolveAvailableAppUpdateManifest() {
 
         if (compareAppVersions(manifest.version, APP_RELEASE_VERSION) <= 0) {
             clearDismissedAppUpdateVersion(channel);
+            if (channel === selectedChannel) {
+                sawCurrentVersionInPreferredChannel = true;
+            }
             setAppUpdateDebugState({
                 channel,
                 manifestVersion: manifest.version,
@@ -429,7 +433,14 @@ async function resolveAvailableAppUpdateManifest() {
         return manifest;
     }
 
-    if (appUpdateDebugState.status === 'checking') {
+    if (sawCurrentVersionInPreferredChannel) {
+        setAppUpdateDebugState({
+            channel: selectedChannel,
+            manifestVersion: APP_RELEASE_VERSION,
+            status: 'up-to-date',
+            message: `Оновлень немає. Поточна версія ${APP_RELEASE_VERSION}.`
+        });
+    } else if (appUpdateDebugState.status === 'checking') {
         setAppUpdateDebugState({
             channel: selectedChannel,
             status: 'no-update',
