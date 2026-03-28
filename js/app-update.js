@@ -5,7 +5,8 @@ const APP_UPDATE_CHANNELS = {
 
 const APP_UPDATE_STORAGE_KEYS = {
     installId: 'appInstallId',
-    selectedChannel: 'appUpdate:channel'
+    selectedChannel: 'appUpdate:channel',
+    dismissedVersionPrefix: 'appUpdate:dismissed:'
 };
 
 const betaAccessState = {
@@ -16,11 +17,6 @@ const betaAccessState = {
     lastResolvedAt: 0,
     lastError: false,
     loadingPromise: null
-};
-
-const dismissedAppUpdateVersionByChannel = {
-    stable: '',
-    beta: ''
 };
 
 const appUpdateEls = {
@@ -203,15 +199,35 @@ function writeSelectedChannel(channel) {
 }
 
 function readDismissedAppUpdateVersion(channel) {
-    return dismissedAppUpdateVersionByChannel[normalizeUpdateChannel(channel)] || '';
+    const normalizedChannel = normalizeUpdateChannel(channel);
+
+    try {
+        return normalizeInstallId(
+            localStorage.getItem(`${APP_UPDATE_STORAGE_KEYS.dismissedVersionPrefix}${normalizedChannel}`)
+        );
+    } catch (error) {
+        return '';
+    }
 }
 
 function writeDismissedAppUpdateVersion(channel, version) {
-    dismissedAppUpdateVersionByChannel[normalizeUpdateChannel(channel)] = typeof version === 'string' ? version : '';
+    const normalizedChannel = normalizeUpdateChannel(channel);
+    const normalizedVersion = typeof version === 'string' ? version.trim() : '';
+
+    try {
+        if (normalizedVersion) {
+            localStorage.setItem(
+                `${APP_UPDATE_STORAGE_KEYS.dismissedVersionPrefix}${normalizedChannel}`,
+                normalizedVersion
+            );
+        } else {
+            localStorage.removeItem(`${APP_UPDATE_STORAGE_KEYS.dismissedVersionPrefix}${normalizedChannel}`);
+        }
+    } catch (error) {}
 }
 
 function clearDismissedAppUpdateVersion(channel) {
-    dismissedAppUpdateVersionByChannel[normalizeUpdateChannel(channel)] = '';
+    writeDismissedAppUpdateVersion(channel, '');
 }
 
 function resolveManifestAssetUrl(manifestUrl, assetUrl) {
@@ -314,6 +330,10 @@ async function loadBetaAccessState(force = false) {
 
     const betaFeatureConfigured = isBetaFeatureConfigured();
     betaAccessState.isConfigured = betaFeatureConfigured;
+
+    if (!force && betaFeatureConfigured && betaAccessState.isLoaded) {
+        return getBetaAccessSnapshot();
+    }
 
     if (!betaFeatureConfigured) {
         betaAccessState.isAllowed = false;
