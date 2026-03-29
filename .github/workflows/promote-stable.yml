@@ -79,6 +79,7 @@ jobs:
           prerelease: false
           make_latest: true
           generate_release_notes: true
+          overwrite_files: true
           files: dist/work-shift-calendar-${{ steps.release_input.outputs.version }}.apk
 
       - name: Update stable manifest
@@ -89,11 +90,24 @@ jobs:
           "${{ steps.release_input.outputs.notes }}"
 
       - name: Commit stable metadata
+        env:
+          RELEASE_VERSION: ${{ steps.release_input.outputs.version }}
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Tag-triggered workflows run on detached HEAD.
+          # Create a local branch so rebase/push to the default branch is reliable.
+          git checkout -B "ci/promote-stable-${RELEASE_VERSION}"
+
           git add stable/version.json
-          git commit -m "chore: promote stable ${{ steps.release_input.outputs.version }}" || exit 0
+          if git diff --cached --quiet; then
+            echo "No stable metadata changes to commit."
+            exit 0
+          fi
+
+          git commit -m "chore: promote stable ${RELEASE_VERSION}"
           git fetch origin "${DEFAULT_BRANCH}"
           git rebase "origin/${DEFAULT_BRANCH}"
           git push origin HEAD:${DEFAULT_BRANCH}

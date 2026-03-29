@@ -97,6 +97,7 @@ jobs:
           prerelease: true
           make_latest: false
           generate_release_notes: true
+          overwrite_files: true
           files: dist/work-shift-calendar-${{ steps.release_input.outputs.version }}-beta.apk
 
       - name: Update beta manifest
@@ -107,11 +108,24 @@ jobs:
           "${{ steps.release_input.outputs.notes }}"
 
       - name: Commit release metadata
+        env:
+          RELEASE_VERSION: ${{ steps.release_input.outputs.version }}
         run: |
+          set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Tag-triggered workflows run on detached HEAD.
+          # Create a local branch so rebase/push to the default branch is reliable.
+          git checkout -B "ci/release-beta-${RELEASE_VERSION}"
+
           git add package.json data/config.js android/app/build.gradle beta/version.json
-          git commit -m "chore: release beta ${{ steps.release_input.outputs.version }}" || exit 0
+          if git diff --cached --quiet; then
+            echo "No release metadata changes to commit."
+            exit 0
+          fi
+
+          git commit -m "chore: release beta ${RELEASE_VERSION}"
           git fetch origin "${DEFAULT_BRANCH}"
           git rebase "origin/${DEFAULT_BRANCH}"
           git push origin HEAD:${DEFAULT_BRANCH}
