@@ -6,8 +6,10 @@ const APP_UPDATE_CHANNELS = {
 const APP_UPDATE_STORAGE_KEYS = {
     installId: 'appInstallId',
     selectedChannel: 'appUpdate:channel',
-    dismissedVersionPrefix: 'appUpdate:dismissed:'
+    dismissedUntilPrefix: 'appUpdate:dismissUntil:'
 };
+
+const APP_UPDATE_DISMISS_MS = 24 * 60 * 60 * 1000;
 
 const betaAccessState = {
     installId: readOrCreateInstallId(),
@@ -198,36 +200,36 @@ function writeSelectedChannel(channel) {
     return nextChannel;
 }
 
-function readDismissedAppUpdateVersion(channel) {
+function readDismissedAppUpdateUntil(channel) {
     const normalizedChannel = normalizeUpdateChannel(channel);
 
     try {
-        return normalizeInstallId(
-            localStorage.getItem(`${APP_UPDATE_STORAGE_KEYS.dismissedVersionPrefix}${normalizedChannel}`)
-        );
+        const storedValue = localStorage.getItem(`${APP_UPDATE_STORAGE_KEYS.dismissedUntilPrefix}${normalizedChannel}`);
+        const parsedValue = Number.parseInt(storedValue || '', 10);
+        return Number.isFinite(parsedValue) ? parsedValue : 0;
     } catch (error) {
-        return '';
+        return 0;
     }
 }
 
-function writeDismissedAppUpdateVersion(channel, version) {
+function writeDismissedAppUpdateUntil(channel, timestamp) {
     const normalizedChannel = normalizeUpdateChannel(channel);
-    const normalizedVersion = typeof version === 'string' ? version.trim() : '';
+    const normalizedTimestamp = Number.isFinite(timestamp) ? Math.max(0, Math.trunc(timestamp)) : 0;
 
     try {
-        if (normalizedVersion) {
+        if (normalizedTimestamp > 0) {
             localStorage.setItem(
-                `${APP_UPDATE_STORAGE_KEYS.dismissedVersionPrefix}${normalizedChannel}`,
-                normalizedVersion
+                `${APP_UPDATE_STORAGE_KEYS.dismissedUntilPrefix}${normalizedChannel}`,
+                String(normalizedTimestamp)
             );
         } else {
-            localStorage.removeItem(`${APP_UPDATE_STORAGE_KEYS.dismissedVersionPrefix}${normalizedChannel}`);
+            localStorage.removeItem(`${APP_UPDATE_STORAGE_KEYS.dismissedUntilPrefix}${normalizedChannel}`);
         }
     } catch (error) {}
 }
 
-function clearDismissedAppUpdateVersion(channel) {
-    writeDismissedAppUpdateVersion(channel, '');
+function clearDismissedAppUpdateUntil(channel) {
+    writeDismissedAppUpdateUntil(channel, 0);
 }
 
 function resolveManifestAssetUrl(manifestUrl, assetUrl) {
@@ -442,7 +444,7 @@ async function resolveAvailableAppUpdateManifest() {
         }
 
         if (compareAppVersions(manifest.version, APP_RELEASE_VERSION) <= 0) {
-            clearDismissedAppUpdateVersion(channel);
+            clearDismissedAppUpdateUntil(channel);
             if (channel === selectedChannel) {
                 sawCurrentVersionInPreferredChannel = true;
             }
@@ -455,12 +457,12 @@ async function resolveAvailableAppUpdateManifest() {
             continue;
         }
 
-        if (readDismissedAppUpdateVersion(channel) === manifest.version) {
+        if (readDismissedAppUpdateUntil(channel) > Date.now()) {
             setAppUpdateDebugState({
                 channel,
                 manifestVersion: manifest.version,
                 status: 'dismissed',
-                message: `Оновлення ${manifest.version} тимчасово приховано.`
+                message: 'Оновлення тимчасово приховано на 24 години.'
             });
             continue;
         }
@@ -534,11 +536,8 @@ if (appUpdateEls.downloadBtn) {
 
 if (appUpdateEls.dismissBtn) {
     appUpdateEls.dismissBtn.addEventListener('click', () => {
-        const version = appUpdateEls.dismissBtn.dataset.version;
         const channel = normalizeUpdateChannel(appUpdateEls.dismissBtn.dataset.channel);
-        if (version) {
-            writeDismissedAppUpdateVersion(channel, version);
-        }
+        writeDismissedAppUpdateUntil(channel, Date.now() + APP_UPDATE_DISMISS_MS);
         hideAppUpdateBanner();
     });
 }
