@@ -6,7 +6,7 @@ const APP_UPDATE_CHANNELS = {
 const APP_UPDATE_STORAGE_KEYS = {
     installId: 'appInstallId',
     selectedChannel: 'appUpdate:channel',
-    dismissedUntilPrefix: 'appUpdate:dismissUntil:'
+    dismissedEntryPrefix: 'appUpdate:dismissed:'
 };
 
 const APP_UPDATE_DISMISS_MS = 24 * 60 * 60 * 1000;
@@ -200,36 +200,51 @@ function writeSelectedChannel(channel) {
     return nextChannel;
 }
 
-function readDismissedAppUpdateUntil(channel) {
+function readDismissedAppUpdateEntry(channel) {
     const normalizedChannel = normalizeUpdateChannel(channel);
 
     try {
-        const storedValue = localStorage.getItem(`${APP_UPDATE_STORAGE_KEYS.dismissedUntilPrefix}${normalizedChannel}`);
-        const parsedValue = Number.parseInt(storedValue || '', 10);
-        return Number.isFinite(parsedValue) ? parsedValue : 0;
+        const rawValue = localStorage.getItem(`${APP_UPDATE_STORAGE_KEYS.dismissedEntryPrefix}${normalizedChannel}`);
+        if (!rawValue) {
+            return null;
+        }
+
+        const parsedValue = JSON.parse(rawValue);
+        const version = typeof parsedValue?.version === 'string' ? parsedValue.version.trim() : '';
+        const until = Number.parseInt(String(parsedValue?.until || ''), 10);
+
+        if (!version || !Number.isFinite(until) || until <= 0) {
+            return null;
+        }
+
+        return { version, until };
     } catch (error) {
-        return 0;
+        return null;
     }
 }
 
-function writeDismissedAppUpdateUntil(channel, timestamp) {
+function writeDismissedAppUpdateEntry(channel, version, timestamp) {
     const normalizedChannel = normalizeUpdateChannel(channel);
+    const normalizedVersion = typeof version === 'string' ? version.trim() : '';
     const normalizedTimestamp = Number.isFinite(timestamp) ? Math.max(0, Math.trunc(timestamp)) : 0;
 
     try {
-        if (normalizedTimestamp > 0) {
+        if (normalizedVersion && normalizedTimestamp > 0) {
             localStorage.setItem(
-                `${APP_UPDATE_STORAGE_KEYS.dismissedUntilPrefix}${normalizedChannel}`,
-                String(normalizedTimestamp)
+                `${APP_UPDATE_STORAGE_KEYS.dismissedEntryPrefix}${normalizedChannel}`,
+                JSON.stringify({
+                    version: normalizedVersion,
+                    until: normalizedTimestamp
+                })
             );
         } else {
-            localStorage.removeItem(`${APP_UPDATE_STORAGE_KEYS.dismissedUntilPrefix}${normalizedChannel}`);
+            localStorage.removeItem(`${APP_UPDATE_STORAGE_KEYS.dismissedEntryPrefix}${normalizedChannel}`);
         }
     } catch (error) {}
 }
 
 function clearDismissedAppUpdateUntil(channel) {
-    writeDismissedAppUpdateUntil(channel, 0);
+    writeDismissedAppUpdateEntry(channel, '', 0);
 }
 
 function resolveManifestAssetUrl(manifestUrl, assetUrl) {
@@ -457,7 +472,8 @@ async function resolveAvailableAppUpdateManifest() {
             continue;
         }
 
-        if (readDismissedAppUpdateUntil(channel) > Date.now()) {
+        const dismissedEntry = readDismissedAppUpdateEntry(channel);
+        if (dismissedEntry?.version === manifest.version && dismissedEntry.until > Date.now()) {
             setAppUpdateDebugState({
                 channel,
                 manifestVersion: manifest.version,
@@ -536,8 +552,11 @@ if (appUpdateEls.downloadBtn) {
 
 if (appUpdateEls.dismissBtn) {
     appUpdateEls.dismissBtn.addEventListener('click', () => {
+        const version = appUpdateEls.dismissBtn.dataset.version;
         const channel = normalizeUpdateChannel(appUpdateEls.dismissBtn.dataset.channel);
-        writeDismissedAppUpdateUntil(channel, Date.now() + APP_UPDATE_DISMISS_MS);
+        if (version) {
+            writeDismissedAppUpdateEntry(channel, version, Date.now() + APP_UPDATE_DISMISS_MS);
+        }
         hideAppUpdateBanner();
     });
 }
