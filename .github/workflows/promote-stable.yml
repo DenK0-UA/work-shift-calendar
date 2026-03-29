@@ -109,5 +109,5 @@ jobs:
 
           git commit -m "chore: promote stable ${RELEASE_VERSION}"
           git fetch origin "${DEFAULT_BRANCH}"
-          git rebase "origin/${DEFAULT_BRANCH}"
+          git rebase --autostash "origin/${DEFAULT_BRANCH}"
           git push origin HEAD:${DEFAULT_BRANCH}
