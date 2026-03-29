@@ -285,10 +285,37 @@ function openApkDownload(url) {
         return;
     }
 
-    const openedWindow = window.open(url, '_blank', 'noopener');
-    if (!openedWindow) {
-        window.location.href = url;
-    }
+    // Спосіб 1: Спробуємо через <a> тег з download атрибутом (найнадійніше на мобілі)
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'work-shift-calendar.apk';
+    link.style.display = 'none';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Спосіб 2: Якщо <a> не спрацював, спробуємо fetch + blob (для більш надійного контролю)
+    setTimeout(() => {
+        fetch(url, { method: 'GET', mode: 'no-cors' })
+            .then(response => response.blob())
+            .then(blob => {
+                const blobUrl = URL.createObjectURL(blob);
+                const fallbackLink = document.createElement('a');
+                fallbackLink.href = blobUrl;
+                fallbackLink.download = 'work-shift-calendar.apk';
+                fallbackLink.style.display = 'none';
+                document.body.appendChild(fallbackLink);
+                fallbackLink.click();
+                document.body.removeChild(fallbackLink);
+                URL.revokeObjectURL(blobUrl);
+            })
+            .catch(error => {
+                // Спосіб 3: Fallback на window.location (останній варіант)
+                console.warn('Download methods failed, trying window.location', error);
+                window.location.href = url;
+            });
+    }, 100);
 }
 
 function getDismissedUntil(channel) {
