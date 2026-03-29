@@ -301,18 +301,27 @@ function openApkDownload(url) {
 
     if (isNativeAndroidApp()) {
         (async () => {
-            const appLauncherPlugin = window.Capacitor?.Plugins?.AppLauncher;
-            if (appLauncherPlugin?.openUrl) {
+            const apkDownloadPlugin = window.Capacitor?.Plugins?.ApkDownload;
+            if (apkDownloadPlugin?.downloadApk) {
                 try {
-                    const launchResult = await appLauncherPlugin.openUrl({ url: externalUrl });
-                    if (launchResult?.completed !== false) {
+                    const fileName = externalUrl.split('?')[0].split('/').pop() || 'work-shift-calendar-update.apk';
+                    const result = await apkDownloadPlugin.downloadApk({
+                        url: externalUrl,
+                        fileName
+                    });
+
+                    if (result?.permissionRequired) {
+                        alert('Дозвольте встановлення оновлень для Work Shift Calendar у системному вікні, потім натисніть завантажити ще раз.');
+                        return;
+                    }
+
+                    if (result?.started) {
+                        alert('Завантаження оновлення розпочато. Після завершення відкриється системне встановлення APK.');
                         return;
                     }
                 } catch (error) {}
             }
 
-            // Avoid in-app custom tabs for APK download on Android.
-            // If launcher is unavailable, force navigation to the external URL.
             window.location.assign(externalUrl);
         })();
         return;
