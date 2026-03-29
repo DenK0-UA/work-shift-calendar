@@ -335,7 +335,7 @@ const APP_UPDATE_BETA_ACCESS_URL = 'https://<user>.github.io/work-shift-calendar
 - `Release Beta APK` збирає новий підписаний `beta`-APK, створює `GitHub Release` з тегом `vX.Y.Z-beta` і сам оновлює `beta/version.json`
 - `Promote Beta To Stable` бере вже перевірений `beta`-APK, публікує його як stable-реліз з тегом `vX.Y.Z` і сам оновлює `stable/version.json`
 
-Практичний флоу:
+Практичний флоу через GitHub UI:
 
 1. У GitHub відкрийте `Actions` -> `Release Beta APK`
 2. Вкажіть нову версію, наприклад `1.0.12`
@@ -343,6 +343,27 @@ const APP_UPDATE_BETA_ACCESS_URL = 'https://<user>.github.io/work-shift-calendar
 4. Якщо все добре, відкрийте `Actions` -> `Promote Beta To Stable`
 5. Вкажіть ту саму версію, наприклад `1.0.12`
 6. Після завершення workflow stable-користувачі побачать оновлення в застосунку
+
+Практичний флоу без GitHub UI:
+
+1. Для нової тестової збірки запустіть:
+
+```bash
+npm run release:beta -- 1.0.16
+```
+
+2. Для публікації вже перевіреної версії для всіх запустіть:
+
+```bash
+npm run release:stable -- 1.0.16
+```
+
+Поведінка:
+
+- команда створює і пушить git-тег `beta-1.0.16` або `stable-1.0.16`
+- GitHub Actions сам запускає відповідний workflow
+- `beta` лишається каналом для тестерів
+- `stable` оновлюється тільки окремою командою після вашого апруву
 
 Для цього один раз треба додати GitHub Secrets:
 
