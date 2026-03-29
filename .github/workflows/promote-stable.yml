@@ -22,7 +22,7 @@ jobs:
   promote-stable:
     runs-on: ubuntu-latest
     env:
-      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch || 'main' }}
 
     steps:
       - name: Checkout
