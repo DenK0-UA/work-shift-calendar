@@ -32,6 +32,9 @@ const appUpdateDebugState = {
     checkedAt: 0,
     channel: '',
     manifestVersion: '',
+    availableVersion: '',
+    downloadUrl: '',
+    dismissedUntil: 0,
     status: 'idle',
     message: ''
 };
@@ -53,7 +56,12 @@ function getChannelLabel(channel) {
 }
 
 function setAppUpdateDebugState(patch) {
-    Object.assign(appUpdateDebugState, patch, {
+    Object.assign(appUpdateDebugState, {
+        manifestVersion: '',
+        availableVersion: '',
+        downloadUrl: '',
+        dismissedUntil: 0
+    }, patch, {
         checkedAt: Date.now()
     });
 
@@ -283,6 +291,11 @@ function openApkDownload(url) {
     }
 }
 
+function getDismissedUntil(channel) {
+    const dismissedEntry = readDismissedAppUpdateEntry(channel);
+    return dismissedEntry?.until || 0;
+}
+
 function hideAppUpdateBanner() {
     if (!appUpdateEls.banner) {
         return;
@@ -477,6 +490,8 @@ async function resolveAvailableAppUpdateManifest() {
             setAppUpdateDebugState({
                 channel,
                 manifestVersion: manifest.version,
+                availableVersion: manifest.version,
+                dismissedUntil: dismissedEntry.until,
                 status: 'dismissed',
                 message: 'Оновлення тимчасово приховано на 24 години.'
             });
@@ -486,6 +501,8 @@ async function resolveAvailableAppUpdateManifest() {
         setAppUpdateDebugState({
             channel,
             manifestVersion: manifest.version,
+            availableVersion: manifest.version,
+            downloadUrl: manifest.apkUrl,
             status: 'update-available',
             message: `Доступне оновлення ${manifest.version}.`
         });
@@ -555,7 +572,16 @@ if (appUpdateEls.dismissBtn) {
         const version = appUpdateEls.dismissBtn.dataset.version;
         const channel = normalizeUpdateChannel(appUpdateEls.dismissBtn.dataset.channel);
         if (version) {
-            writeDismissedAppUpdateEntry(channel, version, Date.now() + APP_UPDATE_DISMISS_MS);
+            const dismissedUntil = Date.now() + APP_UPDATE_DISMISS_MS;
+            writeDismissedAppUpdateEntry(channel, version, dismissedUntil);
+            setAppUpdateDebugState({
+                channel,
+                manifestVersion: version,
+                availableVersion: version,
+                dismissedUntil,
+                status: 'dismissed',
+                message: 'Оновлення тимчасово приховано на 24 години.'
+            });
         }
         hideAppUpdateBanner();
     });
@@ -576,5 +602,6 @@ window.AppUpdate = {
     isBetaAllowedForThisInstall: canAccessBetaChannel,
     isNativeAndroidApp,
     loadBetaAccessState,
+    openDownload: openApkDownload,
     setSelectedChannel: writeSelectedChannel
 };

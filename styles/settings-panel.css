@@ -135,6 +135,20 @@
     transform: translateY(-1px);
 }
 
+.settings-update-summary {
+    margin-top: 10px;
+}
+
+.settings-update-download-btn {
+    margin-top: 10px;
+    background: color-mix(in srgb, var(--accent-primary) 16%, var(--surface-control));
+    border-color: color-mix(in srgb, var(--accent-primary) 34%, var(--card-border));
+}
+
+.settings-update-download-btn:hover {
+    background: color-mix(in srgb, var(--accent-primary) 22%, var(--surface-control-hover));
+}
+
 .settings-update-debug {
     margin-top: 10px;
     white-space: pre-line;

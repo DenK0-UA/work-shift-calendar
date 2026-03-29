@@ -30,6 +30,8 @@ const settingsEls = {
     appVersionValue: document.getElementById('app-version-value'),
     appVersionHint: document.getElementById('app-version-hint'),
     appUpdateCheckNow: document.getElementById('app-update-check-now'),
+    appUpdateSummary: document.getElementById('app-update-summary'),
+    appUpdateDownloadInline: document.getElementById('app-update-download-inline'),
     appUpdateDebugStatus: document.getElementById('app-update-debug-status'),
     appInstallId: document.getElementById('app-install-id'),
     appUpdateChannelSummary: document.getElementById('app-update-channel-summary'),
@@ -86,6 +88,19 @@ const setUpdateChannelUI = (channel) => {
     });
 };
 
+const formatUpdateTime = (timestamp) => {
+    if (!timestamp) {
+        return '';
+    }
+
+    return new Date(timestamp).toLocaleString('uk-UA', {
+        day: '2-digit',
+        month: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+};
+
 const refreshAppUpdateSettingsUI = async () => {
     if (!window.AppUpdate) {
         return;
@@ -98,6 +113,8 @@ const refreshAppUpdateSettingsUI = async () => {
     const channelLabel = window.AppUpdate.getChannelLabel?.(currentChannel) || currentChannel;
     const appVersion = window.AppUpdate.getAppVersion?.() || APP_RELEASE_VERSION;
     const installId = window.AppUpdate.getInstallId?.() || betaAccessState?.installId || '';
+    const debugState = window.AppUpdate.getDebugState?.();
+    const debugMatchesCurrentChannel = !debugState?.channel || debugState.channel === currentChannel;
 
     if (settingsEls.appVersionValue) {
         settingsEls.appVersionValue.textContent = appVersion;
@@ -116,8 +133,44 @@ const refreshAppUpdateSettingsUI = async () => {
         settingsEls.appUpdateChannelSummary.textContent = `Канал оновлень: ${channelLabel}`;
     }
 
+    if (settingsEls.appUpdateSummary) {
+        let summaryText = '';
+
+        if (!debugMatchesCurrentChannel) {
+            summaryText = `Канал змінено на ${channelLabel}. Перевірте оновлення для цього каналу.`;
+        } else if (debugState?.status === 'update-available' && debugState.availableVersion) {
+            summaryText = `Доступна новіша ${channelLabel.toLowerCase()}-версія ${debugState.availableVersion}.`;
+        } else if (debugState?.status === 'dismissed' && debugState.availableVersion) {
+            const untilText = formatUpdateTime(debugState.dismissedUntil);
+            summaryText = untilText
+                ? `Оновлення ${debugState.availableVersion} приховано до ${untilText}.`
+                : `Оновлення ${debugState.availableVersion} тимчасово приховано.`;
+        } else if (debugState?.status === 'up-to-date') {
+            summaryText = `У вас актуальна версія ${appVersion}.`;
+        } else if (debugState?.status === 'checking') {
+            summaryText = 'Перевіряємо наявність новішої версії...';
+        } else if (debugState?.status === 'manifest-unavailable') {
+            summaryText = 'Не вдалося перевірити оновлення. Спробуйте ще раз трохи пізніше.';
+        }
+
+        settingsEls.appUpdateSummary.hidden = !summaryText;
+        settingsEls.appUpdateSummary.textContent = summaryText;
+    }
+
+    if (settingsEls.appUpdateDownloadInline) {
+        const downloadUrl = debugState?.downloadUrl || '';
+        const availableVersion = debugState?.availableVersion || '';
+        const canDownload = debugMatchesCurrentChannel && debugState?.status === 'update-available' && Boolean(downloadUrl);
+
+        settingsEls.appUpdateDownloadInline.hidden = !canDownload;
+        settingsEls.appUpdateDownloadInline.disabled = !canDownload;
+        settingsEls.appUpdateDownloadInline.textContent = availableVersion
+            ? `Завантажити ${availableVersion}`
+            : 'Завантажити оновлення';
+        settingsEls.appUpdateDownloadInline.dataset.downloadUrl = canDownload ? downloadUrl : '';
+    }
+
     if (settingsEls.appUpdateDebugStatus) {
-        const debugState = window.AppUpdate.getDebugState?.();
         const checkedAt = debugState?.checkedAt
             ? new Date(debugState.checkedAt).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
             : '';
@@ -408,6 +461,17 @@ if (settingsEls.appUpdateCheckNow) {
             settingsEls.appUpdateCheckNow.disabled = false;
             settingsEls.appUpdateCheckNow.textContent = 'Перевірити оновлення';
         }
+    });
+}
+
+if (settingsEls.appUpdateDownloadInline) {
+    settingsEls.appUpdateDownloadInline.addEventListener('click', () => {
+        const downloadUrl = settingsEls.appUpdateDownloadInline.dataset.downloadUrl;
+        if (!downloadUrl) {
+            return;
+        }
+
+        window.AppUpdate?.openDownload?.(downloadUrl);
     });
 }
 
