@@ -280,42 +280,88 @@ function buildAppUpdateMessage(manifest) {
     return `Доступна новіша ${channelLabel}-версія ${latestVersion}. Поточна версія: ${APP_RELEASE_VERSION}.${notesSuffix}`;
 }
 
-function openApkDownload(url) {
+async function openApkDownload(url) {
     if (typeof url !== 'string' || !url) {
         return;
     }
 
-    // Спосіб 1: Спробуємо через <a> тег з download атрибутом (найнадійніше на мобілі)
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'work-shift-calendar.apk';
-    link.style.display = 'none';
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Спосіб 2: Якщо <a> не спрацював, спробуємо fetch + blob (для більш надійного контролю)
-    setTimeout(() => {
-        fetch(url, { method: 'GET', mode: 'no-cors' })
-            .then(response => response.blob())
-            .then(blob => {
-                const blobUrl = URL.createObjectURL(blob);
-                const fallbackLink = document.createElement('a');
-                fallbackLink.href = blobUrl;
-                fallbackLink.download = 'work-shift-calendar.apk';
-                fallbackLink.style.display = 'none';
-                document.body.appendChild(fallbackLink);
-                fallbackLink.click();
-                document.body.removeChild(fallbackLink);
-                URL.revokeObjectURL(blobUrl);
-            })
-            .catch(error => {
-                // Спосіб 3: Fallback на window.location (останній варіант)
-                console.warn('Download methods failed, trying window.location', error);
-                window.location.href = url;
-            });
-    }, 100);
+    // Спосіб 1: Capacitor нативні API (для Android/iOS)
+    if (window.Capacitor?.isNativePlatform?.()) {
+        try {
+            const { Filesystem, Directory } = window.Capacitor.Plugins;
+            if (Filesystem) {
+                console.log('Завантажуємо через Capacitor Filesystem API...');
+                
+                // Спочатку завантажимо файл через fetch
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const blob = await response.blob();
+                const arrayBuffer = await blob.arrayBuffer();
+                const uint8Array = new Uint8Array(arrayBuffer);
+                const base64String = btoa(String.fromCharCode.apply(null, uint8Array));
+                
+                // Зберігаємо в Download директорію
+                await Filesystem.writeFile({
+                    path: 'work-shift-calendar-1.0.17.apk',
+                    data: base64String,
+                    directory: Directory.Documents,
+                    recursive: true
+                });
+                
+                console.log('APK успішно завантажений в Downloads');
+                return;
+            }
+        } catch (error) {
+            console.warn('Capacitor download failed:', error);
+            // Fallback до наступного методу
+        }
+    }
+
+    // Спосіб 2: Спробуємо через <a> тег з download атрибутом (для веб)
+    try {
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'work-shift-calendar-1.0.17.apk';
+        link.style.display = 'none';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return;
+    } catch (error) {
+        console.warn('Link download failed:', error);
+    }
+
+    // Спосіб 3: fetch + blob з явним контролем
+    try {
+        const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const blob = await response.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const fallbackLink = document.createElement('a');
+        fallbackLink.href = blobUrl;
+        fallbackLink.download = 'work-shift-calendar-1.0.17.apk';
+        fallbackLink.style.display = 'none';
+        
+        document.body.appendChild(fallbackLink);
+        fallbackLink.click();
+        document.body.removeChild(fallbackLink);
+        
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+        return;
+    } catch (error) {
+        console.warn('Blob download failed:', error);
+    }
+
+    // Спосіб 4: Fallback на прямий window.location
+    console.warn('All download methods failed, trying direct navigation');
+    window.location.href = url;
 }
 
 function getDismissedUntil(channel) {
