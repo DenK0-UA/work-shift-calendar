@@ -455,7 +455,7 @@ if (settingsEls.appUpdateCheckNow) {
         settingsEls.appUpdateCheckNow.textContent = 'Перевіряємо...';
 
         try {
-            await window.AppUpdate.checkForAppUpdate?.();
+            await window.AppUpdate.checkForAppUpdate?.({ manualCheck: true });
             await refreshAppUpdateSettingsUI();
         } finally {
             settingsEls.appUpdateCheckNow.disabled = false;

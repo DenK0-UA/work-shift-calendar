@@ -449,7 +449,8 @@ async function fetchAppUpdateManifest(channel) {
     };
 }
 
-async function resolveAvailableAppUpdateManifest() {
+async function resolveAvailableAppUpdateManifest(options = {}) {
+    const manualCheck = options.manualCheck === true;
     await loadBetaAccessState();
 
     const selectedChannel = readSelectedChannel();
@@ -486,7 +487,7 @@ async function resolveAvailableAppUpdateManifest() {
         }
 
         const dismissedEntry = readDismissedAppUpdateEntry(channel);
-        if (dismissedEntry?.version === manifest.version && dismissedEntry.until > Date.now()) {
+        if (!manualCheck && dismissedEntry?.version === manifest.version && dismissedEntry.until > Date.now()) {
             setAppUpdateDebugState({
                 channel,
                 manifestVersion: manifest.version,
@@ -527,7 +528,8 @@ async function resolveAvailableAppUpdateManifest() {
     return null;
 }
 
-async function checkForAppUpdate() {
+async function checkForAppUpdate(options = {}) {
+    const manualCheck = options.manualCheck === true;
     if (!APP_UPDATE_CHECK_ENABLED || !isNativeAndroidApp()) {
         setAppUpdateDebugState({
             status: 'disabled',
@@ -539,13 +541,15 @@ async function checkForAppUpdate() {
         return;
     }
 
-    const manifest = await resolveAvailableAppUpdateManifest();
+    const manifest = await resolveAvailableAppUpdateManifest({ manualCheck });
     if (!manifest) {
         hideAppUpdateBanner();
         return;
     }
 
-    showAppUpdateBanner(manifest);
+    if (!manualCheck) {
+        showAppUpdateBanner(manifest);
+    }
 }
 
 function bindAutomaticAppUpdateChecks() {
