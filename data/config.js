@@ -1,5 +1,5 @@
 // --- Дані та Налаштування ---
-const APP_RELEASE_VERSION = '1.0.21';
+const APP_RELEASE_VERSION = '1.0.22';
 const APP_UPDATE_CHANNEL_DEFAULT = 'stable';
 const APP_UPDATE_MANIFEST_URLS = {
     stable: 'https://denk0-ua.github.io/work-shift-calendar/stable/version.json',

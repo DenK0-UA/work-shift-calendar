@@ -280,13 +280,43 @@ function buildAppUpdateMessage(manifest) {
     return `Доступна новіша ${channelLabel}-версія ${latestVersion}. Поточна версія: ${APP_RELEASE_VERSION}.${notesSuffix}`;
 }
 
+function toExternalDownloadUrl(url) {
+    if (typeof url !== 'string') {
+        return '';
+    }
+
+    const normalizedUrl = url.trim();
+    if (!normalizedUrl) {
+        return '';
+    }
+
+    return normalizedUrl;
+}
+
 function openApkDownload(url) {
-    if (typeof url !== 'string' || !url) {
+    const externalUrl = toExternalDownloadUrl(url);
+    if (!externalUrl) {
         return;
     }
 
-    // Просто відкриваємо посилання у браузері — це найнадійніше
-    window.location.href = url;
+    const browserPlugin = window.Capacitor?.Plugins?.Browser;
+    if (isNativeAndroidApp() && browserPlugin?.open) {
+        browserPlugin.open({
+            url: externalUrl,
+            presentationStyle: 'fullscreen'
+        }).catch(() => {
+            const openedWindow = window.open(externalUrl, '_blank', 'noopener');
+            if (!openedWindow) {
+                window.location.assign(externalUrl);
+            }
+        });
+        return;
+    }
+
+    const openedWindow = window.open(externalUrl, '_blank', 'noopener');
+    if (!openedWindow) {
+        window.location.assign(externalUrl);
+    }
 }
 
 function getDismissedUntil(channel) {
