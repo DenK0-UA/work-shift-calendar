@@ -19,11 +19,9 @@ const updateTextFile = (relativePath, transform) => {
     const previousValue = fs.readFileSync(absolutePath, 'utf8');
     const nextValue = transform(previousValue);
 
-    if (nextValue === previousValue) {
-        return;
+    if (nextValue !== previousValue) {
+        fs.writeFileSync(absolutePath, nextValue, 'utf8');
     }
-
-    fs.writeFileSync(absolutePath, nextValue, 'utf8');
 };
 
 updateTextFile('package.json', (source) => {
@@ -45,12 +43,5 @@ updateTextFile(path.join('android', 'app', 'build.gradle'), (source) =>
         .replace(/versionName ".*?"/, `versionName "${nextVersion}"`)
 );
 
-for (const channel of ['beta', 'stable']) {
-    updateTextFile(path.join(channel, 'version.json'), (source) => {
-        const parsed = JSON.parse(source);
-        parsed.version = nextVersion;
-        return `${JSON.stringify(parsed, null, 2)}\n`;
-    });
-}
-
+console.warn('npm run version:set now updates only the app version. Release manifests are managed by GitHub release workflows.');
 console.log(`Updated app version to ${nextVersion} (versionCode ${nextVersionCode}).`);
