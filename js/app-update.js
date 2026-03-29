@@ -293,37 +293,48 @@ function toExternalDownloadUrl(url) {
     return normalizedUrl;
 }
 
-function openApkDownload(url) {
+function toReleasePageUrl(url) {
     const externalUrl = toExternalDownloadUrl(url);
+    if (!externalUrl) {
+        return '';
+    }
+
+    try {
+        const parsedUrl = new URL(externalUrl);
+        const pathMatch = parsedUrl.pathname.match(/^(\/[^/]+\/[^/]+)\/releases\/download\/([^/]+)\/[^/]+$/i);
+        if (pathMatch) {
+            return `${parsedUrl.origin}${pathMatch[1]}/releases/tag/${pathMatch[2]}`;
+        }
+    } catch (error) {}
+
+    return externalUrl;
+}
+
+function openApkDownload(url) {
+    const externalUrl = toReleasePageUrl(url);
     if (!externalUrl) {
         return;
     }
 
     if (isNativeAndroidApp()) {
-        (async () => {
-            const apkDownloadPlugin = window.Capacitor?.Plugins?.ApkDownload;
-            if (apkDownloadPlugin?.downloadApk) {
-                try {
-                    const fileName = externalUrl.split('?')[0].split('/').pop() || 'work-shift-calendar-update.apk';
-                    const result = await apkDownloadPlugin.downloadApk({
-                        url: externalUrl,
-                        fileName
-                    });
+        const browserPlugin = window.Capacitor?.Plugins?.Browser;
+        if (browserPlugin?.open) {
+            browserPlugin.open({
+                url: externalUrl,
+                presentationStyle: 'fullscreen'
+            }).catch(() => {
+                const openedWindow = window.open(externalUrl, '_blank', 'noopener');
+                if (!openedWindow) {
+                    window.location.assign(externalUrl);
+                }
+            });
+            return;
+        }
 
-                    if (result?.permissionRequired) {
-                        alert('Дозвольте встановлення оновлень для Work Shift Calendar у системному вікні, потім натисніть завантажити ще раз.');
-                        return;
-                    }
-
-                    if (result?.started) {
-                        alert('Завантаження оновлення розпочато. Після завершення відкриється системне встановлення APK.');
-                        return;
-                    }
-                } catch (error) {}
-            }
-
+        const openedWindow = window.open(externalUrl, '_blank', 'noopener');
+        if (!openedWindow) {
             window.location.assign(externalUrl);
-        })();
+        }
         return;
     }
 
