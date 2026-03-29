@@ -311,21 +311,9 @@ function openApkDownload(url) {
                 } catch (error) {}
             }
 
-            const browserPlugin = window.Capacitor?.Plugins?.Browser;
-            if (browserPlugin?.open) {
-                try {
-                    await browserPlugin.open({
-                        url: externalUrl,
-                        presentationStyle: 'fullscreen'
-                    });
-                    return;
-                } catch (error) {}
-            }
-
-            const openedWindow = window.open(externalUrl, '_blank', 'noopener');
-            if (!openedWindow) {
-                window.location.assign(externalUrl);
-            }
+            // Avoid in-app custom tabs for APK download on Android.
+            // If launcher is unavailable, force navigation to the external URL.
+            window.location.assign(externalUrl);
         })();
         return;
     }
