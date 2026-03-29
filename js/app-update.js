@@ -25,7 +25,8 @@ const appUpdateEls = {
     banner: document.getElementById('app-update-banner'),
     text: document.getElementById('app-update-banner-text'),
     downloadBtn: document.getElementById('app-update-download'),
-    dismissBtn: document.getElementById('app-update-dismiss')
+    dismissBtn: document.getElementById('app-update-dismiss'),
+    downloadHint: document.getElementById('app-update-download-hint')
 };
 
 const appUpdateDebugState = {
@@ -365,6 +366,11 @@ function hideAppUpdateBanner() {
     appUpdateEls.downloadBtn?.removeAttribute('data-download-url');
     appUpdateEls.dismissBtn?.removeAttribute('data-version');
     appUpdateEls.dismissBtn?.removeAttribute('data-channel');
+
+    if (appUpdateEls.downloadHint) {
+        appUpdateEls.downloadHint.hidden = true;
+        appUpdateEls.downloadHint.textContent = '';
+    }
 }
 
 function showAppUpdateBanner(manifest) {
@@ -376,6 +382,12 @@ function showAppUpdateBanner(manifest) {
     appUpdateEls.downloadBtn.dataset.downloadUrl = manifest.apkUrl;
     appUpdateEls.dismissBtn.dataset.version = manifest.version;
     appUpdateEls.dismissBtn.dataset.channel = manifest.channel;
+
+    if (appUpdateEls.downloadHint) {
+        appUpdateEls.downloadHint.hidden = true;
+        appUpdateEls.downloadHint.textContent = '';
+    }
+
     appUpdateEls.banner.hidden = false;
     appUpdateEls.banner.classList.add('active');
 }
@@ -627,6 +639,11 @@ if (appUpdateEls.downloadBtn) {
     appUpdateEls.downloadBtn.addEventListener('click', () => {
         const downloadUrl = appUpdateEls.downloadBtn.dataset.downloadUrl;
         openApkDownload(downloadUrl);
+
+        if (isNativeAndroidApp() && appUpdateEls.downloadHint) {
+            appUpdateEls.downloadHint.textContent = 'APK відкрито для завантаження. Після завершення натисніть сповіщення або відкрийте файл у папці Завантаження, щоб встановити.';
+            appUpdateEls.downloadHint.hidden = false;
+        }
     });
 }
 
