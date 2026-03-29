@@ -20,6 +20,11 @@ const runGit = (...args) => execFileSync('git', args, {
     stdio: ['ignore', 'pipe', 'pipe']
 }).trim();
 
+const runNode = (...args) => execFileSync('node', args, {
+    encoding: 'utf8',
+    stdio: 'inherit'
+});
+
 const worktreeStatus = runGit('status', '--short');
 
 if (worktreeStatus) {
@@ -42,6 +47,8 @@ if (existingTags === tagName) {
     console.error(`Tag ${tagName} already exists.`);
     process.exit(1);
 }
+
+runNode('scripts/release-preflight.mjs', channel, version);
 
 runGit('tag', '-a', tagName, '-m', `${channel} release ${version}`);
 runGit('push', 'origin', tagName);

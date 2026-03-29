@@ -11,6 +11,7 @@
     "app:version:set": "node scripts/set-app-version.mjs",
     "manifest:set": "node scripts/update-release-manifest.mjs",
     "version:set": "node scripts/set-version.mjs",
+    "release:check": "node scripts/release-preflight.mjs",
     "release:beta": "node scripts/push-release-tag.mjs beta",
     "release:stable": "node scripts/push-release-tag.mjs stable",
     "cap:sync": "npm run build:web && npx cap sync",
