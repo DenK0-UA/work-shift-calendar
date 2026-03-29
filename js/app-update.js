@@ -299,8 +299,39 @@ function openApkDownload(url) {
         return;
     }
 
+    if (isNativeAndroidApp()) {
+        (async () => {
+            const appLauncherPlugin = window.Capacitor?.Plugins?.AppLauncher;
+            if (appLauncherPlugin?.openUrl) {
+                try {
+                    const launchResult = await appLauncherPlugin.openUrl({ url: externalUrl });
+                    if (launchResult?.completed !== false) {
+                        return;
+                    }
+                } catch (error) {}
+            }
+
+            const browserPlugin = window.Capacitor?.Plugins?.Browser;
+            if (browserPlugin?.open) {
+                try {
+                    await browserPlugin.open({
+                        url: externalUrl,
+                        presentationStyle: 'fullscreen'
+                    });
+                    return;
+                } catch (error) {}
+            }
+
+            const openedWindow = window.open(externalUrl, '_blank', 'noopener');
+            if (!openedWindow) {
+                window.location.assign(externalUrl);
+            }
+        })();
+        return;
+    }
+
     const browserPlugin = window.Capacitor?.Plugins?.Browser;
-    if (isNativeAndroidApp() && browserPlugin?.open) {
+    if (browserPlugin?.open) {
         browserPlugin.open({
             url: externalUrl,
             presentationStyle: 'fullscreen'
