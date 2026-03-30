@@ -185,12 +185,10 @@ const refreshAppUpdateSettingsUI = async () => {
     if (settingsEls.appUpdateCheckNow) {
         settingsEls.appUpdateCheckNow.hidden = false;
         settingsEls.appUpdateCheckNow.disabled = !isNativeAndroidApp;
-        settingsEls.appUpdateCheckNow.textContent = isNativeAndroidApp
-            ? 'Перевірити оновлення'
-            : 'Перевірка лише в Android';
+        settingsEls.appUpdateCheckNow.textContent = 'Перевірити оновлення';
         settingsEls.appUpdateCheckNow.title = isNativeAndroidApp
             ? 'Перевірити наявність новішої версії'
-            : 'Кнопка працює тільки в Android-додатку';
+            : 'Оновлення доступні тільки в Android-додатку';
     }
 
     if (settingsEls.appUpdateDebugStatus) {
@@ -237,13 +235,7 @@ const refreshAppUpdateSettingsUI = async () => {
     setUpdateChannelUI(effectiveChannel);
 
     if (settingsEls.updateChannelHelp) {
-        const helpText = betaAccessState?.lastError
-            ? 'Статус beta тимчасово недоступний'
-            : (currentChannel === 'beta'
-                ? 'Beta активний'
-                : 'Можна перемкнути на Beta');
-        settingsEls.updateChannelHelp.hidden = !betaAllowed || !helpText;
-        settingsEls.updateChannelHelp.textContent = betaAllowed ? helpText : '';
+        settingsEls.updateChannelHelp.hidden = true;
     }
 
     if (!settingsEls.appVersionHint) {
@@ -259,7 +251,8 @@ const refreshAppUpdateSettingsUI = async () => {
     }
 
     if (betaAllowed) {
-        settingsEls.appVersionHint.textContent = 'Цей пристрій має доступ до beta.';
+        settingsEls.appVersionHint.textContent = '';
+        settingsEls.appVersionHint.hidden = true;
         return;
     }
 
