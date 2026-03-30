@@ -69,10 +69,19 @@ work-shift-calendar/
 
 ## Запуск
 
-Проєкт не потребує збірки.
+Для звичайного браузерного запуску окрема збірка не потрібна.
+
+Рекомендований локальний режим розробки:
 
 ```bash
-start index.html
+npm install
+npm run dev:web
+```
+
+Для швидкої перевірки можна і без dev-сервера:
+
+```bash
+open index.html
 ```
 
 Або:
@@ -251,18 +260,30 @@ android/app/build/outputs/apk/debug/app-debug.apk
 Рекомендований флоу:
 
 1. локально перевіряєте UI через `npm run dev:web` + `npm run android:live`
-2. коли правка готова до тесту на телефоні, піднімаєте версію через `npm run version:set -- 1.0.1`
+2. коли правка готова до тесту на телефоні, піднімаєте версію через `npm run version:set -- x.y.z`
 3. збираєте beta APK (`work-shift-calendar-<version>-beta.apk`) і публікуєте його в `beta`
 4. `Beta` доступний тільки на пристроях, чий `installId` є в allowlist
 5. після апруву або публікуєте той самий білд у `stable`, або збираєте `work-shift-calendar.apk`
 6. усі інші пристрої отримують звичне сповіщення про нову версію
 
-Щоб його увімкнути в реальному середовищі:
+Поточна конфігурація в репозиторії вже використовує GitHub Pages цього проєкту:
+
+```js
+const APP_UPDATE_CHANNEL_DEFAULT = "stable";
+const APP_UPDATE_MANIFEST_URLS = {
+  stable: "https://denk0-ua.github.io/work-shift-calendar/stable/version.json",
+  beta: "https://denk0-ua.github.io/work-shift-calendar/beta/version.json",
+};
+const APP_UPDATE_BETA_ACCESS_URL =
+  "https://denk0-ua.github.io/work-shift-calendar/beta/access.json";
+```
+
+Якщо переносити цю схему в інший репозиторій або на інший Pages-домен:
 
 1. У `data/config.js` задайте актуальну версію:
 
 ```js
-const APP_RELEASE_VERSION = "1.0.0";
+const APP_RELEASE_VERSION = "x.y.z";
 ```
 
 2. Там само вкажіть канал за замовчуванням і URL маніфестів:
@@ -270,11 +291,11 @@ const APP_RELEASE_VERSION = "1.0.0";
 ```js
 const APP_UPDATE_CHANNEL_DEFAULT = "stable";
 const APP_UPDATE_MANIFEST_URLS = {
-  stable: "https://<user>.github.io/work-shift-calendar/stable/version.json",
-  beta: "https://<user>.github.io/work-shift-calendar/beta/version.json",
+  stable: "https://<user>.github.io/<repo>/stable/version.json",
+  beta: "https://<user>.github.io/<repo>/beta/version.json",
 };
 const APP_UPDATE_BETA_ACCESS_URL =
-  "https://<user>.github.io/work-shift-calendar/beta/access.json";
+  "https://<user>.github.io/<repo>/beta/access.json";
 ```
 
 3. Розмістіть на `GitHub Pages` два файли з однаковою структурою:
@@ -287,8 +308,8 @@ const APP_UPDATE_BETA_ACCESS_URL =
 
 ```json
 {
-  "version": "1.0.1",
-  "apkUrl": "https://example.com/work-shift-calendar/releases/work-shift-calendar-1.0.1.apk",
+  "version": "x.y.z",
+  "apkUrl": "https://example.com/work-shift-calendar/releases/work-shift-calendar-x.y.z.apk",
   "notes": "Додано нові зміни та виправлення."
 }
 ```
@@ -337,10 +358,10 @@ const APP_UPDATE_BETA_ACCESS_URL =
 Практичний флоу через GitHub UI:
 
 1. У GitHub відкрийте `Actions` -> `Release Beta APK`
-2. Вкажіть нову версію, наприклад `1.0.12`
+2. Вкажіть нову версію, наприклад `x.y.z`
 3. Дочекайтесь завершення workflow і перевірте beta-оновлення на телефоні
 4. Якщо все добре, відкрийте `Actions` -> `Promote Beta To Stable`
-5. Вкажіть ту саму версію, наприклад `1.0.12`
+5. Вкажіть ту саму версію `x.y.z`
 6. Після завершення workflow stable-користувачі побачать оновлення в застосунку
 
 Практичний флоу без GitHub UI:
@@ -348,13 +369,13 @@ const APP_UPDATE_BETA_ACCESS_URL =
 1. Для нової тестової збірки запустіть:
 
 ```bash
-npm run release:beta -- 1.0.16
+npm run release:beta -- x.y.z
 ```
 
 2. Для публікації вже перевіреної версії для всіх запустіть:
 
 ```bash
-npm run release:stable -- 1.0.16
+npm run release:stable -- x.y.z
 ```
 
 Поведінка:
@@ -368,7 +389,7 @@ npm run release:stable -- 1.0.16
 Окремо preflight можна прогнати вручну:
 
 ```bash
-npm run release:check -- beta 1.0.16
+npm run release:check -- beta x.y.z
 ```
 
 Для цього один раз треба додати GitHub Secrets:
