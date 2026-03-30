@@ -4,6 +4,9 @@
 }
 
 .settings-card {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
     max-width: 380px;
     max-height: 80vh;
     overflow-y: auto;
@@ -13,13 +16,13 @@
     font-family: var(--font-family-display);
     font-size: 26px;
     font-weight: 800;
-    margin-bottom: 28px;
+    margin-bottom: 0;
     text-align: left;
     letter-spacing: -0.04em;
 }
 
 .settings-group {
-    margin-bottom: 18px;
+    margin: 0;
     padding: 20px;
     border-radius: 22px;
     border: 1px solid var(--surface-panel-subtle-border);
@@ -37,31 +40,34 @@
     display: block;
 }
 
+.settings-group-color {
+    padding-bottom: 18px;
+}
+
 .color-picker-wrapper {
-    display: flex;
-    gap: 12px;
-    align-items: center;
+    position: relative;
+    display: block;
+    width: 100%;
+    min-height: 56px;
 }
 
 .color-picker-input {
-    width: 64px;
-    height: 48px;
-    border: 1px solid var(--card-border-strong);
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    border: none;
     border-radius: 16px;
     cursor: pointer;
-    transition: var(--control-transition);
     background: transparent;
-    box-shadow: none;
-}
-
-.color-picker-input:hover {
-    transform: scale(1.05);
+    z-index: 2;
 }
 
 .color-preview {
-    flex: 1;
-    min-height: 48px;
-    padding: 12px 14px;
+    width: 100%;
+    min-height: 56px;
+    padding: 14px 16px;
     border-radius: 16px;
     text-align: left;
     font-size: 12px;
@@ -70,7 +76,13 @@
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     display: flex;
     align-items: center;
+    border: 1px solid color-mix(in srgb, var(--card-border-strong) 86%, transparent);
     box-shadow: none;
+}
+
+.color-picker-wrapper:focus-within .color-preview {
+    border-color: color-mix(in srgb, var(--accent) 44%, var(--card-border-strong));
+    box-shadow: var(--focus-ring-soft);
 }
 
 .settings-meta-btn {
@@ -168,6 +180,10 @@
     overflow-wrap: anywhere;
 }
 
+.settings-group-app {
+    gap: 10px;
+}
+
 .settings-device-id-label,
 .settings-device-id-value {
     display: block;
@@ -204,7 +220,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 10px;
+    margin: 0;
 }
 
 .settings-buttons .btn-reset {
@@ -220,7 +236,7 @@
 
 .settings-danger-zone {
     position: relative;
-    margin-top: 20px;
+    margin: 0;
     padding: 20px;
     border-radius: 24px;
     border: 1px solid var(--surface-panel-danger-border);
@@ -332,4 +348,53 @@
 [data-theme="dark"] .settings-group {
     background: var(--surface-panel-subtle);
     border-color: var(--surface-panel-subtle-border);
+}
+
+@media (max-width: 720px) {
+    .settings-group-app {
+        padding: 16px;
+    }
+
+    .settings-group-app .settings-label {
+        margin-bottom: 10px;
+    }
+
+    .settings-group-app .settings-meta-btn {
+        padding: 14px 16px;
+        gap: 4px;
+        border-radius: 18px;
+    }
+
+    .settings-group-app .settings-meta-title {
+        font-size: 14px;
+    }
+
+    .settings-group-app .settings-help-text,
+    .settings-group-app .settings-update-debug {
+        font-size: 11px;
+        line-height: 1.45;
+        margin-top: 8px;
+    }
+
+    .settings-group-app .settings-check-update-btn {
+        margin-top: 8px;
+        padding: 12px 14px;
+        border-radius: 14px;
+        font-size: 12px;
+    }
+
+    .settings-group-app .settings-device-id-btn {
+        margin-top: 8px;
+        padding: 10px 12px;
+        border-radius: 14px;
+    }
+
+    .settings-group-app .settings-device-id-label {
+        font-size: 9px;
+    }
+
+    .settings-group-app .settings-device-id-value {
+        font-size: 10px;
+        line-height: 1.35;
+    }
 }

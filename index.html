@@ -190,7 +190,7 @@
                 </div>
             </div>
 
-            <div class="settings-group">
+            <div class="settings-group settings-group-color">
                 <label class="settings-label">Колір робочих днів</label>
                 <div class="color-picker-wrapper">
                     <input type="color" id="work-color" class="color-picker-input">
@@ -198,12 +198,16 @@
                 </div>
             </div>
 
-            <div class="settings-group">
+            <div class="settings-group settings-group-color">
                 <label class="settings-label">Колір вихідних днів</label>
                 <div class="color-picker-wrapper">
                     <input type="color" id="off-color" class="color-picker-input">
                     <div class="color-preview color-preview-off" id="off-preview">Вихідний день</div>
                 </div>
+            </div>
+
+            <div class="settings-buttons">
+                <button class="settings-btn-action btn-reset" id="reset-settings">Скинути тему</button>
             </div>
 
             <div class="settings-group">
@@ -213,7 +217,7 @@
                 </p>
             </div>
 
-            <div class="settings-group">
+            <div class="settings-group settings-group-app">
                 <label class="settings-label">📦 Застосунок</label>
                 <button class="settings-meta-btn" id="app-version-trigger" type="button">
                     <span class="settings-meta-title">Версія <span id="app-version-value">1.0.0</span></span>
@@ -242,10 +246,6 @@
                 <p class="settings-help-text helper-text" id="update-channel-help">
                     Stable для всіх пристроїв. Beta призначений тільки для цього пристрою, поки ви не апрувнули реліз.
                 </p>
-            </div>
-
-            <div class="settings-buttons">
-                <button class="settings-btn-action btn-reset" id="reset-settings">Скинути тему</button>
             </div>
 
             <div class="settings-danger-zone">

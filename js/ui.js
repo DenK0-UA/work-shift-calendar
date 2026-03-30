@@ -110,6 +110,7 @@ const refreshAppUpdateSettingsUI = async () => {
     const currentChannel = window.AppUpdate.getSelectedChannel?.() || 'stable';
     const betaAllowed = betaAccessState?.isAllowed === true;
     const betaConfigured = betaAccessState?.isConfigured === true;
+    const isNativeAndroidApp = window.AppUpdate.isNativeAndroidApp?.() === true;
     const channelLabel = window.AppUpdate.getChannelLabel?.(currentChannel) || currentChannel;
     const appVersion = window.AppUpdate.getAppVersion?.() || APP_RELEASE_VERSION;
     const installId = window.AppUpdate.getInstallId?.() || betaAccessState?.installId || '';
@@ -170,6 +171,11 @@ const refreshAppUpdateSettingsUI = async () => {
         settingsEls.appUpdateDownloadInline.dataset.downloadUrl = canDownload ? downloadUrl : '';
     }
 
+    if (settingsEls.appUpdateCheckNow) {
+        settingsEls.appUpdateCheckNow.hidden = !isNativeAndroidApp;
+        settingsEls.appUpdateCheckNow.disabled = !isNativeAndroidApp;
+    }
+
     if (settingsEls.appUpdateDebugStatus) {
         const checkedAt = debugState?.checkedAt
             ? new Date(debugState.checkedAt).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
@@ -188,9 +194,11 @@ const refreshAppUpdateSettingsUI = async () => {
             debugParts.push(`Перевірено: ${checkedAt}`);
         }
 
-        settingsEls.appUpdateDebugStatus.textContent = debugParts.length > 0
-            ? debugParts.join('\n')
-            : 'Статус перевірки оновлення: ще не запускалась.';
+        const shouldHideDebugStatus = debugState?.status === 'disabled' || debugParts.length === 0;
+        settingsEls.appUpdateDebugStatus.hidden = shouldHideDebugStatus;
+        settingsEls.appUpdateDebugStatus.textContent = shouldHideDebugStatus
+            ? ''
+            : debugParts.join('\n');
     }
 
     if (settingsEls.updateChannelGroup) {
@@ -217,8 +225,11 @@ const refreshAppUpdateSettingsUI = async () => {
         return;
     }
 
+    settingsEls.appVersionHint.hidden = false;
+
     if (!betaConfigured) {
-        settingsEls.appVersionHint.textContent = 'Beta-доступ ще не налаштовано. Пристрій працює лише через Stable.';
+        settingsEls.appVersionHint.textContent = '';
+        settingsEls.appVersionHint.hidden = true;
         return;
     }
 
@@ -227,7 +238,8 @@ const refreshAppUpdateSettingsUI = async () => {
         return;
     }
 
-    settingsEls.appVersionHint.textContent = 'Цей пристрій не має beta-доступу.';
+    settingsEls.appVersionHint.textContent = '';
+    settingsEls.appVersionHint.hidden = true;
 };
 
 let selectedStylePreset = getSavedStylePreset();
@@ -418,6 +430,7 @@ if (settingsEls.appInstallId) {
             }
 
             if (settingsEls.appVersionHint) {
+                settingsEls.appVersionHint.hidden = false;
                 settingsEls.appVersionHint.textContent = 'ID пристрою скопійовано.';
                 installIdHintResetTimer = window.setTimeout(() => {
                     installIdHintResetTimer = null;
@@ -426,6 +439,7 @@ if (settingsEls.appInstallId) {
             }
         } catch (error) {
             if (settingsEls.appVersionHint) {
+                settingsEls.appVersionHint.hidden = false;
                 settingsEls.appVersionHint.textContent = 'Не вдалося скопіювати ID.';
             }
         }

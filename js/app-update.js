@@ -602,7 +602,7 @@ async function checkForAppUpdate(options = {}) {
             status: 'disabled',
             message: !APP_UPDATE_CHECK_ENABLED
                 ? 'Перевірку оновлень вимкнено в конфігу.'
-                : 'Оновлення перевіряються тільки в Android-додатку.'
+                : ''
         });
         hideAppUpdateBanner();
         return;
