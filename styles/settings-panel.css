@@ -6,7 +6,7 @@
 .settings-card {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     max-width: 380px;
     max-height: 80vh;
     overflow-y: auto;
@@ -16,14 +16,14 @@
     font-family: var(--font-family-display);
     font-size: 26px;
     font-weight: 800;
-    margin-bottom: 0;
+    margin-bottom: 2px;
     text-align: left;
     letter-spacing: -0.04em;
 }
 
 .settings-group {
     margin: 0;
-    padding: 20px;
+    padding: 18px;
     border-radius: 22px;
     border: 1px solid var(--surface-panel-subtle-border);
     background: var(--surface-panel-subtle);
@@ -41,7 +41,7 @@
 }
 
 .settings-group-color {
-    padding-bottom: 18px;
+    padding-bottom: 16px;
 }
 
 .color-picker-wrapper {
@@ -85,27 +85,19 @@
     box-shadow: var(--focus-ring-soft);
 }
 
-.settings-meta-btn {
+.settings-meta-card {
     width: 100%;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 6px;
-    padding: 16px 18px;
+    gap: 4px;
+    padding: 14px 16px;
     border-radius: 20px;
     border: 1px solid var(--card-border);
     background: var(--surface-panel-muted);
     color: var(--text-primary);
     text-align: left;
-    cursor: pointer;
-    transition: var(--control-transition);
     box-shadow: none;
-}
-
-.settings-meta-btn:hover {
-    background: var(--surface-control-hover);
-    box-shadow: var(--surface-panel-elevated-shadow-hover);
-    transform: translateY(-1px);
 }
 
 .settings-meta-title {
@@ -118,11 +110,56 @@
     margin: 0;
 }
 
+.settings-group-app .settings-meta-caption,
+.settings-group-app .settings-help-text,
+.settings-group-app .settings-update-summary,
+.settings-group-app .settings-update-debug,
+.settings-group-app .settings-channel-help,
+.settings-group-app .settings-device-id-label,
+.settings-group-app .settings-device-id-value {
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+.settings-group-app #app-version-hint {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.settings-channel-block {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 14px;
+    border-radius: 18px;
+    border: 1px solid var(--surface-panel-subtle-border);
+    background: color-mix(in srgb, var(--surface-panel-muted) 76%, transparent);
+}
+
+.settings-channel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.settings-channel-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.settings-channel-help {
+    margin: 0;
+    text-align: right;
+}
+
 .settings-device-id-btn {
-    margin-top: 12px;
+    margin-top: 2px;
     display: block;
     width: 100%;
-    padding: 12px 14px;
+    padding: 10px 12px;
     border: 1px dashed color-mix(in srgb, var(--accent) 24%, var(--card-border));
     border-radius: 16px;
     background: color-mix(in srgb, var(--accent-soft) 42%, transparent);
@@ -139,8 +176,8 @@
 
 .settings-check-update-btn {
     width: 100%;
-    margin-top: 12px;
-    padding: 13px 14px;
+    margin-top: 0;
+    padding: 12px 14px;
     border: 1px solid var(--card-border);
     border-radius: 16px;
     background: var(--surface-control);
@@ -161,11 +198,11 @@
 }
 
 .settings-update-summary {
-    margin-top: 12px;
+    margin-top: 0;
 }
 
 .settings-update-download-btn {
-    margin-top: 10px;
+    margin-top: 0;
     background: color-mix(in srgb, var(--accent-primary) 16%, var(--surface-control));
     border-color: color-mix(in srgb, var(--accent-primary) 34%, var(--card-border));
 }
@@ -175,13 +212,15 @@
 }
 
 .settings-update-debug {
-    margin-top: 12px;
+    margin-top: 0;
     white-space: pre-line;
     overflow-wrap: anywhere;
 }
 
 .settings-group-app {
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .settings-device-id-label,
@@ -191,7 +230,6 @@
 
 .settings-device-id-label {
     margin-bottom: 3px;
-    font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -199,7 +237,6 @@
 }
 
 .settings-device-id-value {
-    font-size: 11px;
     line-height: 1.4;
     letter-spacing: 0.01em;
 }
@@ -219,7 +256,7 @@
 .settings-buttons {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 6px;
     margin: 0;
 }
 
@@ -237,7 +274,7 @@
 .settings-danger-zone {
     position: relative;
     margin: 0;
-    padding: 20px;
+    padding: 18px;
     border-radius: 24px;
     border: 1px solid var(--surface-panel-danger-border);
     background: var(--surface-panel-danger);
@@ -351,8 +388,12 @@
 }
 
 @media (max-width: 720px) {
+    .settings-card {
+        gap: 12px;
+    }
+
     .settings-group-app {
-        padding: 16px;
+        padding: 18px;
     }
 
     .settings-group-app .settings-label {
@@ -365,13 +406,29 @@
         border-radius: 18px;
     }
 
+    .settings-channel-block {
+        padding: 10px 12px;
+        gap: 6px;
+        border-radius: 16px;
+    }
+
+    .settings-channel-head {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .settings-channel-help {
+        text-align: left;
+    }
+
     .settings-group-app .settings-meta-title {
         font-size: 14px;
     }
 
     .settings-group-app .settings-help-text,
     .settings-group-app .settings-update-debug {
-        font-size: 11px;
+        font-size: 10px;
         line-height: 1.45;
         margin-top: 8px;
     }
@@ -384,7 +441,7 @@
     }
 
     .settings-group-app .settings-device-id-btn {
-        margin-top: 8px;
+        margin-top: 4px;
         padding: 10px 12px;
         border-radius: 14px;
     }
@@ -394,7 +451,7 @@
     }
 
     .settings-group-app .settings-device-id-value {
-        font-size: 10px;
+        font-size: 9px;
         line-height: 1.35;
     }
 }

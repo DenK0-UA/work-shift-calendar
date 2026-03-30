@@ -106,7 +106,7 @@ const refreshAppUpdateSettingsUI = async () => {
         return;
     }
 
-    const betaAccessState = await window.AppUpdate.loadBetaAccessState?.();
+    const betaAccessState = await window.AppUpdate.loadBetaAccessState?.(true);
     const currentChannel = window.AppUpdate.getSelectedChannel?.() || 'stable';
     const betaAllowed = betaAccessState?.isAllowed === true;
     const betaConfigured = betaAccessState?.isConfigured === true;
@@ -116,6 +116,15 @@ const refreshAppUpdateSettingsUI = async () => {
     const installId = window.AppUpdate.getInstallId?.() || betaAccessState?.installId || '';
     const debugState = window.AppUpdate.getDebugState?.();
     const debugMatchesCurrentChannel = !debugState?.channel || debugState.channel === currentChannel;
+
+    // Never leave non-beta users on beta channel from stale local storage state.
+    if (!betaAllowed && currentChannel === 'beta') {
+        window.AppUpdate.setSelectedChannel?.('stable');
+    }
+
+    const effectiveChannel = betaAllowed
+        ? (window.AppUpdate.getSelectedChannel?.() || 'stable')
+        : 'stable';
 
     if (settingsEls.appVersionValue) {
         settingsEls.appVersionValue.textContent = appVersion;
@@ -131,7 +140,9 @@ const refreshAppUpdateSettingsUI = async () => {
     }
 
     if (settingsEls.appUpdateChannelSummary) {
-        settingsEls.appUpdateChannelSummary.textContent = `Канал оновлень: ${channelLabel}`;
+        settingsEls.appUpdateChannelSummary.textContent = effectiveChannel === 'beta'
+            ? 'Отримуєте Beta-оновлення'
+            : 'Отримуєте Stable-оновлення';
     }
 
     if (settingsEls.appUpdateSummary) {
@@ -172,8 +183,14 @@ const refreshAppUpdateSettingsUI = async () => {
     }
 
     if (settingsEls.appUpdateCheckNow) {
-        settingsEls.appUpdateCheckNow.hidden = !isNativeAndroidApp;
+        settingsEls.appUpdateCheckNow.hidden = false;
         settingsEls.appUpdateCheckNow.disabled = !isNativeAndroidApp;
+        settingsEls.appUpdateCheckNow.textContent = isNativeAndroidApp
+            ? 'Перевірити оновлення'
+            : 'Перевірка лише в Android';
+        settingsEls.appUpdateCheckNow.title = isNativeAndroidApp
+            ? 'Перевірити наявність новішої версії'
+            : 'Кнопка працює тільки в Android-додатку';
     }
 
     if (settingsEls.appUpdateDebugStatus) {
@@ -202,23 +219,31 @@ const refreshAppUpdateSettingsUI = async () => {
     }
 
     if (settingsEls.updateChannelGroup) {
-        settingsEls.updateChannelGroup.hidden = !betaAllowed;
+        const shouldHide = !betaAllowed;
+        settingsEls.updateChannelGroup.hidden = shouldHide;
+        // Backup: также установить display:none для полной уверенности
+        if (shouldHide) {
+            settingsEls.updateChannelGroup.style.display = 'none';
+        } else {
+            settingsEls.updateChannelGroup.style.display = '';
+        }
+        console.log('[AppUpdate] Channel group visibility:', { betaAllowed, shouldHide, hidden: settingsEls.updateChannelGroup.hidden, installId: betaAccessState?.installId });
     }
 
     settingsEls.updateChannelBtns.forEach((button) => {
         const isBetaButton = button.dataset.updateChannel === 'beta';
         button.disabled = isBetaButton && !betaAllowed;
     });
-    setUpdateChannelUI(currentChannel);
+    setUpdateChannelUI(effectiveChannel);
 
     if (settingsEls.updateChannelHelp) {
-        settingsEls.updateChannelHelp.textContent = betaAccessState?.lastError
-            ? 'Не вдалося оновити beta-статус. Показано останній відомий стан.'
-            : (!betaAllowed
-                ? 'Beta-перемикач доступний тільки для дозволених пристроїв.'
-                : (currentChannel === 'beta'
-                    ? 'Цей пристрій зараз отримує beta-оновлення. Інші користувачі залишаються на Stable.'
-                    : ''));
+        const helpText = betaAccessState?.lastError
+            ? 'Статус beta тимчасово недоступний'
+            : (currentChannel === 'beta'
+                ? 'Beta активний'
+                : 'Можна перемкнути на Beta');
+        settingsEls.updateChannelHelp.hidden = !betaAllowed || !helpText;
+        settingsEls.updateChannelHelp.textContent = betaAllowed ? helpText : '';
     }
 
     if (!settingsEls.appVersionHint) {
@@ -234,7 +259,7 @@ const refreshAppUpdateSettingsUI = async () => {
     }
 
     if (betaAllowed) {
-        settingsEls.appVersionHint.textContent = 'Цей пристрій є в beta списку і може перемикатися між Stable та Beta.';
+        settingsEls.appVersionHint.textContent = 'Цей пристрій має доступ до beta.';
         return;
     }
 
@@ -367,15 +392,18 @@ const startHardResetHold = () => {
 
 bindLiveColorInput(settingsEls.workColor);
 bindLiveColorInput(settingsEls.offColor);
-refreshAppUpdateSettingsUI();
+// Initialize UI after DOM is ready - don't wait, just call
+refreshAppUpdateSettingsUI().catch(e => console.error('[AppUpdate] Error initializing UI:', e));
 
 document.addEventListener('app-update:state-changed', () => {
-    refreshAppUpdateSettingsUI();
+    refreshAppUpdateSettingsUI().catch(e => console.error('[AppUpdate] Error updating UI:', e));
 });
 
 if (settingsEls.settingsBtn && settingsEls.overlay) {
     settingsEls.settingsBtn.addEventListener('click', () => {
+        console.log('[AppUpdate] Settings clicked, refreshing UI');
         setSettingsOverlayOpen(true);
+        refreshAppUpdateSettingsUI();
     });
 }
 
@@ -447,21 +475,26 @@ if (settingsEls.appInstallId) {
 }
 
 settingsEls.updateChannelBtns.forEach((button) => {
-    button.addEventListener('click', () => {
+    button.addEventListener('click', async () => {
         if (!window.AppUpdate) {
             return;
         }
 
         const nextChannel = button.dataset.updateChannel;
         window.AppUpdate.setSelectedChannel?.(nextChannel);
-        refreshAppUpdateSettingsUI();
-        window.AppUpdate.checkForAppUpdate?.();
+        await window.AppUpdate.checkForAppUpdate?.({ manualCheck: true });
+        await refreshAppUpdateSettingsUI();
     });
 });
 
 if (settingsEls.appUpdateCheckNow) {
     settingsEls.appUpdateCheckNow.addEventListener('click', async () => {
         if (!window.AppUpdate) {
+            return;
+        }
+
+        if (window.AppUpdate.isNativeAndroidApp?.() !== true) {
+            await refreshAppUpdateSettingsUI();
             return;
         }
 

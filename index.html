@@ -219,13 +219,21 @@
 
             <div class="settings-group settings-group-app">
                 <label class="settings-label">📦 Застосунок</label>
-                <button class="settings-meta-btn" id="app-version-trigger" type="button">
+                <div class="settings-meta-card" id="app-version-trigger">
                     <span class="settings-meta-title">Версія <span id="app-version-value">1.0.0</span></span>
-                    <span class="settings-meta-caption helper-text" id="app-update-channel-summary">Канал оновлень: Stable</span>
-                </button>
-                <p class="settings-help-text helper-text" id="app-version-hint">
-                    Цей пристрій працює через Stable, якщо для нього не видано окремий beta-доступ.
-                </p>
+                    <span class="settings-meta-caption helper-text" id="app-update-channel-summary">Отримуєте Stable-оновлення</span>
+                </div>
+                <div class="settings-channel-block" id="update-channel-group" hidden>
+                    <div class="settings-channel-head">
+                        <span class="settings-channel-label">Канал оновлень</span>
+                        <p class="settings-channel-help helper-text" id="update-channel-help"></p>
+                    </div>
+                    <div class="theme-mode-switcher" id="update-channel-switcher">
+                        <button class="theme-mode-btn" type="button" data-update-channel="stable">Stable</button>
+                        <button class="theme-mode-btn" type="button" data-update-channel="beta">Beta</button>
+                    </div>
+                </div>
+                <p class="settings-help-text helper-text" id="app-version-hint" hidden></p>
                 <button class="settings-check-update-btn" id="app-update-check-now" type="button">Перевірити оновлення</button>
                 <p class="settings-update-summary helper-text" id="app-update-summary" hidden></p>
                 <button class="settings-check-update-btn settings-update-download-btn" id="app-update-download-inline" type="button" hidden>Завантажити оновлення</button>
@@ -235,17 +243,6 @@
                 <button class="settings-device-id-btn" id="app-install-id" type="button">
                     ID пристрою: ...
                 </button>
-            </div>
-
-            <div class="settings-group" id="update-channel-group" hidden>
-                <label class="settings-label">Канал оновлень</label>
-                <div class="theme-mode-switcher" id="update-channel-switcher">
-                    <button class="theme-mode-btn" type="button" data-update-channel="stable">Stable</button>
-                    <button class="theme-mode-btn" type="button" data-update-channel="beta">Beta</button>
-                </div>
-                <p class="settings-help-text helper-text" id="update-channel-help">
-                    Stable для всіх пристроїв. Beta призначений тільки для цього пристрою, поки ви не апрувнули реліз.
-                </p>
             </div>
 
             <div class="settings-danger-zone">

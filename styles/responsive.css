@@ -318,10 +318,6 @@
         font-size: 11px;
     }
 
-    .settings-group {
-        margin-bottom: 20px;
-    }
-
     .settings-danger-zone {
         padding: 16px;
         border-radius: 20px;
@@ -450,8 +446,12 @@
     }
 
     .settings-group {
-        padding: 16px;
+        padding: 18px;
         border-radius: 20px;
+    }
+
+    .settings-card {
+        gap: 12px;
     }
 
     .undo-toast {
@@ -479,6 +479,10 @@
     .depth-panel {
         padding: 16px;
         border-radius: 18px;
+    }
+
+    .settings-card {
+        gap: 10px;
     }
 
     header.depth-panel {
@@ -675,7 +679,7 @@
     }
 }
 
-@media (max-height: 820px) and (min-width: 481px) {
+@media (max-height: 820px) and (max-width: 519px) {
     .schedule-overlay.setup-mode .schedule-card {
         max-height: min(94vh, 680px);
         padding: 22px 22px 20px;

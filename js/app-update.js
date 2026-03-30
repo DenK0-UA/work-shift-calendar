@@ -442,10 +442,14 @@ async function loadBetaAccessState(force = false) {
     }
 
     betaAccessState.loadingPromise = (async () => {
+        console.log('[AppUpdate] Loading beta access state (force=' + force + ')');
         const accessData = await fetchJsonWithTimeout(readBetaAccessUrl());
         if (!accessData || !Array.isArray(accessData.allowedInstallIds)) {
+            console.log('[AppUpdate] Failed to load allowlist or invalid format');
+            betaAccessState.isAllowed = false;
             betaAccessState.isLoaded = true;
             betaAccessState.lastError = true;
+            writeSelectedChannel(APP_UPDATE_CHANNELS.stable);
             return getBetaAccessSnapshot();
         }
 
@@ -456,6 +460,7 @@ async function loadBetaAccessState(force = false) {
             : [];
 
         betaAccessState.isAllowed = allowedInstallIds.includes(betaAccessState.installId);
+        console.log('[AppUpdate] Beta check:', { installId: betaAccessState.installId, isAllowed: betaAccessState.isAllowed, allowedCount: allowedInstallIds.length });
         betaAccessState.isLoaded = true;
         betaAccessState.lastResolvedAt = Date.now();
         betaAccessState.lastError = false;
