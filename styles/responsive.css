@@ -11,15 +11,38 @@
 
     .depth-panel {
         border-radius: 20px;
-        padding: 16px;
+        padding: 18px;
+    }
+
+    header.depth-panel {
+        padding-bottom: 18px;
     }
 
     h1 {
         font-size: 24px;
+        line-height: 0.98;
     }
 
     .subtitle {
         font-size: 12px;
+    }
+
+    .header-top {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .header-top > :first-child {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .header-actions {
+        flex-shrink: 0;
+        justify-content: flex-end;
+        gap: 8px;
     }
 
     .weekdays {
@@ -34,6 +57,7 @@
     .day {
         aspect-ratio: 1;
         padding: 8px;
+        min-height: 52px;
     }
 
     .date-num {
@@ -206,49 +230,73 @@
     }
 
     .month-title {
-        min-width: 120px;
-        padding: 0 12px;
+        min-width: 0;
+        flex: 1;
+        padding: 0 10px;
+        font-size: 14px;
     }
 
-    .btn-icon {
+    .btn-icon,
+    .settings-btn {
         width: 36px;
         height: 36px;
         font-size: 16px;
     }
 
+    .controls-row {
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .month-switcher {
+        flex: 1;
+        width: auto;
+        min-width: 0;
+    }
+
     .calendar-actions {
         gap: 8px;
+        flex-shrink: 0;
+        width: 100%;
+        justify-content: flex-start;
     }
 
     .today-btn {
         font-size: 13px;
         min-height: 42px;
         padding: 10px 16px;
+        min-width: 132px;
     }
 
-    .header-top,
-    .controls-row,
     .summary-legend {
-        flex-direction: column;
-        align-items: stretch;
-    }
-
-    .header-actions,
-    .calendar-actions {
-        justify-content: flex-start;
-    }
-
-    .month-switcher {
-        width: 100%;
-        justify-content: space-between;
+        flex-direction: row;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 18px;
     }
 
     .stats {
-        width: 100%;
+        width: auto;
+        gap: 8px;
+    }
+
+    .separator {
+        height: 34px;
     }
 
     .logo-area {
-        align-self: flex-end;
+        align-self: auto;
+        font-size: 12px;
+        letter-spacing: 0.16em;
+    }
+
+    .calendar-section {
+        padding: 16px 16px 18px;
+    }
+
+    .calendar-grid {
+        gap: 6px;
     }
 
     .panel-heading {
@@ -284,6 +332,12 @@
         font-size: 22px;
     }
 
+    .stat-item {
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 16px;
+    }
+
     .calendar-section {
         position: relative;
         overflow: hidden;
@@ -303,6 +357,117 @@
     .schedule-overlay.active ~ .undo-toast,
     .settings-overlay.active ~ .undo-toast {
         bottom: calc(env(safe-area-inset-bottom, 0px) + 176px);
+    }
+}
+
+@media (max-width: 390px) {
+    body {
+        padding: 10px 6px;
+    }
+
+    .main-container {
+        gap: 10px;
+        padding: 6px;
+    }
+
+    .depth-panel {
+        padding: 14px;
+        border-radius: 18px;
+    }
+
+    header.depth-panel {
+        padding-bottom: 14px;
+    }
+
+    h1 {
+        font-size: 20px;
+        letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+        font-size: 11px;
+    }
+
+    .header-top {
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .header-actions {
+        gap: 6px;
+    }
+
+    .btn-icon,
+    .settings-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        font-size: 15px;
+    }
+
+    .month-switcher {
+        width: 100%;
+        padding: 5px;
+        border-radius: 18px;
+    }
+
+    .month-title {
+        font-size: 13px;
+        padding: 0 8px;
+    }
+
+    .today-btn {
+        min-height: 40px;
+        min-width: 120px;
+        padding: 9px 14px;
+        border-radius: 16px;
+        font-size: 12px;
+    }
+
+    .calendar-section {
+        padding: 14px 12px 16px;
+    }
+
+    .weekdays span {
+        font-size: 11px;
+        padding: 6px 0;
+    }
+
+    .calendar-grid {
+        gap: 5px;
+    }
+
+    .day {
+        min-height: 48px;
+        border-radius: 16px;
+    }
+
+    .date-num {
+        font-size: 15px;
+    }
+
+    .holiday-marker {
+        width: 8px;
+        height: 8px;
+        top: 5px;
+        right: 5px;
+    }
+
+    .summary-legend {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+        padding: 14px;
+    }
+
+    .stats {
+        width: 100%;
+        gap: 6px;
+    }
+
+    .logo-area {
+        align-self: flex-end;
+        font-size: 11px;
     }
 }
 
