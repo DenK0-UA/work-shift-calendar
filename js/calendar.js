@@ -247,8 +247,8 @@ function renderCalendar(year, month) {
     calendarEls.monthTitle.textContent = `${localeData.months[month]} ${year}`;
 
     const fragment = document.createDocumentFragment();
-    const firstDayOfWeek = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDayOfWeek = new Date(Date.UTC(year, month, 1)).getUTCDay();
+    const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
     const paddingDays = firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1;
     const stats = { work: 0, off: 0 };
 

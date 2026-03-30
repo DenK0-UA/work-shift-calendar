@@ -296,23 +296,23 @@ function updateSubtitle() {
 function getPeriodRange(period, year = currentState.year, month = currentState.month) {
     if (period === 'year') {
         return {
-            start: new Date(year, 0, 1),
-            end: new Date(year, 11, 31),
+            start: new Date(Date.UTC(year, 0, 1)),
+            end: new Date(Date.UTC(year, 11, 31)),
             label: `${year} рік`
         };
     }
 
     if (period === 'quarter') {
         return {
-            start: new Date(year, month, 1),
-            end: new Date(year, month + 3, 0),
+            start: new Date(Date.UTC(year, month, 1)),
+            end: new Date(Date.UTC(year, month + 3, 0)),
             label: `${localeData.months[month]} + 2 міс.`
         };
     }
 
     return {
-        start: new Date(year, month, 1),
-        end: new Date(year, month + 1, 0),
+        start: new Date(Date.UTC(year, month, 1)),
+        end: new Date(Date.UTC(year, month + 1, 0)),
         label: `${localeData.months[month]} ${year}`
     };
 }
@@ -328,10 +328,10 @@ function calculatePeriodStats(period, year = currentState.year, month = currentS
     let maxOffStreak = 0;
     let customCount = 0;
 
-    for (let date = new Date(range.start); date <= range.end; date.setDate(date.getDate() + 1)) {
-        const yearValue = date.getFullYear();
-        const monthValue = date.getMonth();
-        const dayValue = date.getDate();
+    for (let date = new Date(range.start); date <= range.end; date.setUTCDate(date.getUTCDate() + 1)) {
+        const yearValue = date.getUTCFullYear();
+        const monthValue = date.getUTCMonth();
+        const dayValue = date.getUTCDate();
         const key = getDayStorageKey(yearValue, monthValue, dayValue);
         const status = customStatuses[key] || getScheduledDayStatus(yearValue, monthValue, dayValue);
 
