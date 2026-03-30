@@ -211,8 +211,8 @@ npm run version:set -- 1.0.1
 - `package.json`
 - `data/config.js`
 - `android/app/build.gradle`
-- `beta/version.json`
-- `stable/version.json`
+
+`beta/version.json` і `stable/version.json` оновлюються релізними workflow після тегів `beta-X.Y.Z` / `stable-X.Y.Z`.
 
 1. Запустіть `npm run cap:android`
 2. Відкрийте Android Studio через `npm run android:open`
@@ -229,7 +229,7 @@ cd android
 Готовий debug APK зазвичай буде тут:
 
 ```text
-android/app/build/outputs/apk/debug/work-shift-calendar-beta.apk
+android/app/build/outputs/apk/debug/app-debug.apk
 ```
 
 ### Важливо
@@ -252,7 +252,7 @@ android/app/build/outputs/apk/debug/work-shift-calendar-beta.apk
 
 1. локально перевіряєте UI через `npm run dev:web` + `npm run android:live`
 2. коли правка готова до тесту на телефоні, піднімаєте версію через `npm run version:set -- 1.0.1`
-3. збираєте `work-shift-calendar-beta.apk` і публікуєте його в `beta`
+3. збираєте beta APK (`work-shift-calendar-<version>-beta.apk`) і публікуєте його в `beta`
 4. `Beta` доступний тільки на пристроях, чий `installId` є в allowlist
 5. після апруву або публікуєте той самий білд у `stable`, або збираєте `work-shift-calendar.apk`
 6. усі інші пристрої отримують звичне сповіщення про нову версію
@@ -310,7 +310,7 @@ const APP_UPDATE_BETA_ACCESS_URL =
 - якщо пристрій є в allowlist, він може перейти на `beta` і перевіряти `beta/version.json`
 - якщо у вибраному каналі версія новіша за `APP_RELEASE_VERSION`, показується кнопка `Завантажити APK`
 - якщо натиснути `Пізніше`, банер сховається на 24 години, а потім з’явиться знову, якщо APK досі не оновлено
-- при кожному релізі нового `APK` достатньо запустити `npm run version:set -- x.y.z`, щоб синхронно оновити версію в проєкті й маніфестах
+- при кожному релізі нового `APK` запускайте `npm run version:set -- x.y.z`, щоб оновити версію застосунку; маніфести каналів оновлюються релізними workflow
 - `beta` можна використовувати для особистої перевірки до того, як реліз піде на всіх
 - якщо `version.json` або `apkUrl` лежать на іншому домені, той домен має дозволяти `CORS`; найпростіше тримати маніфест на тому ж хостингу, що й сайт
 
