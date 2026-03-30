@@ -18,13 +18,13 @@
 }
 
 .day {
-    --calendar-day-radius: 34%;
+    --calendar-day-radius: 30%;
     border-width: 1px;
     border-color: var(--calendar-day-border);
 }
 
 .day {
-    box-shadow: none;
+    box-shadow: var(--surface-panel-subtle-shadow);
 }
 
 /* Статуси */
@@ -100,11 +100,7 @@
 
 /* Поточний день */
 .day.today {
-    border: 3px solid var(--accent);
-    box-shadow: var(--focus-ring-soft) !important;
-}
-
-.day.today {
+    border: 2px solid color-mix(in srgb, var(--accent) 82%, white);
     box-shadow: var(--calendar-today-shadow) !important;
 }
 
@@ -127,10 +123,10 @@
 /* Маркер свята */
 .holiday-marker {
     position: absolute;
-    top: 6px;
-    right: 6px;
-    width: 7px;
-    height: 7px;
+    top: 7px;
+    right: 7px;
+    width: 8px;
+    height: 8px;
     background-color: var(--holiday-color);
     border-radius: 50%;
     box-shadow: 0 0 0 2px var(--holiday-marker-ring), var(--holiday-marker-shadow);
@@ -141,12 +137,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 20px;
+    gap: 18px;
+    padding: 18px 20px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(246, 249, 253, 0.96));
 }
 
 .stats {
     display: flex;
-    gap: 16px;
+    flex: 1;
+    gap: 12px;
 }
 
 .stat-item {
@@ -154,14 +153,17 @@
     align-items: center;
     gap: 10px;
     cursor: pointer;
-    padding: 6px 12px;
-    border-radius: 12px;
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 18px;
+    border: 1px solid transparent;
     transition: background 0.2s;
     user-select: none;
 }
 
 .stat-item:hover {
-    background: var(--surface-control-strong);
+    background: var(--surface-panel-muted);
+    border-color: var(--surface-panel-muted-border);
 }
 
 [data-theme="dark"] .stat-item:hover {
@@ -169,27 +171,29 @@
 }
 
 .legend-circle {
-    width: 14px;
-    height: 14px;
+    width: 15px;
+    height: 15px;
     border-radius: 50%;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 .stat-num {
     font-family: var(--font-family-numeric);
-    font-size: 20px;
-    font-weight: 700;
+    font-size: 24px;
+    font-weight: 800;
     font-variant-numeric: tabular-nums;
+    letter-spacing: -0.04em;
 }
 
 .stat-label {
     font-size: 12px;
     color: var(--text-secondary);
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .separator {
     width: 1px;
-    height: 34px;
+    height: 42px;
     background: var(--card-border);
 }
 
@@ -199,14 +203,15 @@
     font-weight: 800;
     color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 2px;
-    opacity: 0.6;
+    letter-spacing: 0.18em;
+    opacity: 0.52;
+    white-space: nowrap;
 }
 
 /* Фільтрація кліком по легенді */
 .grid-dim .day:not(.filtered) {
-    opacity: 0.15;
-    filter: blur(1.5px);
+    opacity: 0.24;
+    filter: blur(1px);
     transform: scale(0.95) !important;
 }
 

@@ -122,7 +122,7 @@
     }
 
     .schedule-btn {
-        min-height: 92px;
+        min-height: 96px;
         padding: 12px 10px;
         border-radius: 14px;
         gap: 6px;
@@ -193,7 +193,7 @@
     }
 
     .stat-item {
-        padding: 4px 8px;
+        padding: 8px 10px;
         font-size: 14px;
     }
 
@@ -207,11 +207,12 @@
 
     .month-title {
         min-width: 120px;
+        padding: 0 12px;
     }
 
     .btn-icon {
-        width: 32px;
-        height: 32px;
+        width: 36px;
+        height: 36px;
         font-size: 16px;
     }
 
@@ -221,7 +222,33 @@
 
     .today-btn {
         font-size: 13px;
-        padding: 8px 16px;
+        min-height: 42px;
+        padding: 10px 16px;
+    }
+
+    .header-top,
+    .controls-row,
+    .summary-legend {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .header-actions,
+    .calendar-actions {
+        justify-content: flex-start;
+    }
+
+    .month-switcher {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .stats {
+        width: 100%;
+    }
+
+    .logo-area {
+        align-self: flex-end;
     }
 
     .panel-heading {
@@ -260,6 +287,11 @@
     .calendar-section {
         position: relative;
         overflow: hidden;
+    }
+
+    .settings-group {
+        padding: 16px;
+        border-radius: 20px;
     }
 
     .undo-toast {
@@ -319,7 +351,7 @@
 
 @media (min-width: 768px) {
     .main-container {
-        max-width: 540px;
+        max-width: 560px;
         gap: 14px;
     }
 
@@ -347,7 +379,7 @@
 
 @media (min-width: 1024px) {
     .main-container {
-        max-width: 540px;
+        max-width: 560px;
         gap: 12px;
     }
 

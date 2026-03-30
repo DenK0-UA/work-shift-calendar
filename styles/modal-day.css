@@ -10,10 +10,10 @@
 
 .modal-date {
     font-family: var(--font-family-numeric);
-    font-size: 56px;
+    font-size: 58px;
     font-weight: 800;
     letter-spacing: -2px;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
     line-height: 1;
 }
 
@@ -21,7 +21,7 @@
     font-size: 15px;
     color: var(--text-secondary);
     font-weight: 500;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
     text-transform: capitalize;
 }
 
@@ -44,14 +44,15 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 14px 28px;
-    border-radius: 18px;
+    padding: 15px 28px;
+    border-radius: 20px;
     font-size: 14px;
     font-weight: 700;
     margin-bottom: 24px;
     transition: var(--control-transition);
     width: 100%;
     box-shadow: var(--surface-panel-elevated-shadow);
+    border: 1px solid rgba(255, 255, 255, 0.24);
 }
 
 .modal-status-badge:hover {
@@ -62,16 +63,16 @@
 .modal-status-actions {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 8px;
-    margin-bottom: 10px;
+    gap: 10px;
+    margin-bottom: 12px;
 }
 
 .modal-status-action {
     border: 1px solid var(--card-border);
-    background: var(--surface-control);
+    background: var(--surface-panel-subtle);
     color: var(--text-primary);
     border-radius: 16px;
-    padding: 11px 10px;
+    padding: 12px 10px;
     font-size: 12px;
     font-weight: 800;
     cursor: pointer;
@@ -86,7 +87,7 @@
 }
 
 .modal-status-action.active {
-    background: var(--accent-soft);
+    background: color-mix(in srgb, var(--accent-soft-strong) 74%, var(--surface-panel-subtle));
     border-color: var(--accent);
     color: var(--accent);
 }
@@ -118,10 +119,11 @@
     gap: 12px;
     text-align: left;
     padding: 14px 16px;
-    border-radius: 18px;
+    border-radius: 20px;
     background: var(--surface-panel-accent);
     border: 1px solid var(--surface-panel-accent-border);
     margin-bottom: 20px;
+    box-shadow: var(--surface-panel-accent-shadow);
 }
 
 [data-theme="dark"] .modal-weather {
@@ -132,7 +134,7 @@
 .modal-weather-icon {
     width: 46px;
     height: 46px;
-    border-radius: 14px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -172,6 +174,7 @@
     min-height: 92px;
     resize: vertical;
     line-height: 1.45;
+    box-shadow: var(--surface-panel-subtle-shadow);
 }
 
 .modal-note-actions {
@@ -216,7 +219,7 @@
     gap: 12px;
     max-width: min(92vw, 420px);
     padding: 12px 14px;
-    border-radius: 18px;
+    border-radius: 20px;
     background: var(--main-container-bg);
     border: 1px solid var(--card-border);
     box-shadow: var(--surface-shell-shadow);

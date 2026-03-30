@@ -1,11 +1,13 @@
 :root {
-    /* Palette - Ultra Modern / Apple-like */
-    --bg-color: #eef3f7;
-    --main-container-bg: #fbfdff;
-    --text-primary: #17212b;
-    --text-secondary: #64748b;
-    --accent: #0f6cbd;
-    --accent-soft: rgba(15, 108, 189, 0.1);
+    /* Palette - refined soft glass system */
+    --bg-color: #eef4fb;
+    --main-container-bg: rgba(251, 253, 255, 0.94);
+    --text-primary: #162130;
+    --text-secondary: #66788f;
+    --accent: #1174cb;
+    --accent-primary: var(--accent);
+    --accent-soft: rgba(17, 116, 203, 0.12);
+    --accent-soft-strong: rgba(17, 116, 203, 0.18);
 
     /* Нові кольори: Сірий для роботи, Зелений для вихідних */
     --work-bg: #dbe7f3;
@@ -16,31 +18,32 @@
     --holiday-color: #d13438;
     --holiday-marker-ring: rgba(251, 253, 255, 0.94);
     --holiday-marker-shadow: 0 4px 10px rgba(209, 52, 56, 0.24);
-    --glass-bg: rgba(255, 255, 255, 0.56);
-    --glass-border: rgba(255, 255, 255, 0.72);
-    --card-border: rgba(15, 23, 42, 0.06);
-    --card-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
-    --card-hover-shadow: 0 18px 44px rgba(15, 23, 42, 0.14);
-    --card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.72);
-    --card-depth-shadow: 0 18px 36px rgba(15, 23, 42, 0.08);
-    --surface-control: rgba(255, 255, 255, 0.6);
-    --surface-control-hover: rgba(255, 255, 255, 0.82);
-    --surface-control-strong: rgba(0, 0, 0, 0.05);
-    --surface-control-strong-hover: rgba(0, 0, 0, 0.1);
-    --surface-shell-border: rgba(255, 255, 255, 0.15);
-    --surface-shell-shadow: var(--card-highlight), 0 2px 8px rgba(0, 0, 0, 0.08), 0 20px 60px rgba(0, 0, 0, 0.24), var(--card-depth-shadow);
+    --glass-bg: rgba(255, 255, 255, 0.62);
+    --glass-border: rgba(255, 255, 255, 0.76);
+    --card-border: rgba(15, 23, 42, 0.075);
+    --card-border-strong: rgba(15, 23, 42, 0.12);
+    --card-shadow: 0 18px 38px rgba(15, 23, 42, 0.08), 0 4px 16px rgba(83, 114, 146, 0.08);
+    --card-hover-shadow: 0 24px 48px rgba(15, 23, 42, 0.12), 0 10px 24px rgba(17, 116, 203, 0.1);
+    --card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.84);
+    --card-depth-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+    --surface-control: rgba(255, 255, 255, 0.68);
+    --surface-control-hover: rgba(255, 255, 255, 0.92);
+    --surface-control-strong: rgba(22, 33, 48, 0.055);
+    --surface-control-strong-hover: rgba(22, 33, 48, 0.1);
+    --surface-shell-border: rgba(255, 255, 255, 0.22);
+    --surface-shell-shadow: var(--card-highlight), 0 8px 24px rgba(79, 107, 138, 0.08), 0 24px 64px rgba(15, 23, 42, 0.16), var(--card-depth-shadow);
     --surface-shell-gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.16), transparent 26%);
     --surface-shell-gloss-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0));
-    --surface-panel-elevated-shadow: var(--card-highlight), 0 1px 3px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.12), var(--card-depth-shadow);
-    --surface-panel-elevated-shadow-hover: 0 2px 8px rgba(15, 23, 42, 0.12), 0 16px 30px rgba(15, 23, 42, 0.1);
+    --surface-panel-elevated-shadow: var(--card-highlight), 0 6px 16px rgba(15, 23, 42, 0.06), 0 16px 30px rgba(15, 23, 42, 0.08), var(--card-depth-shadow);
+    --surface-panel-elevated-shadow-hover: 0 10px 22px rgba(15, 23, 42, 0.1), 0 20px 38px rgba(17, 116, 203, 0.08);
     --surface-panel-gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent 24%);
-    --surface-panel-accent: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(224, 238, 255, 0.42));
-    --surface-panel-accent-border: rgba(15, 108, 189, 0.14);
-    --surface-panel-accent-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.74), 0 12px 28px rgba(15, 108, 189, 0.08);
-    --surface-panel-subtle: linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(246, 249, 253, 0.86));
-    --surface-panel-subtle-border: rgba(15, 23, 42, 0.05);
-    --surface-panel-subtle-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78), 0 8px 20px rgba(15, 23, 42, 0.04);
-    --surface-panel-muted: linear-gradient(180deg, rgba(0, 0, 0, 0.02), rgba(0, 122, 255, 0.04));
+    --surface-panel-accent: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(228, 240, 255, 0.72));
+    --surface-panel-accent-border: rgba(17, 116, 203, 0.16);
+    --surface-panel-accent-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), 0 14px 30px rgba(17, 116, 203, 0.08);
+    --surface-panel-subtle: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(244, 248, 252, 0.96));
+    --surface-panel-subtle-border: rgba(15, 23, 42, 0.06);
+    --surface-panel-subtle-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.86), 0 10px 22px rgba(15, 23, 42, 0.045);
+    --surface-panel-muted: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(239, 246, 253, 0.92));
     --surface-panel-muted-border: var(--card-border);
     --surface-panel-muted-shadow: var(--card-highlight), 0 10px 22px rgba(15, 23, 42, 0.05);
     --surface-panel-danger: linear-gradient(180deg, rgba(255, 59, 48, 0.045), rgba(255, 255, 255, 0.72));
@@ -49,14 +52,14 @@
     --surface-panel-danger-button: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 246, 246, 0.94));
     --surface-panel-danger-button-hover: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(255, 241, 241, 0.98));
     --surface-panel-danger-button-border: rgba(255, 59, 48, 0.22);
-    --surface-input: rgba(255, 255, 255, 0.7);
-    --surface-badge: rgba(255, 255, 255, 0.68);
+    --surface-input: rgba(255, 255, 255, 0.84);
+    --surface-badge: rgba(255, 255, 255, 0.76);
     --surface-badge-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
     --surface-danger-badge: rgba(255, 59, 48, 0.08);
-    --surface-button-accent: linear-gradient(180deg, #8eb8e9, #7ca9df);
+    --surface-button-accent: linear-gradient(180deg, #8fbdf4, #6fa8ea);
     --surface-button-accent-border: transparent;
-    --surface-button-accent-shadow: 0 10px 24px rgba(74, 136, 214, 0.28);
-    --field-radius: 16px;
+    --surface-button-accent-shadow: 0 12px 26px rgba(74, 136, 214, 0.24);
+    --field-radius: 18px;
     --field-padding: 12px 14px;
     --helper-text-size: 12px;
     --helper-line-height: 1.55;
@@ -65,13 +68,22 @@
     --text-on-accent: #ffffff;
     --text-accent-strong: color-mix(in srgb, var(--accent) 88%, black);
     --modal-overlay: rgba(243, 247, 251, 0.7);
+    --shell-radius: 30px;
+    --panel-radius: 24px;
+    --control-radius-sm: 14px;
+    --control-radius-md: 18px;
+    --panel-padding: 24px;
+    --section-gap: 14px;
+    --kicker-bg: rgba(255, 255, 255, 0.82);
+    --kicker-border: rgba(17, 116, 203, 0.12);
     --base-font-size: 16px;
     --font-family-base: "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
     --font-family-display: "SF Pro Rounded", "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
     --font-family-numeric: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Segoe UI", sans-serif;
     --font-family: var(--font-family-base);
-    --page-gradient: radial-gradient(circle at top, rgba(255, 255, 255, 0.96), rgba(236, 243, 248, 0.94) 46%, rgba(220, 231, 240, 0.92));
-    --noise-opacity: 0.01;
+    --page-gradient: radial-gradient(circle at top, rgba(255, 255, 255, 0.96), rgba(238, 245, 252, 0.94) 42%, rgba(224, 235, 247, 0.94));
+    --page-side-glow: radial-gradient(circle at 0% 12%, rgba(157, 193, 230, 0.18), transparent 28%), radial-gradient(circle at 100% 24%, rgba(180, 210, 240, 0.16), transparent 24%);
+    --noise-opacity: 0.012;
     --calendar-day-gloss: rgba(255, 255, 255, 0.34);
     --calendar-day-shimmer: rgba(255, 255, 255, 0.2);
     --calendar-day-border: rgba(15, 108, 189, 0.08);
@@ -102,11 +114,13 @@
 
 [data-theme="dark"] {
     --bg-color: #0b1220;
-    --main-container-bg: #121a28;
+    --main-container-bg: rgba(18, 26, 40, 0.94);
     --text-primary: #eef4fb;
     --text-secondary: #93a4b8;
     --accent: #5ab0ff;
+    --accent-primary: var(--accent);
     --accent-soft: rgba(90, 176, 255, 0.16);
+    --accent-soft-strong: rgba(90, 176, 255, 0.22);
 
     /* Темна тема кольорів */
     --work-bg: #2a3b52;
@@ -117,31 +131,32 @@
     --holiday-color: #ff6b6b;
     --holiday-marker-ring: rgba(18, 26, 40, 0.96);
     --holiday-marker-shadow: 0 4px 12px rgba(255, 107, 107, 0.28);
-    --glass-bg: rgba(14, 24, 38, 0.56);
-    --glass-border: rgba(164, 197, 235, 0.08);
-    --card-border: rgba(164, 197, 235, 0.08);
-    --card-shadow: 0 14px 40px rgba(0, 0, 0, 0.34);
-    --card-hover-shadow: 0 18px 52px rgba(0, 0, 0, 0.44);
+    --glass-bg: rgba(14, 24, 38, 0.64);
+    --glass-border: rgba(164, 197, 235, 0.1);
+    --card-border: rgba(164, 197, 235, 0.1);
+    --card-border-strong: rgba(164, 197, 235, 0.16);
+    --card-shadow: 0 18px 42px rgba(0, 0, 0, 0.32);
+    --card-hover-shadow: 0 22px 54px rgba(0, 0, 0, 0.42), 0 10px 26px rgba(90, 176, 255, 0.08);
     --card-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.05);
     --card-depth-shadow: 0 24px 44px rgba(0, 0, 0, 0.26);
     --surface-control: rgba(255, 255, 255, 0.08);
-    --surface-control-hover: rgba(255, 255, 255, 0.15);
+    --surface-control-hover: rgba(255, 255, 255, 0.14);
     --surface-control-strong: rgba(255, 255, 255, 0.08);
     --surface-control-strong-hover: rgba(255, 255, 255, 0.15);
     --surface-shell-border: rgba(164, 197, 235, 0.08);
     --surface-shell-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 20px 60px rgba(0, 0, 0, 0.5);
     --surface-shell-gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 26%);
     --surface-shell-gloss-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0));
-    --surface-panel-elevated-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.25);
-    --surface-panel-elevated-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.5), 0 16px 40px rgba(0, 0, 0, 0.4);
+    --surface-panel-elevated-shadow: 0 6px 18px rgba(0, 0, 0, 0.28), 0 16px 34px rgba(0, 0, 0, 0.2);
+    --surface-panel-elevated-shadow-hover: 0 10px 24px rgba(0, 0, 0, 0.4), 0 18px 42px rgba(0, 0, 0, 0.3);
     --surface-panel-gloss: linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 24%);
     --surface-panel-accent: linear-gradient(180deg, rgba(24, 38, 58, 0.82), rgba(18, 28, 44, 0.72));
     --surface-panel-accent-border: rgba(121, 189, 255, 0.18);
     --surface-panel-accent-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06), 0 16px 34px rgba(0, 0, 0, 0.18);
-    --surface-panel-subtle: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.03));
+    --surface-panel-subtle: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.03));
     --surface-panel-subtle-border: rgba(255, 255, 255, 0.08);
     --surface-panel-subtle-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 10px 22px rgba(0, 0, 0, 0.16);
-    --surface-panel-muted: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(10, 132, 255, 0.08));
+    --surface-panel-muted: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(10, 132, 255, 0.08));
     --surface-panel-muted-border: var(--card-border);
     --surface-panel-muted-shadow: var(--card-highlight), 0 10px 22px rgba(0, 0, 0, 0.18);
     --surface-panel-danger: linear-gradient(180deg, rgba(69, 24, 26, 0.42), rgba(28, 18, 23, 0.8));
@@ -150,11 +165,11 @@
     --surface-panel-danger-button: linear-gradient(180deg, rgba(55, 28, 32, 0.88), rgba(43, 22, 26, 0.94));
     --surface-panel-danger-button-hover: linear-gradient(180deg, rgba(64, 32, 37, 0.94), rgba(49, 24, 29, 0.98));
     --surface-panel-danger-button-border: rgba(255, 69, 58, 0.22);
-    --surface-input: rgba(255, 255, 255, 0.08);
-    --surface-badge: rgba(255, 255, 255, 0.08);
+    --surface-input: rgba(255, 255, 255, 0.1);
+    --surface-badge: rgba(255, 255, 255, 0.1);
     --surface-badge-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     --surface-danger-badge: rgba(255, 69, 58, 0.12);
-    --surface-button-accent: linear-gradient(180deg, #6cbaff, #55aaf7);
+    --surface-button-accent: linear-gradient(180deg, #6fbfff, #4ea7f6);
     --surface-button-accent-border: transparent;
     --surface-button-accent-shadow: 0 12px 28px rgba(90, 176, 255, 0.26);
     --field-radius: 16px;
@@ -166,7 +181,8 @@
     --text-on-accent: #ffffff;
     --text-accent-strong: color-mix(in srgb, var(--accent) 84%, white);
     --modal-overlay: rgba(5, 10, 18, 0.72);
-    --page-gradient: radial-gradient(circle at top, rgba(37, 62, 92, 0.34), rgba(11, 18, 32, 0.96) 44%, rgba(7, 12, 22, 1));
+    --page-gradient: radial-gradient(circle at top, rgba(41, 69, 104, 0.42), rgba(11, 18, 32, 0.96) 44%, rgba(7, 12, 22, 1));
+    --page-side-glow: radial-gradient(circle at 0% 16%, rgba(67, 117, 170, 0.2), transparent 26%), radial-gradient(circle at 100% 12%, rgba(25, 66, 110, 0.2), transparent 22%);
     --noise-opacity: 0.015;
     --calendar-day-gloss: rgba(255, 255, 255, 0.08);
     --calendar-day-shimmer: rgba(255, 255, 255, 0.12);
@@ -193,7 +209,7 @@
 
 body {
     background-color: var(--bg-color);
-    background-image: var(--page-gradient);
+    background-image: var(--page-side-glow), var(--page-gradient);
     color: var(--text-primary);
     transition: background-color 0.5s ease, background-image 0.5s ease, color 0.3s ease;
     display: flex;
@@ -244,6 +260,17 @@ body::before {
     background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MDAtIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiPjxyZWN0IHdpZHRoPSI0MDAtIiBoZWlnaHQ9IjMwMCIgZmlsbD0id2hpdGUiLz48ZyBmaWxsPSJibGFjayIgZmlsbC1vcGFjaXR5PSIwLjA1Ij48Y2lyY2xlIGN4PSIxMCIgY3k9IjEwIiByPSIwLjgiLz48Y2lyY2xlIGN4PSIzMCIgY3k9IjIwIiByPSIwLjUiLz48Y2lyY2xlIGN4PSIxNSIgY3k9IjMwIiByPSIwLjgiLz48Y2lyY2xlIGN4PSIzNSIgY3k9IjEwIiByPSIwLjYiLz48Y2lyY2xlIGN4PSIyNSIgY3k9IjMwIiByPSIwLjUiLz48Y2lyY2xlIGN4PSI1IiBjeT0iMjUiIHI9IjAuNyIvPjwvZz48L3N2Zz4=');
     pointer-events: none;
     z-index: -1;
+}
+
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -2;
+    background:
+        radial-gradient(circle at 50% -12%, rgba(255, 255, 255, 0.72), transparent 38%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.14), transparent 34%);
 }
 
 @media (prefers-reduced-motion: reduce) {
