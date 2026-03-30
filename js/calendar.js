@@ -175,13 +175,29 @@ function queueCalendarEnterAnimation() {
     });
 }
 
-function createDayCell(year, month, day, dayStatus, isToday, holidayName) {
+function syncSelectedDayCell() {
+    renderedDayEls.forEach((dayEl) => {
+        const isSelected = Boolean(
+            activeModalDate &&
+            Number(dayEl.dataset.year) === activeModalDate.year &&
+            Number(dayEl.dataset.month) === activeModalDate.month &&
+            Number(dayEl.dataset.day) === activeModalDate.day
+        );
+        dayEl.classList.toggle('selected', isSelected);
+    });
+}
+
+function createDayCell(year, month, day, dayStatus, isToday, holidayName, customStatus) {
     const dayEl = document.createElement('div');
     dayEl.className = `day ${isToday ? 'today' : ''}`;
     dayEl.dataset.status = dayStatus;
     dayEl.dataset.year = String(year);
     dayEl.dataset.month = String(month);
     dayEl.dataset.day = String(day);
+    dayEl.dataset.manual = customStatus ? 'true' : 'false';
+    dayEl.tabIndex = 0;
+    dayEl.setAttribute('role', 'button');
+    dayEl.setAttribute('aria-label', `${day} ${localeData.months[month]} ${year}`);
 
     if (holidayName) {
         dayEl.dataset.holiday = holidayName;
@@ -198,7 +214,16 @@ function createDayCell(year, month, day, dayStatus, isToday, holidayName) {
         dayEl.appendChild(holidayMarker);
     }
 
-    if (supportsInteractiveHover) {
+    dayEl.addEventListener('keydown', (event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') {
+            return;
+        }
+
+        event.preventDefault();
+        openModal(year, month, day, holidayName || '');
+    });
+
+    if (supportsInteractiveHover && window.innerWidth >= 1280) {
         setup3DTilt(dayEl);
     }
 
@@ -260,6 +285,7 @@ function renderCalendar(year, month) {
 
     for (let day = 1; day <= daysInMonth; day++) {
         const dayStatus = getDayStatus(year, month, day);
+        const customStatus = getCustomDayStatus(year, month, day);
         stats[dayStatus]++;
 
         const isToday = (
@@ -269,7 +295,7 @@ function renderCalendar(year, month) {
         );
         const holidayName = getHolidayName(year, month, day);
 
-        fragment.appendChild(createDayCell(year, month, day, dayStatus, isToday, holidayName));
+        fragment.appendChild(createDayCell(year, month, day, dayStatus, isToday, holidayName, customStatus));
     }
 
     calendarEls.grid.replaceChildren(fragment);
@@ -279,6 +305,7 @@ function renderCalendar(year, month) {
         updatePeriodStatsPanel(window.activeStatsPeriod || 'month');
     }
     applyActiveFilter();
+    syncSelectedDayCell();
 
     if (activeModalDate && calendarEls.modal.classList.contains('active')) {
         applyModalHolidayState(getHolidayName(activeModalDate.year, activeModalDate.month, activeModalDate.day));
@@ -390,6 +417,7 @@ function openModal(year, month, day, holidayName) {
     updateModalNoteActions();
 
     calendarEls.modal.classList.add('active');
+    syncSelectedDayCell();
 }
 
 function updateModalNoteActions() {
@@ -426,6 +454,7 @@ const closeModal = () => {
     activeModalDate = null;
     activeModalStatusMeta = null;
     calendarEls.modal.classList.remove('active');
+    syncSelectedDayCell();
 };
 
 calendarEls.grid.addEventListener('click', (event) => {

@@ -4,7 +4,7 @@
 }
 
 .modal-card {
-    max-width: 320px;
+    max-width: 352px;
     text-align: center;
 }
 
@@ -27,7 +27,7 @@
 
 .modal-holiday {
     color: var(--holiday-color);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 700;
     margin-bottom: 16px;
     display: none;
@@ -51,8 +51,8 @@
     margin-bottom: 24px;
     transition: var(--control-transition);
     width: 100%;
-    box-shadow: var(--surface-panel-elevated-shadow);
-    border: 1px solid rgba(255, 255, 255, 0.24);
+    box-shadow: none;
+    border: 1px solid var(--card-border);
 }
 
 .modal-status-badge:hover {
@@ -77,7 +77,7 @@
     font-weight: 800;
     cursor: pointer;
     transition: var(--control-transition);
-    box-shadow: var(--surface-panel-subtle-shadow);
+    box-shadow: none;
 }
 
 .modal-status-action:hover {
@@ -123,7 +123,7 @@
     background: var(--surface-panel-accent);
     border: 1px solid var(--surface-panel-accent-border);
     margin-bottom: 20px;
-    box-shadow: var(--surface-panel-accent-shadow);
+    box-shadow: none;
 }
 
 [data-theme="dark"] .modal-weather {
@@ -141,7 +141,7 @@
     background: var(--surface-badge);
     font-size: 24px;
     flex-shrink: 0;
-    box-shadow: var(--surface-badge-shadow);
+    box-shadow: none;
 }
 
 .modal-weather-content {
@@ -174,7 +174,7 @@
     min-height: 92px;
     resize: vertical;
     line-height: 1.45;
-    box-shadow: var(--surface-panel-subtle-shadow);
+    box-shadow: none;
 }
 
 .modal-note-actions {
@@ -222,7 +222,7 @@
     border-radius: 20px;
     background: var(--main-container-bg);
     border: 1px solid var(--card-border);
-    box-shadow: var(--surface-shell-shadow);
+    box-shadow: var(--card-shadow);
     opacity: 0;
     pointer-events: none;
     transition: var(--control-transition);
@@ -243,7 +243,7 @@
 
 .undo-toast-text {
     min-width: 0;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--text-primary);
 }

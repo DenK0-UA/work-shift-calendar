@@ -56,7 +56,7 @@ body.app-setup-pending .main-container {
     border-radius: 22px;
     background: var(--surface-panel-accent);
     border: 1px solid var(--surface-panel-accent-border);
-    box-shadow: var(--surface-panel-accent-shadow);
+    box-shadow: none;
 }
 
 .schedule-overlay.setup-mode .schedule-onboarding {
@@ -71,11 +71,11 @@ body.app-setup-pending .main-container {
     border-radius: 999px;
     background: var(--kicker-bg);
     border: 1px solid var(--kicker-border);
-    color: color-mix(in srgb, var(--accent) 58%, #71819a);
-    font-size: 10px;
+    color: var(--accent);
+    font-size: 11px;
     font-weight: 700;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    text-transform: none;
 }
 
 .schedule-onboarding-text {
@@ -116,7 +116,7 @@ body.app-setup-pending .main-container {
     justify-content: center;
     gap: 6px;
     text-align: center;
-    box-shadow: var(--surface-panel-subtle-shadow);
+    box-shadow: none;
 }
 
 .schedule-btn::before {
@@ -148,16 +148,16 @@ body.app-setup-pending .main-container {
 
 .schedule-btn:hover {
     border-color: var(--accent);
-    background: var(--surface-control-hover);
+    background: var(--surface-control);
     transform: var(--button-hover-transform);
-    box-shadow: var(--surface-panel-elevated-shadow-hover);
+    box-shadow: none;
 }
 
 .schedule-btn.active {
     border-color: var(--accent);
-    background: color-mix(in srgb, var(--accent-soft-strong) 76%, var(--surface-panel-subtle));
+    background: color-mix(in srgb, var(--accent-soft-strong) 100%, var(--surface-panel-subtle));
     color: var(--text-accent-strong);
-    box-shadow: var(--surface-panel-elevated-shadow);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
 }
 
 .schedule-btn.active::before {
@@ -182,7 +182,7 @@ body.app-setup-pending .main-container {
     background: var(--surface-panel-subtle);
     border: 1px solid var(--surface-panel-subtle-border);
     display: none;
-    box-shadow: var(--surface-panel-subtle-shadow);
+    box-shadow: none;
 }
 
 .schedule-custom.active {
@@ -260,17 +260,13 @@ body.app-setup-pending .main-container {
 }
 
 .schedule-overlay.setup-mode .schedule-card {
-    background: color-mix(in srgb, var(--main-container-bg) 82%, transparent);
-    border-color: color-mix(in srgb, var(--surface-shell-border) 82%, rgba(255, 255, 255, 0.18));
-    backdrop-filter: blur(26px) saturate(170%);
-    -webkit-backdrop-filter: blur(26px) saturate(170%);
+    background: var(--main-container-bg);
+    border-color: var(--card-border);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     max-width: 440px;
     max-height: min(92vh, 760px);
     padding: 34px 30px 30px;
-}
-
-.schedule-overlay.setup-mode .schedule-card::before {
-    opacity: 0.68;
 }
 
 .schedule-overlay.setup-mode .schedule-title {
