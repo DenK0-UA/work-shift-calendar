@@ -101,10 +101,10 @@
 
 .holiday-marker {
     position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 9px;
-    height: 9px;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
     background-color: var(--holiday-color);
     border-radius: 50%;
     box-shadow: 0 0 0 2px var(--holiday-marker-ring), var(--holiday-marker-shadow);

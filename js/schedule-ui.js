@@ -68,6 +68,11 @@ scheduleEls.closeBtn2.addEventListener('click', closeScheduleModal);
 scheduleEls.overlay.addEventListener('click', (e) => {
     if (e.target === scheduleEls.overlay) closeScheduleModal();
 });
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && scheduleEls.overlay.classList.contains('active')) {
+        closeScheduleModal();
+    }
+});
 
 scheduleEls.applyBtn.addEventListener('click', () => {
     if (!selectedSchedule) {

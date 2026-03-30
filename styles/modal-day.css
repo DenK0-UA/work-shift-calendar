@@ -161,6 +161,37 @@
     line-height: 1.35;
 }
 
+.modal-weather-refresh {
+    width: 40px;
+    height: 40px;
+    border-radius: 14px;
+    margin-left: auto;
+    align-self: center;
+    border: 1px solid color-mix(in srgb, var(--surface-panel-muted-border) 76%, transparent);
+    background: color-mix(in srgb, var(--surface-control) 92%, var(--surface-panel-accent));
+    color: color-mix(in srgb, var(--text-secondary) 88%, var(--accent));
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1;
+    box-shadow: none;
+}
+
+.modal-weather-refresh:hover {
+    background: color-mix(in srgb, var(--surface-control-hover) 92%, var(--surface-panel-accent));
+    border-color: color-mix(in srgb, var(--surface-panel-muted-border) 88%, var(--accent));
+    box-shadow: none;
+    transform: var(--icon-hover-transform);
+}
+
+.modal-weather-refresh:active {
+    transform: scale(0.98);
+}
+
+.modal-weather-refresh:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring-soft);
+}
+
 .modal-note {
     margin-bottom: 18px;
     text-align: left;

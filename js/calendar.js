@@ -197,7 +197,10 @@ function createDayCell(year, month, day, dayStatus, isToday, holidayName, custom
     dayEl.dataset.manual = customStatus ? 'true' : 'false';
     dayEl.tabIndex = 0;
     dayEl.setAttribute('role', 'button');
-    dayEl.setAttribute('aria-label', `${day} ${localeData.months[month]} ${year}`);
+    const dayAriaLabel = holidayName
+        ? `${day} ${localeData.months[month]} ${year}. Свято: ${holidayName}.`
+        : `${day} ${localeData.months[month]} ${year}`;
+    dayEl.setAttribute('aria-label', dayAriaLabel);
 
     if (holidayName) {
         dayEl.dataset.holiday = holidayName;
@@ -474,6 +477,11 @@ calendarEls.grid.addEventListener('click', (event) => {
 calendarEls.modalClose.addEventListener('click', closeModal);
 calendarEls.modal.addEventListener('click', (e) => {
     if (e.target === calendarEls.modal) closeModal();
+});
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && calendarEls.modal.classList.contains('active')) {
+        closeModal();
+    }
 });
 modalNoteEls.input.addEventListener('input', updateModalNoteActions);
 modalNoteEls.save.addEventListener('click', () => {

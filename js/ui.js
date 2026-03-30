@@ -33,7 +33,6 @@ const settingsEls = {
     appUpdateSummary: document.getElementById('app-update-summary'),
     appUpdateDownloadInline: document.getElementById('app-update-download-inline'),
     appUpdateDebugStatus: document.getElementById('app-update-debug-status'),
-    appInstallId: document.getElementById('app-install-id'),
     appUpdateChannelSummary: document.getElementById('app-update-channel-summary'),
     updateChannelGroup: document.getElementById('update-channel-group'),
     updateChannelBtns: document.querySelectorAll('#update-channel-switcher [data-update-channel]'),
@@ -51,6 +50,26 @@ let hardResetAnimationFrameId = null;
 let hardResetHoldStartedAt = 0;
 let applySelectedThemeMode = null;
 let installIdHintResetTimer = null;
+let appVersionTapCount = 0;
+const isDevUiMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const APP_VERSION_TAP_TO_COPY_THRESHOLD = 10;
+
+const copyTextToClipboard = async (text) => {
+    if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return;
+    }
+
+    const tempTextArea = document.createElement('textarea');
+    tempTextArea.value = text;
+    tempTextArea.setAttribute('readonly', '');
+    tempTextArea.style.position = 'absolute';
+    tempTextArea.style.left = '-9999px';
+    document.body.appendChild(tempTextArea);
+    tempTextArea.select();
+    document.execCommand('copy');
+    tempTextArea.remove();
+};
 
 const setSettingsOverlayOpen = (isOpen) => {
     if (!settingsEls.overlay) {
@@ -109,11 +128,9 @@ const refreshAppUpdateSettingsUI = async () => {
     const betaAccessState = await window.AppUpdate.loadBetaAccessState?.(true);
     const currentChannel = window.AppUpdate.getSelectedChannel?.() || 'stable';
     const betaAllowed = betaAccessState?.isAllowed === true;
-    const betaConfigured = betaAccessState?.isConfigured === true;
     const isNativeAndroidApp = window.AppUpdate.isNativeAndroidApp?.() === true;
     const channelLabel = window.AppUpdate.getChannelLabel?.(currentChannel) || currentChannel;
     const appVersion = window.AppUpdate.getAppVersion?.() || APP_RELEASE_VERSION;
-    const installId = window.AppUpdate.getInstallId?.() || betaAccessState?.installId || '';
     const debugState = window.AppUpdate.getDebugState?.();
     const debugMatchesCurrentChannel = !debugState?.channel || debugState.channel === currentChannel;
 
@@ -128,15 +145,6 @@ const refreshAppUpdateSettingsUI = async () => {
 
     if (settingsEls.appVersionValue) {
         settingsEls.appVersionValue.textContent = appVersion;
-    }
-
-    if (settingsEls.appInstallId) {
-        settingsEls.appInstallId.innerHTML = installId
-            ? `<span class="settings-device-id-label">ID пристрою</span><span class="settings-device-id-value">${installId}</span>`
-            : '<span class="settings-device-id-label">ID пристрою</span><span class="settings-device-id-value">недоступний</span>';
-        settingsEls.appInstallId.title = installId
-            ? 'Натисніть, щоб скопіювати ID'
-            : 'ID пристрою недоступний';
     }
 
     if (settingsEls.appUpdateChannelSummary) {
@@ -184,14 +192,18 @@ const refreshAppUpdateSettingsUI = async () => {
 
     if (settingsEls.appUpdateCheckNow) {
         settingsEls.appUpdateCheckNow.hidden = false;
-        settingsEls.appUpdateCheckNow.disabled = !isNativeAndroidApp;
+        settingsEls.appUpdateCheckNow.disabled = false;
         settingsEls.appUpdateCheckNow.textContent = 'Перевірити оновлення';
         settingsEls.appUpdateCheckNow.title = isNativeAndroidApp
             ? 'Перевірити наявність новішої версії'
-            : 'Оновлення доступні тільки в Android-додатку';
+            : 'Кнопка працює тільки в Android-додатку';
     }
 
     if (settingsEls.appUpdateDebugStatus) {
+        if (!isDevUiMode) {
+            settingsEls.appUpdateDebugStatus.hidden = true;
+            settingsEls.appUpdateDebugStatus.textContent = '';
+        } else {
         const checkedAt = debugState?.checkedAt
             ? new Date(debugState.checkedAt).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
             : '';
@@ -214,6 +226,7 @@ const refreshAppUpdateSettingsUI = async () => {
         settingsEls.appUpdateDebugStatus.textContent = shouldHideDebugStatus
             ? ''
             : debugParts.join('\n');
+        }
     }
 
     if (settingsEls.updateChannelGroup) {
@@ -236,28 +249,13 @@ const refreshAppUpdateSettingsUI = async () => {
 
     if (settingsEls.updateChannelHelp) {
         settingsEls.updateChannelHelp.hidden = true;
+        settingsEls.updateChannelHelp.textContent = '';
     }
 
-    if (!settingsEls.appVersionHint) {
-        return;
-    }
-
-    settingsEls.appVersionHint.hidden = false;
-
-    if (!betaConfigured) {
+    if (settingsEls.appVersionHint && !installIdHintResetTimer) {
         settingsEls.appVersionHint.textContent = '';
         settingsEls.appVersionHint.hidden = true;
-        return;
     }
-
-    if (betaAllowed) {
-        settingsEls.appVersionHint.textContent = '';
-        settingsEls.appVersionHint.hidden = true;
-        return;
-    }
-
-    settingsEls.appVersionHint.textContent = '';
-    settingsEls.appVersionHint.hidden = true;
 };
 
 let selectedStylePreset = getSavedStylePreset();
@@ -414,6 +412,12 @@ if (settingsEls.overlay) {
     });
 }
 
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && settingsEls.overlay?.classList.contains('active')) {
+        setSettingsOverlayOpen(false);
+    }
+});
+
 settingsEls.themeModeBtns.forEach((button) => {
     button.addEventListener('click', () => {
         selectedThemeMode = button.dataset.themeMode;
@@ -424,27 +428,23 @@ settingsEls.themeModeBtns.forEach((button) => {
     });
 });
 
-if (settingsEls.appInstallId) {
-    settingsEls.appInstallId.addEventListener('click', async () => {
+if (settingsEls.appVersionTrigger) {
+    settingsEls.appVersionTrigger.addEventListener('click', async () => {
+        appVersionTapCount += 1;
+
+        if (appVersionTapCount < APP_VERSION_TAP_TO_COPY_THRESHOLD) {
+            return;
+        }
+
+        appVersionTapCount = 0;
+
         const installId = window.AppUpdate?.getInstallId?.();
         if (!installId) {
             return;
         }
 
         try {
-            if (navigator.clipboard?.writeText) {
-                await navigator.clipboard.writeText(installId);
-            } else {
-                const tempTextArea = document.createElement('textarea');
-                tempTextArea.value = installId;
-                tempTextArea.setAttribute('readonly', '');
-                tempTextArea.style.position = 'absolute';
-                tempTextArea.style.left = '-9999px';
-                document.body.appendChild(tempTextArea);
-                tempTextArea.select();
-                document.execCommand('copy');
-                tempTextArea.remove();
-            }
+            await copyTextToClipboard(installId);
 
             if (installIdHintResetTimer) {
                 clearTimeout(installIdHintResetTimer);
@@ -452,7 +452,7 @@ if (settingsEls.appInstallId) {
 
             if (settingsEls.appVersionHint) {
                 settingsEls.appVersionHint.hidden = false;
-                settingsEls.appVersionHint.textContent = 'ID пристрою скопійовано.';
+                settingsEls.appVersionHint.textContent = 'ID пристрою скопійовано';
                 installIdHintResetTimer = window.setTimeout(() => {
                     installIdHintResetTimer = null;
                     refreshAppUpdateSettingsUI();
@@ -461,7 +461,7 @@ if (settingsEls.appInstallId) {
         } catch (error) {
             if (settingsEls.appVersionHint) {
                 settingsEls.appVersionHint.hidden = false;
-                settingsEls.appVersionHint.textContent = 'Не вдалося скопіювати ID.';
+                settingsEls.appVersionHint.textContent = 'Не вдалося скопіювати ID';
             }
         }
     });
@@ -487,7 +487,10 @@ if (settingsEls.appUpdateCheckNow) {
         }
 
         if (window.AppUpdate.isNativeAndroidApp?.() !== true) {
-            await refreshAppUpdateSettingsUI();
+            if (settingsEls.appUpdateSummary) {
+                settingsEls.appUpdateSummary.hidden = false;
+                settingsEls.appUpdateSummary.textContent = 'Перевірка оновлень працює тільки в Android-додатку.';
+            }
             return;
         }
 
