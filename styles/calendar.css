@@ -1,7 +1,6 @@
 .day {
     aspect-ratio: 1;
     width: 100%;
-    min-height: 58px;
     border-radius: var(--calendar-day-radius, 20px);
     display: flex;
     flex-direction: column;
