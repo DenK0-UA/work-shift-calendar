@@ -262,18 +262,19 @@ android/app/build/outputs/apk/debug/work-shift-calendar-beta.apk
 1. У `data/config.js` задайте актуальну версію:
 
 ```js
-const APP_RELEASE_VERSION = '1.0.0';
+const APP_RELEASE_VERSION = "1.0.0";
 ```
 
 2. Там само вкажіть канал за замовчуванням і URL маніфестів:
 
 ```js
-const APP_UPDATE_CHANNEL_DEFAULT = 'stable';
+const APP_UPDATE_CHANNEL_DEFAULT = "stable";
 const APP_UPDATE_MANIFEST_URLS = {
-  stable: 'https://<user>.github.io/work-shift-calendar/stable/version.json',
-  beta: 'https://<user>.github.io/work-shift-calendar/beta/version.json'
+  stable: "https://<user>.github.io/work-shift-calendar/stable/version.json",
+  beta: "https://<user>.github.io/work-shift-calendar/beta/version.json",
 };
-const APP_UPDATE_BETA_ACCESS_URL = 'https://<user>.github.io/work-shift-calendar/beta/access.json';
+const APP_UPDATE_BETA_ACCESS_URL =
+  "https://<user>.github.io/work-shift-calendar/beta/access.json";
 ```
 
 3. Розмістіть на `GitHub Pages` два файли з однаковою структурою:
@@ -296,10 +297,7 @@ const APP_UPDATE_BETA_ACCESS_URL = 'https://<user>.github.io/work-shift-calendar
 
 ```json
 {
-  "allowedInstallIds": [
-    "demo-install-id-1",
-    "demo-install-id-2"
-  ]
+  "allowedInstallIds": ["demo-install-id-1", "demo-install-id-2"]
 }
 ```
 
