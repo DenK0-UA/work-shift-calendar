@@ -245,7 +245,7 @@
 
     .controls-row {
         align-items: center;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 10px;
     }
 
@@ -258,8 +258,8 @@
     .calendar-actions {
         gap: 8px;
         flex-shrink: 0;
-        width: 100%;
-        justify-content: flex-start;
+        width: auto;
+        justify-content: flex-end;
     }
 
     .today-btn {
@@ -360,6 +360,106 @@
     }
 }
 
+@media (max-width: 430px) {
+    body {
+        padding: 10px 7px;
+    }
+
+    .main-container {
+        gap: 10px;
+        padding: 6px;
+    }
+
+    .depth-panel {
+        padding: 16px;
+        border-radius: 18px;
+    }
+
+    header.depth-panel {
+        padding-bottom: 16px;
+    }
+
+    h1 {
+        font-size: 22px;
+        letter-spacing: -0.04em;
+    }
+
+    .subtitle {
+        font-size: 12px;
+    }
+
+    .header-actions {
+        gap: 6px;
+    }
+
+    .btn-icon,
+    .settings-btn {
+        width: 35px;
+        height: 35px;
+        border-radius: 12px;
+        font-size: 15px;
+    }
+
+    .month-switcher {
+        padding: 5px;
+        border-radius: 18px;
+    }
+
+    .month-title {
+        font-size: 13px;
+        padding: 0 8px;
+    }
+
+    .today-btn {
+        min-height: 40px;
+        min-width: 120px;
+        padding: 9px 14px;
+        border-radius: 16px;
+        font-size: 12px;
+    }
+
+    .calendar-section {
+        padding: 14px 12px 16px;
+    }
+
+    .weekdays span {
+        font-size: 11px;
+        padding: 6px 0;
+    }
+
+    .calendar-grid {
+        gap: 5px;
+    }
+
+    .day {
+        min-height: 50px;
+        border-radius: 16px;
+    }
+
+    .date-num {
+        font-size: 15px;
+    }
+
+    .summary-legend {
+        gap: 10px;
+        padding: 14px;
+    }
+
+    .stats {
+        gap: 6px;
+    }
+
+    .stat-item {
+        gap: 7px;
+        padding: 7px 9px;
+    }
+
+    .logo-area {
+        font-size: 11px;
+        letter-spacing: 0.12em;
+    }
+}
+
 @media (max-width: 390px) {
     body {
         padding: 10px 6px;
@@ -406,7 +506,7 @@
     }
 
     .month-switcher {
-        width: 100%;
+        width: auto;
         padding: 5px;
         border-radius: 18px;
     }
