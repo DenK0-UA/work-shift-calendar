@@ -423,9 +423,9 @@
         const updateThemeToggleIcon = () => {
             if (!themeBtn) return;
             const nextIcon = settingsState.savedThemeMode === 'auto'
-                ? '🌓'
-                : (settingsState.isDark ? '☀️' : '🌙');
-            themeBtn.textContent = nextIcon;
+                ? 'auto'
+                : (settingsState.isDark ? 'light' : 'dark');
+            themeBtn.dataset.themeIcon = nextIcon;
             themeBtn.setAttribute(
                 'aria-label',
                 settingsState.savedThemeMode === 'auto'

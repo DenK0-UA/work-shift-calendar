@@ -236,6 +236,7 @@ android/app/build/outputs/apk/debug/work-shift-calendar-beta.apk
 
 - папка `www/` не комітиться, вона генерується автоматично
 - після змін у `index.html`, `js/`, `styles/` або `data/` потрібно знову запускати `npm run cap:android`
+- перед кожним push / заливом у репозиторій оновлюйте `README.md` під актуальний стан функцій і релізного флоу
 - для швидких UI-правок замість цього краще використовувати зв'язку `npm run dev:web` + `npm run android:live`
 - локальні дані застосунку, як і раніше, зберігаються локально на пристрої
 - вихідники для Android-іконки та splash лежать у `assets/android/`

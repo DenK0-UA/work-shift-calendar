@@ -390,6 +390,20 @@
         transition: transform 0.15s, background 0.15s;
     }
 
+    /* Prevent sticky hover lift on touch devices after tap. */
+    button:hover,
+    .btn-icon:hover,
+    .settings-btn:hover,
+    .today-btn:hover,
+    .theme-toggle-btn:hover,
+    .schedule-btn:hover,
+    .schedule-btn-action:hover,
+    .settings-btn-action:hover,
+    .theme-mode-btn:hover,
+    .period-btn:hover {
+        transform: none !important;
+    }
+
     .day:active {
         transform: scale(0.95) !important;
     }
