@@ -257,14 +257,14 @@ android/app/build/outputs/apk/debug/app-debug.apk
 У застосунку є банер перевірки оновлень для Android з двома каналами:
 
 - `stable` за замовчуванням для всіх користувачів
-- `beta` тільки для пристроїв, чий `installId` додано в allowlist
+- `beta` для пристроїв, де канал розблоковано локально
 
 Рекомендований флоу:
 
 1. локально перевіряєте UI через `npm run dev:web` + `npm run android:live`
 2. коли правка готова до тесту на телефоні, піднімаєте версію через `npm run version:set -- x.y.z`
 3. збираєте beta APK (`work-shift-calendar-<version>-beta.apk`) і публікуєте його в `beta`
-4. `Beta` доступний тільки на пристроях, чий `installId` є в allowlist
+4. щоб увімкнути `Beta` на пристрої, 20 разів натисніть на блок `Версія` в налаштуваннях
 5. після апруву або публікуєте той самий білд у `stable`, або збираєте `work-shift-calendar.apk`
 6. усі інші пристрої отримують звичне сповіщення про нову версію
 
@@ -277,7 +277,7 @@ const APP_UPDATE_MANIFEST_URLS = {
   beta: "https://denk0-ua.github.io/work-shift-calendar/beta/version.json",
 };
 const APP_UPDATE_BETA_ACCESS_URL =
-  "https://denk0-ua.github.io/work-shift-calendar/beta/access.json";
+  "https://denk0-ua.github.io/work-shift-calendar/beta/access.json"; // legacy-compatible, keep file empty when using local beta unlock only
 ```
 
 Якщо переносити цю схему в інший репозиторій або на інший Pages-домен:
@@ -316,11 +316,11 @@ const APP_UPDATE_BETA_ACCESS_URL =
 }
 ```
 
-Приклад allowlist для beta:
+Для поточної схеми `beta/access.json` можна лишати порожнім:
 
 ```json
 {
-  "allowedInstallIds": ["demo-install-id-1", "demo-install-id-2"]
+  "allowedInstallIds": []
 }
 ```
 
@@ -328,9 +328,9 @@ const APP_UPDATE_BETA_ACCESS_URL =
 
 - перевірка виконується при відкритті Android-застосунку
 - усі пристрої за замовчуванням перевіряють тільки `stable/version.json`
-- `beta` блок з’являється на пристроях, чий `installId` є в `beta/access.json`, або після локального прихованого розблокування через 20 тапів по `Версія`
-- якщо пристрою немає в allowlist і користувач не активував прихований жест, він не бачить перемикач `Beta` і не отримує beta-оновлення
-- якщо пристрій є в allowlist або користувач розблокував `Beta` локально, він може перейти на `beta` і перевіряти `beta/version.json`
+- `beta` блок з’являється після локального прихованого розблокування через 20 тапів по `Версія`
+- якщо користувач не активував прихований жест, він не бачить перемикач `Beta` і не отримує beta-оновлення
+- після локального розблокування користувач може перейти на `beta` і перевіряти `beta/version.json`
 - якщо у вибраному каналі версія новіша за `APP_RELEASE_VERSION`, показується кнопка `Завантажити APK`
 - якщо натиснути `Пізніше`, банер сховається на 24 години, а потім з’явиться знову, якщо APK досі не оновлено
 - при кожному релізі нового `APK` запускайте `npm run version:set -- x.y.z`, щоб оновити версію застосунку; маніфести каналів оновлюються релізними workflow

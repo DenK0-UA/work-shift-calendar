@@ -59,8 +59,8 @@ if (channel === 'stable' && stableManifest.version === version) {
     fail(`stable/version.json is already on ${version}.`);
 }
 
-if (!Array.isArray(betaAccess.allowedInstallIds) || betaAccess.allowedInstallIds.length === 0) {
-    fail('beta/access.json has no allowedInstallIds. Beta release would be invisible to testers.');
+if (!Array.isArray(betaAccess.allowedInstallIds)) {
+    fail('beta/access.json must contain an allowedInstallIds array.');
 }
 
 if (!configSource.includes('https://denk0-ua.github.io/work-shift-calendar/stable/version.json')
