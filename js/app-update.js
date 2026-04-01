@@ -5,6 +5,7 @@ const APP_UPDATE_CHANNELS = {
 
 const APP_UPDATE_STORAGE_KEYS = {
     installId: 'appInstallId',
+    localBetaAccess: 'appUpdate:localBetaAccess',
     selectedChannel: 'appUpdate:channel',
     dismissedEntryPrefix: 'appUpdate:dismissed:'
 };
@@ -16,6 +17,7 @@ const betaAccessState = {
     isAllowed: false,
     isConfigured: false,
     isLoaded: false,
+    isLocallyEnabled: false,
     lastResolvedAt: 0,
     lastError: false,
     loadingPromise: null
@@ -102,6 +104,24 @@ function readOrCreateInstallId() {
     }
 }
 
+function readLocalBetaAccessEnabled() {
+    try {
+        return localStorage.getItem(APP_UPDATE_STORAGE_KEYS.localBetaAccess) === '1';
+    } catch (error) {
+        return false;
+    }
+}
+
+function writeLocalBetaAccessEnabled(enabled) {
+    try {
+        if (enabled) {
+            localStorage.setItem(APP_UPDATE_STORAGE_KEYS.localBetaAccess, '1');
+        } else {
+            localStorage.removeItem(APP_UPDATE_STORAGE_KEYS.localBetaAccess);
+        }
+    } catch (error) {}
+}
+
 function readConfiguredManifestUrls() {
     const configuredUrls =
         typeof APP_UPDATE_MANIFEST_URLS === 'object' && APP_UPDATE_MANIFEST_URLS
@@ -133,6 +153,7 @@ function getBetaAccessSnapshot() {
         isAllowed: betaAccessState.isAllowed,
         isConfigured: betaAccessState.isConfigured,
         isLoaded: betaAccessState.isLoaded,
+        isLocallyEnabled: betaAccessState.isLocallyEnabled,
         lastResolvedAt: betaAccessState.lastResolvedAt,
         lastError: betaAccessState.lastError
     };
@@ -140,6 +161,22 @@ function getBetaAccessSnapshot() {
 
 function canAccessBetaChannel() {
     return betaAccessState.isConfigured && betaAccessState.isAllowed;
+}
+
+function enableLocalBetaAccess() {
+    if (!isBetaFeatureConfigured()) {
+        return false;
+    }
+
+    writeLocalBetaAccessEnabled(true);
+    betaAccessState.isConfigured = true;
+    betaAccessState.isAllowed = true;
+    betaAccessState.isLoaded = true;
+    betaAccessState.isLocallyEnabled = true;
+    betaAccessState.lastResolvedAt = Date.now();
+    betaAccessState.lastError = false;
+    writeSelectedChannel(APP_UPDATE_CHANNELS.beta);
+    return true;
 }
 
 function readConfiguredDefaultChannel() {
@@ -388,11 +425,30 @@ function showAppUpdateBanner(manifest) {
     appUpdateEls.banner.classList.add('active');
 }
 
+function withCacheBust(url) {
+    if (typeof url !== 'string' || !url.trim()) {
+        return '';
+    }
+
+    const normalizedUrl = url.trim();
+    const cacheBustValue = String(Date.now());
+
+    try {
+        const parsedUrl = new URL(normalizedUrl, window.location.href);
+        parsedUrl.searchParams.set('_ts', cacheBustValue);
+        return parsedUrl.toString();
+    } catch (error) {
+        const separator = normalizedUrl.includes('?') ? '&' : '?';
+        return `${normalizedUrl}${separator}_ts=${encodeURIComponent(cacheBustValue)}`;
+    }
+}
+
 async function fetchJsonWithTimeout(url) {
     if (typeof url !== 'string' || !url.trim()) {
         return null;
     }
 
+    const requestUrl = withCacheBust(url);
     const controller = typeof AbortController === 'function'
         ? new AbortController()
         : null;
@@ -401,7 +457,7 @@ async function fetchJsonWithTimeout(url) {
         : null;
 
     try {
-        const response = await fetch(url, {
+        const response = await fetch(requestUrl, {
             cache: 'no-store',
             signal: controller?.signal
         });
@@ -427,6 +483,7 @@ async function loadBetaAccessState(force = false) {
 
     const betaFeatureConfigured = isBetaFeatureConfigured();
     betaAccessState.isConfigured = betaFeatureConfigured;
+    betaAccessState.isLocallyEnabled = betaFeatureConfigured && readLocalBetaAccessEnabled();
 
     if (!force && betaFeatureConfigured && betaAccessState.isLoaded) {
         return getBetaAccessSnapshot();
@@ -435,9 +492,18 @@ async function loadBetaAccessState(force = false) {
     if (!betaFeatureConfigured) {
         betaAccessState.isAllowed = false;
         betaAccessState.isLoaded = true;
+        betaAccessState.isLocallyEnabled = false;
         betaAccessState.lastResolvedAt = 0;
         betaAccessState.lastError = false;
         writeSelectedChannel(APP_UPDATE_CHANNELS.stable);
+        return getBetaAccessSnapshot();
+    }
+
+    if (betaAccessState.isLocallyEnabled) {
+        betaAccessState.isAllowed = true;
+        betaAccessState.isLoaded = true;
+        betaAccessState.lastResolvedAt = Date.now();
+        betaAccessState.lastError = false;
         return getBetaAccessSnapshot();
     }
 
@@ -669,6 +735,7 @@ bindAutomaticAppUpdateChecks();
 window.AppUpdate = {
     checkForAppUpdate,
     compareAppVersions,
+    enableLocalBetaAccess,
     getDebugState: getAppUpdateDebugSnapshot,
     getAppVersion: () => APP_RELEASE_VERSION,
     getBetaAccessSnapshot,

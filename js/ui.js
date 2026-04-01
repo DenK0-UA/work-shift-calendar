@@ -52,7 +52,7 @@ let applySelectedThemeMode = null;
 let installIdHintResetTimer = null;
 let appVersionTapCount = 0;
 const isDevUiMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const APP_VERSION_TAP_TO_COPY_THRESHOLD = 10;
+const APP_VERSION_TAP_TO_ENABLE_BETA_THRESHOLD = 20;
 
 const copyTextToClipboard = async (text) => {
     if (navigator.clipboard?.writeText) {
@@ -69,6 +69,23 @@ const copyTextToClipboard = async (text) => {
     tempTextArea.select();
     document.execCommand('copy');
     tempTextArea.remove();
+};
+
+const showAppVersionHint = (message) => {
+    if (!settingsEls.appVersionHint) {
+        return;
+    }
+
+    if (installIdHintResetTimer) {
+        clearTimeout(installIdHintResetTimer);
+    }
+
+    settingsEls.appVersionHint.hidden = false;
+    settingsEls.appVersionHint.textContent = message;
+    installIdHintResetTimer = window.setTimeout(() => {
+        installIdHintResetTimer = null;
+        refreshAppUpdateSettingsUI();
+    }, 1800);
 };
 
 const setSettingsOverlayOpen = (isOpen) => {
@@ -432,37 +449,40 @@ if (settingsEls.appVersionTrigger) {
     settingsEls.appVersionTrigger.addEventListener('click', async () => {
         appVersionTapCount += 1;
 
-        if (appVersionTapCount < APP_VERSION_TAP_TO_COPY_THRESHOLD) {
+        if (appVersionTapCount < APP_VERSION_TAP_TO_ENABLE_BETA_THRESHOLD) {
             return;
         }
 
         appVersionTapCount = 0;
 
-        const installId = window.AppUpdate?.getInstallId?.();
-        if (!installId) {
+        if (!window.AppUpdate) {
+            showAppVersionHint('Beta зараз недоступна');
             return;
         }
 
         try {
-            await copyTextToClipboard(installId);
-
-            if (installIdHintResetTimer) {
-                clearTimeout(installIdHintResetTimer);
+            if (window.AppUpdate.isBetaAllowedForThisInstall?.() === true) {
+                window.AppUpdate.setSelectedChannel?.('beta');
+                await window.AppUpdate.checkForAppUpdate?.({ manualCheck: true });
+                await refreshAppUpdateSettingsUI();
+                showAppVersionHint('Beta-доступ уже увімкнено');
+                return;
             }
 
-            if (settingsEls.appVersionHint) {
-                settingsEls.appVersionHint.hidden = false;
-                settingsEls.appVersionHint.textContent = 'ID пристрою скопійовано';
-                installIdHintResetTimer = window.setTimeout(() => {
-                    installIdHintResetTimer = null;
-                    refreshAppUpdateSettingsUI();
-                }, 1800);
+            const betaEnabled = window.AppUpdate.enableLocalBetaAccess?.() === true;
+            if (!betaEnabled) {
+                showAppVersionHint('Не вдалося увімкнути Beta');
+                return;
             }
+
+            await window.AppUpdate.loadBetaAccessState?.(true);
+            window.AppUpdate.setSelectedChannel?.('beta');
+            await window.AppUpdate.checkForAppUpdate?.({ manualCheck: true });
+            await refreshAppUpdateSettingsUI();
+            showAppVersionHint('Beta-доступ увімкнено');
         } catch (error) {
-            if (settingsEls.appVersionHint) {
-                settingsEls.appVersionHint.hidden = false;
-                settingsEls.appVersionHint.textContent = 'Не вдалося скопіювати ID';
-            }
+            console.error('[AppUpdate] Failed to enable local beta access', error);
+            showAppVersionHint('Не вдалося увімкнути Beta');
         }
     });
 }
