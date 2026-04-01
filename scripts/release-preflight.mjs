@@ -43,8 +43,12 @@ if (packageJson.version !== configVersion || packageJson.version !== versionName
     fail('App version is inconsistent across package.json, data/config.js, and android/app/build.gradle.');
 }
 
-if (channel === 'beta' && betaManifest.version !== packageJson.version) {
-    fail('beta/version.json must match the current app version before creating the next beta release.');
+if (channel === 'beta' && packageJson.version !== version) {
+    fail(`App version must already be ${version} in package.json, data/config.js, and android/app/build.gradle before creating a beta release.`);
+}
+
+if (channel === 'beta' && betaManifest.version === version) {
+    fail(`beta/version.json is already on ${version}.`);
 }
 
 if (channel === 'stable' && betaManifest.version !== version) {
