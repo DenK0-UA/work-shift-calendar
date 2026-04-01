@@ -409,6 +409,7 @@ npm run release:check -- beta x.y.z
 
 - після `push` у `main` сайт оновлюється автоматично
 - у налаштуваннях репозиторію для `Pages` має бути вибране джерело `GitHub Actions`
+- якщо `beta/version.json` або `stable/version.json` були змінені самим GitHub Actions workflow, а сайт ще показує старий маніфест, потрібно дати окремий user-push у `main` або вручну перезапустити `Deploy GitHub Pages`
 
 ## Як користуватись
 
