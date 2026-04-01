@@ -75,10 +75,14 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.release_input.outputs.version }}
-          name: Stable ${{ steps.release_input.outputs.version }}
+          name: Stable ${{ steps.release_input.outputs.version }} APK
           prerelease: false
           make_latest: true
-          generate_release_notes: true
+          generate_release_notes: false
+          body: |
+            ⬇️ Завантажуйте тільки файл `work-shift-calendar-${{ steps.release_input.outputs.version }}.apk` у секції **Assets**.
+
+            `Source code (zip)` і `Source code (tar.gz)` додаються самим GitHub автоматично і для встановлення застосунку не потрібні.
           overwrite_files: true
           files: dist/work-shift-calendar-${{ steps.release_input.outputs.version }}.apk
 

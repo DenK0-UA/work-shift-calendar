@@ -342,7 +342,7 @@ const APP_UPDATE_BETA_ACCESS_URL =
 Зручно тримати:
 
 - `GitHub Pages` для `stable/version.json` і `beta/version.json`
-- `GitHub Releases` для самих `APK`
+- `GitHub Releases` для самих `APK` (користувачу треба качати тільки файл `.apk`; `Source code (zip/tar.gz)` GitHub додає автоматично)
 
 Приклад:
 
@@ -354,8 +354,8 @@ const APP_UPDATE_BETA_ACCESS_URL =
 
 У репозиторії є два workflow:
 
-- `Release Beta APK` збирає новий підписаний `beta`-APK, створює `GitHub Release` з тегом `vX.Y.Z-beta` і сам оновлює `beta/version.json`
-- `Promote Beta To Stable` бере вже перевірений `beta`-APK, публікує його як stable-реліз з тегом `vX.Y.Z` і сам оновлює `stable/version.json`
+- `Release Beta APK` збирає новий підписаний `beta`-APK, створює `GitHub Release` з тегом `vX.Y.Z-beta`, показує користувачу явну підказку качати саме `.apk` і сам оновлює `beta/version.json`
+- `Promote Beta To Stable` бере вже перевірений `beta`-APK, публікує його як stable-реліз з тегом `vX.Y.Z`, показує користувачу явну підказку качати саме `.apk` і сам оновлює `stable/version.json`
 
 Практичний флоу через GitHub UI:
 
