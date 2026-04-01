@@ -255,139 +255,27 @@ android/app/build/outputs/apk/debug/app-debug.apk
 
 ### Перевірка нової версії APK
 
-У застосунку є банер перевірки оновлень для Android з двома каналами:
+У застосунку є перевірка оновлень для Android:
 
-- `stable` за замовчуванням для всіх користувачів
-- `beta` для пристроїв, де канал розблоковано локально
+- `stable` — основний канал для користувачів
+- `beta` — внутрішній канал для тестових збірок
 
-Рекомендований флоу:
+Короткий робочий флоу:
 
-1. локально перевіряєте UI через `npm run dev:web` + `npm run android:live`
-2. коли правка готова до тесту на телефоні, піднімаєте версію через `npm run version:set -- x.y.z`
-3. збираєте beta APK (`work-shift-calendar-<version>-beta.apk`) і публікуєте його в `beta`
-4. щоб увімкнути `Beta` на пристрої, 20 разів натисніть на блок `Версія` в налаштуваннях
-5. після апруву або публікуєте той самий білд у `stable`, або збираєте `work-shift-calendar.apk`
-6. усі інші пристрої отримують звичне сповіщення про нову версію
+1. локально перевіряєте зміни через `npm run dev:web` + `npm run android:live`
+2. перед новим білдом піднімаєте версію: `npm run version:set -- x.y.z`
+3. тестову збірку публікуєте через `npm run release:beta -- x.y.z`
+4. після перевірки публікуєте для всіх через `npm run release:stable -- x.y.z`
 
-Поточна конфігурація в репозиторії вже використовує GitHub Pages цього проєкту:
-
-```js
-const APP_UPDATE_CHANNEL_DEFAULT = "stable";
-const APP_UPDATE_MANIFEST_URLS = {
-  stable: "https://denk0-ua.github.io/work-shift-calendar/stable/version.json",
-  beta: "https://denk0-ua.github.io/work-shift-calendar/beta/version.json",
-};
-const APP_UPDATE_BETA_ACCESS_URL =
-  "https://denk0-ua.github.io/work-shift-calendar/beta/access.json"; // legacy-compatible, keep file empty when using local beta unlock only
-```
-
-Якщо переносити цю схему в інший репозиторій або на інший Pages-домен:
-
-1. У `data/config.js` задайте актуальну версію:
-
-```js
-const APP_RELEASE_VERSION = "x.y.z";
-```
-
-2. Там само вкажіть канал за замовчуванням і URL маніфестів:
-
-```js
-const APP_UPDATE_CHANNEL_DEFAULT = "stable";
-const APP_UPDATE_MANIFEST_URLS = {
-  stable: "https://<user>.github.io/<repo>/stable/version.json",
-  beta: "https://<user>.github.io/<repo>/beta/version.json",
-};
-const APP_UPDATE_BETA_ACCESS_URL =
-  "https://<user>.github.io/<repo>/beta/access.json";
-```
-
-3. Розмістіть на `GitHub Pages` два файли з однаковою структурою:
-
-- `stable/version.json`
-- `beta/version.json`
-- `beta/access.json`
-
-Приклад для будь-якого каналу:
-
-```json
-{
-  "version": "x.y.z",
-  "apkUrl": "https://example.com/work-shift-calendar/releases/work-shift-calendar-x.y.z.apk",
-  "notes": "Додано нові зміни та виправлення."
-}
-```
-
-Для поточної схеми `beta/access.json` можна лишати порожнім:
-
-```json
-{
-  "allowedInstallIds": []
-}
-```
-
-Поведінка:
-
-- перевірка виконується при відкритті Android-застосунку
-- усі пристрої за замовчуванням перевіряють тільки `stable/version.json`
-- `beta` блок з’являється після локального прихованого розблокування через 20 тапів по `Версія`
-- якщо користувач не активував прихований жест, він не бачить перемикач `Beta` і не отримує beta-оновлення
-- після локального розблокування користувач може перейти на `beta` і перевіряти `beta/version.json`
-- якщо у вибраному каналі версія новіша за `APP_RELEASE_VERSION`, показується кнопка `Завантажити APK`
-- якщо натиснути `Пізніше`, банер сховається на 24 години, а потім з’явиться знову, якщо APK досі не оновлено
-- при кожному релізі нового `APK` запускайте `npm run version:set -- x.y.z`, щоб оновити версію застосунку; маніфести каналів оновлюються релізними workflow
-- `beta` можна використовувати для особистої перевірки до того, як реліз піде на всіх
-- якщо `version.json` або `apkUrl` лежать на іншому домені, той домен має дозволяти `CORS`; найпростіше тримати маніфест на тому ж хостингу, що й сайт
-
-### GitHub-схема для релізів
-
-Зручно тримати:
-
-- `GitHub Pages` для `stable/version.json` і `beta/version.json`
-- `GitHub Releases` для самих `APK` (користувачу треба качати тільки файл `.apk`; `Source code (zip/tar.gz)` GitHub додає автоматично)
-
-Приклад:
-
-- beta маніфест веде на `beta`-APK, який бачать тільки пристрої з allowlist
-- після апруву той самий або новий `APK` публікується як stable
-- усі пристрої на каналі `stable` отримують звичний банер оновлення
+Маніфести оновлень живуть у `GitHub Pages`, а самі `APK` — у `GitHub Releases`.
+Користувачу в релізі потрібно качати тільки файл `.apk` із секції **Assets**.
 
 ### Автоматичні релізи через GitHub Actions
 
 У репозиторії є два workflow:
 
-- `Release Beta APK` збирає новий підписаний `beta`-APK, створює `GitHub Release` з тегом `vX.Y.Z-beta`, показує користувачу явну підказку качати саме `.apk` і сам оновлює `beta/version.json`
-- `Promote Beta To Stable` бере вже перевірений `beta`-APK, публікує його як stable-реліз з тегом `vX.Y.Z`, показує користувачу явну підказку качати саме `.apk` і сам оновлює `stable/version.json`
-
-Практичний флоу через GitHub UI:
-
-1. У GitHub відкрийте `Actions` -> `Release Beta APK`
-2. Вкажіть нову версію, наприклад `x.y.z`
-3. Дочекайтесь завершення workflow і перевірте beta-оновлення на телефоні
-4. Якщо все добре, відкрийте `Actions` -> `Promote Beta To Stable`
-5. Вкажіть ту саму версію `x.y.z`
-6. Після завершення workflow stable-користувачі побачать оновлення в застосунку
-
-Практичний флоу без GitHub UI:
-
-1. Для нової тестової збірки запустіть:
-
-```bash
-npm run release:beta -- x.y.z
-```
-
-2. Для публікації вже перевіреної версії для всіх запустіть:
-
-```bash
-npm run release:stable -- x.y.z
-```
-
-Поведінка:
-
-- перед створенням тега запускається preflight-перевірка
-- команда створює і пушить git-тег `beta-1.0.16` або `stable-1.0.16`
-- GitHub Actions сам запускає відповідний workflow
-- `beta` лишається каналом для тестерів
-- `stable` оновлюється тільки окремою командою після вашого апруву
+- `Release Beta APK` — збирає і публікує `beta`-APK
+- `Promote Beta To Stable` — публікує перевірений білд у `stable`
 
 Окремо preflight можна прогнати вручну:
 
@@ -395,14 +283,12 @@ npm run release:stable -- x.y.z
 npm run release:check -- beta x.y.z
 ```
 
-Для цього один раз треба додати GitHub Secrets:
+Для release-білдів потрібні GitHub Secrets:
 
-- `ANDROID_KEYSTORE_BASE64` - ваш release keystore у форматі base64
+- `ANDROID_KEYSTORE_BASE64`
 - `ANDROID_KEYSTORE_PASSWORD`
 - `ANDROID_KEY_ALIAS`
 - `ANDROID_KEY_PASSWORD`
-
-Без цих секретів GitHub не зможе зібрати підписаний релізний `APK`.
 
 ## GitHub Pages
 
