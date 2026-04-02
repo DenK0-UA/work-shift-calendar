@@ -3,6 +3,57 @@ let weatherForecastRange = null;
 let weatherLastUpdatedAt = null;
 let weatherState = 'idle';
 let weatherLastError = null;
+let weatherCachedCoords = null;
+
+const WEATHER_FALLBACK_LAT = 50.35;
+const WEATHER_FALLBACK_LON = 30.95;
+const WEATHER_GEO_TIMEOUT_MS = 6000;
+const WEATHER_AUTO_REFRESH_MS = 3 * 60 * 60 * 1000;
+let weatherAutoRefreshTimer = null;
+
+function scheduleWeatherAutoRefresh() {
+    if (weatherAutoRefreshTimer) {
+        clearTimeout(weatherAutoRefreshTimer);
+    }
+    weatherAutoRefreshTimer = setTimeout(() => {
+        weatherAutoRefreshTimer = null;
+        fetchTodayWeather();
+    }, WEATHER_AUTO_REFRESH_MS);
+}
+
+function getWeatherCoords() {
+    return new Promise((resolve) => {
+        if (weatherCachedCoords) {
+            resolve(weatherCachedCoords);
+            return;
+        }
+
+        if (!navigator.geolocation) {
+            resolve({ lat: WEATHER_FALLBACK_LAT, lon: WEATHER_FALLBACK_LON });
+            return;
+        }
+
+        const timeoutId = setTimeout(() => {
+            resolve({ lat: WEATHER_FALLBACK_LAT, lon: WEATHER_FALLBACK_LON });
+        }, WEATHER_GEO_TIMEOUT_MS);
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                clearTimeout(timeoutId);
+                weatherCachedCoords = {
+                    lat: position.coords.latitude,
+                    lon: position.coords.longitude
+                };
+                resolve(weatherCachedCoords);
+            },
+            () => {
+                clearTimeout(timeoutId);
+                resolve({ lat: WEATHER_FALLBACK_LAT, lon: WEATHER_FALLBACK_LON });
+            },
+            { timeout: WEATHER_GEO_TIMEOUT_MS, maximumAge: 60 * 60 * 1000 }
+        );
+    });
+}
 
 function getWeatherIcon(code, isDay = 1) {
     if (code === 0) return isDay ? '☀️' : '🌙';
@@ -196,9 +247,8 @@ async function fetchTodayWeather() {
     }
 
     try {
-        const lat = 50.35;
-        const lon = 30.95;
-        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Europe%2FKyiv&forecast_days=10`;
+        const { lat, lon } = await getWeatherCoords();
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto&forecast_days=10`;
         const response = await fetch(url);
 
         if (!response.ok) {
@@ -218,6 +268,7 @@ async function fetchTodayWeather() {
         };
         weatherLastUpdatedAt = new Date();
         weatherState = 'ready';
+        scheduleWeatherAutoRefresh();
 
         if (modal.classList.contains('active')) {
             updateModalWeather(
@@ -229,6 +280,7 @@ async function fetchTodayWeather() {
     } catch (error) {
         weatherState = 'error';
         weatherLastError = error;
+        scheduleWeatherAutoRefresh();
 
         if (modal.classList.contains('active')) {
             updateModalWeather(

@@ -305,7 +305,7 @@ function renderCalendar(year, month) {
     updateLegendStats(stats);
     updateSubtitle();
     if (typeof updatePeriodStatsPanel === 'function') {
-        updatePeriodStatsPanel(window.activeStatsPeriod || 'month');
+        updatePeriodStatsPanel();
     }
     applyActiveFilter();
     syncSelectedDayCell();
@@ -529,16 +529,16 @@ if (calendarSection) {
         if (swipeDuration < SWIPE_TIME && swipeDistance > SWIPE_THRESHOLD) {
             if (touchEndX < touchStartX) {
                 calendarSection.classList.add('swipe-left');
-                setTimeout(() => {
-                    changeMonth(1);
+                calendarSection.addEventListener('animationend', () => {
                     calendarSection.classList.remove('swipe-left');
-                }, 300);
+                    changeMonth(1);
+                }, { once: true });
             } else {
                 calendarSection.classList.add('swipe-right');
-                setTimeout(() => {
-                    changeMonth(-1);
+                calendarSection.addEventListener('animationend', () => {
                     calendarSection.classList.remove('swipe-right');
-                }, 300);
+                    changeMonth(-1);
+                }, { once: true });
             }
         }
     }, false);

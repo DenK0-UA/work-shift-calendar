@@ -389,7 +389,7 @@ const startHardResetHold = () => {
         settingsEls.hardResetBtn.classList.remove('is-holding');
         setHardResetButtonState('\u041f\u0456\u0434\u0442\u0432\u0435\u0440\u0434\u0436\u0435\u043d\u043d\u044f...', 100);
 
-        if (confirm('\u0426\u0435 \u043f\u043e\u0432\u043d\u0456\u0441\u0442\u044e \u043e\u0447\u0438\u0441\u0442\u0438\u0442\u044c \u0433\u0440\u0430\u0444\u0456\u043a, \u0440\u0443\u0447\u043d\u0456 \u0437\u043c\u0456\u043d\u0438, \u043d\u043e\u0442\u0430\u0442\u043a\u0438, \u043a\u0435\u0448 \u0441\u0432\u044f\u0442 \u0456 \u0432\u0441\u0456 \u043b\u043e\u043a\u0430\u043b\u044c\u043d\u0456 \u043d\u0430\u043b\u0430\u0448\u0442\u0443\u0432\u0430\u043d\u043d\u044f. \u041f\u0440\u043e\u0434\u043e\u0432\u0436\u0438\u0442\u0438?')) {
+        if (confirm('Це повністю очистить графік, ручні зміни, нотатки і всі локальні налаштування. Свята залишяться. Продовжити?')) {
             hardResetAllData();
             return;
         }
@@ -607,7 +607,7 @@ if (!bootstrapSetupPending) {
     normalizeStartDate();
     updateSubtitle();
     if (typeof updatePeriodStatsPanel === 'function') {
-        updatePeriodStatsPanel(window.activeStatsPeriod || 'month');
+        updatePeriodStatsPanel();
     }
 }
 

@@ -129,7 +129,7 @@ scheduleEls.applyBtn.addEventListener('click', () => {
     syncScheduleControls(scheduleEls, selectedSchedule);
     syncScheduleModalState();
     updateSubtitle();
-    updatePeriodStatsPanel(window.activeStatsPeriod || 'month');
+    updatePeriodStatsPanel();
     renderCalendar(currentState.year, currentState.month);
     fetchTodayWeather();
     closeScheduleModal();

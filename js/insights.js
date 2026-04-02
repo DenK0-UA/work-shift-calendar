@@ -10,7 +10,7 @@ const insightsEls = {
     custom: document.getElementById('period-stat-custom')
 };
 
-window.activeStatsPeriod = 'month';
+let activeStatsPeriod = 'month';
 
 function setPeriodStatsCollapsed(isCollapsed) {
     if (!insightsEls.panel || !insightsEls.toggle) return;
@@ -18,7 +18,7 @@ function setPeriodStatsCollapsed(isCollapsed) {
     insightsEls.toggle.setAttribute('aria-expanded', String(!isCollapsed));
 }
 
-function updatePeriodStatsPanel(period = window.activeStatsPeriod || 'month') {
+function updatePeriodStatsPanel(period = activeStatsPeriod) {
     const stats = calculatePeriodStats(period);
     insightsEls.work.textContent = stats.work;
     insightsEls.off.textContent = stats.off;
@@ -39,9 +39,9 @@ if (insightsEls.toggle) {
 
 insightsEls.buttons.forEach((button) => {
     button.addEventListener('click', () => {
-        window.activeStatsPeriod = button.dataset.period;
+        activeStatsPeriod = button.dataset.period;
         insightsEls.buttons.forEach((item) => item.classList.toggle('active', item === button));
-        updatePeriodStatsPanel(window.activeStatsPeriod);
+        updatePeriodStatsPanel(activeStatsPeriod);
     });
 });
 

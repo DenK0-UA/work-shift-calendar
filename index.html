@@ -243,7 +243,7 @@
             </div>
 
             <div class="settings-danger-zone">
-                <p class="settings-danger-text">Hard reset очистить графік, ручні зміни, нотатки, кеш свят і всі візуальні налаштування.</p>
+                <p class="settings-danger-text">Hard reset очистить графік, ручні зміни, нотатки і всі візуальні налаштування. Свята залишаться.</p>
                 <button class="settings-danger-btn" id="hard-reset-btn" type="button">Утримуй для hard reset</button>
             </div>
         </div>
@@ -324,6 +324,11 @@
     <script src="js/schedule-ui.js"></script>
     <script src="js/app-update.js"></script>
     <script src="js/ui.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
+    </script>
 </body>
 
 </html>

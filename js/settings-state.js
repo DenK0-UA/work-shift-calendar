@@ -5,16 +5,13 @@
         theme: 'theme',
         themeMode: 'themeMode'
     };
-    const APP_STORAGE_KEYS = [
-        STORAGE_KEYS.settings,
-        STORAGE_KEYS.stylePreset,
-        STORAGE_KEYS.theme,
-        STORAGE_KEYS.themeMode,
-        'scheduleConfig',
-        'customDayStatuses',
-        'dayNotes'
-    ];
-    const APP_STORAGE_PREFIXES = ['holidayData:', 'appUpdate:'];
+    const APP_STORAGE_PREFIXES = ['appUpdate:'];
+
+    // Schedule keys are owned by schedule.js — read at call time to avoid duplication
+    const getScheduleStorageKeys = () =>
+        window.SCHEDULE_STORAGE_KEYS
+            ? Object.values(window.SCHEDULE_STORAGE_KEYS)
+            : ['scheduleConfig', 'customDayStatuses', 'dayNotes'];
 
     const settingsState = {
         customSettings: null,
@@ -25,7 +22,6 @@
     };
 
     let visualSwitchTimeoutId = null;
-    const PUBLIC_STYLE_PRESETS = new Set(['current']);
     const FALLBACK_STYLE_PRESET = 'current';
 
     const normalizeHexColor = (value, fallback = '#34C759') => {
@@ -171,22 +167,18 @@
     };
 
     const normalizePublicStylePreset = (stylePreset) => (
-        PUBLIC_STYLE_PRESETS.has(stylePreset) ? stylePreset : FALLBACK_STYLE_PRESET
+        stylePreset === FALLBACK_STYLE_PRESET ? stylePreset : FALLBACK_STYLE_PRESET
     );
 
     const matchesBuiltInPalette = (workColor, offColor) => {
         const normalizedWork = normalizeHexColor(workColor, '#E5E5EA');
         const normalizedOff = normalizeHexColor(offColor, '#34C759');
-
-        const stylePresets = ['current'];
         const themeNames = ['light', 'dark'];
 
-        return stylePresets.some((stylePreset) =>
-            themeNames.some((themeName) => {
-                const variant = getDefaultDayColors(stylePreset, themeName);
-                return variant.workColor === normalizedWork && variant.offColor === normalizedOff;
-            })
-        );
+        return themeNames.some((themeName) => {
+            const variant = getDefaultDayColors(FALLBACK_STYLE_PRESET, themeName);
+            return variant.workColor === normalizedWork && variant.offColor === normalizedOff;
+        });
     };
 
     const clearCustomColors = () => {
@@ -360,8 +352,12 @@
     };
 
     const hardResetAllData = () => {
+        const allKeysToRemove = [
+            ...Object.values(STORAGE_KEYS),
+            ...getScheduleStorageKeys()
+        ];
         try {
-            APP_STORAGE_KEYS.forEach((key) => localStorage.removeItem(key));
+            allKeysToRemove.forEach((key) => localStorage.removeItem(key));
 
             const keysToRemove = [];
             for (let index = 0; index < localStorage.length; index++) {

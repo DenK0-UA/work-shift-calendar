@@ -4,6 +4,9 @@ const SCHEDULE_STORAGE_KEYS = {
     dayNotes: 'dayNotes'
 };
 
+// Expose so settings-state.js can reference without duplication
+window.SCHEDULE_STORAGE_KEYS = SCHEDULE_STORAGE_KEYS;
+
 const scheduleStore = {
     scheduleConfig: null,
     customDayStatuses: null,
