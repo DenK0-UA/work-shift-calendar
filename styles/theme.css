@@ -142,7 +142,9 @@
     --button-compact-padding-inline: var(--space-4);
     --button-compact-radius: 16px;
     --icon-button-size: 40px;
+    --icon-button-size-compact: 32px;
     --icon-button-radius: var(--control-radius-sm);
+    --icon-stroke-width: 1.9;
     --modal-close-offset: var(--space-7);
     --disclosure-button-radius: 12px;
     --marker-cube-size: 10px;
@@ -161,9 +163,9 @@
     --kicker-bg: #eef3fb;
     --kicker-border: rgba(25, 103, 210, 0.14);
     --base-font-size: 16px;
-    --font-family-base: "Google Sans", "Noto Sans", sans-serif;
-    --font-family-display: "Google Sans", "Noto Sans", sans-serif;
-    --font-family-numeric: "Google Sans", "Noto Sans", sans-serif;
+    --font-family-base: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", sans-serif;
+    --font-family-display: var(--font-family-base);
+    --font-family-numeric: var(--font-family-base);
     --font-family: var(--font-family-base);
     --page-gradient: linear-gradient(180deg, #eef2f8 0%, #e9eef5 100%);
     --page-side-glow: none;
@@ -184,6 +186,40 @@
     --day-off-shadow: 0 1px 2px rgba(17, 89, 64, 0.18);
     --day-work-hover-shadow: 0 2px 6px rgba(24, 33, 45, 0.08);
     --day-off-hover-shadow: 0 2px 8px rgba(17, 89, 64, 0.22);
+    /* Z-index scale */
+    --z-base: 1;
+    --z-content: 2;
+    --z-dots: 3;
+    --z-calendar: 5;
+    --z-header: 10;
+    --z-overlay: 100;
+    --z-overlay-settings: 110;
+    --z-overlay-profiles: 115;
+    --z-overlay-schedule: 120;
+    --z-overlay-profile-edit: 130;
+    --z-overlay-app-update: 140;
+    --z-overlay-color-modal: 150;
+    --z-toast: 220;
+
+    /* Icon font-sizes */
+    --icon-size-sm: 16px;
+    --icon-size-md: 18px;
+
+    /* Decorative: theme toggle */
+    --theme-toggle-size: 18px;
+    --theme-toggle-light: #ffd45c;
+    --theme-toggle-light-rim: #f4b940;
+    --theme-toggle-dark: #89a4cb;
+    --theme-toggle-dark-deep: #5a7196;
+    --theme-toggle-auto-dark: #6f85a8;
+
+    /* Danger inline (for action buttons) */
+    --danger-soft: rgba(255, 59, 48, 0.13);
+    --danger-soft-border: rgba(255, 59, 48, 0.4);
+
+    /* Neutral dot overflow */
+    --dot-overflow-bg: #8E8E93;
+
     --panel-hover-transform: translateY(-1px);
     --icon-hover-transform: translateY(-1px);
     --button-hover-transform: translateY(-1px);
@@ -289,6 +325,9 @@
     --day-work-hover-shadow: 0 2px 4px rgba(0, 0, 0, 0.24);
     --day-off-hover-shadow: 0 2px 4px rgba(0, 0, 0, 0.24);
     --marker-cube-ring: 0 0 0 1px transparent;
+    --danger-soft: rgba(255, 69, 58, 0.16);
+    --danger-soft-border: rgba(255, 69, 58, 0.44);
+    --dot-overflow-bg: #8E8E93;
 }
 
 * {
@@ -315,6 +354,29 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+}
+
+body:has(.modal-overlay.active),
+body:has(.settings-overlay.active),
+body:has(.schedule-overlay.active),
+body:has(.profiles-overlay.active),
+body:has(.profile-edit-overlay.active),
+body:has(.profile-color-modal.active) {
+    overflow: hidden;
+}
+
+button,
+.day,
+.btn-icon,
+.settings-btn,
+.today-btn,
+.profile-action-btn,
+.schedule-btn,
+.period-btn,
+.theme-mode-btn,
+.modal-close,
+.modal-status-action {
+    touch-action: manipulation;
 }
 
 h1,
@@ -350,6 +412,31 @@ body::after {
 :focus-visible {
     outline: none;
     box-shadow: var(--focus-ring-strong);
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.icon-glyph {
+    width: 1em;
+    height: 1em;
+    display: block;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: var(--icon-stroke-width);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
 }
 
 @media (prefers-reduced-motion: reduce) {

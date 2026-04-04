@@ -91,11 +91,7 @@ function getStatusActionCaption(scheduledStatus, customStatus) {
 }
 
 function updateModalStatusBadge(status) {
-    modalStatusEls.badge.style.background = status === 'work' ? 'var(--work-bg)' : 'var(--off-bg)';
-    modalStatusEls.badge.style.color = status === 'work' ? 'var(--work-text)' : 'var(--off-text)';
-    modalStatusEls.badge.style.boxShadow = status === 'off'
-        ? '0 4px 15px rgba(52, 199, 89, 0.3)'
-        : '0 4px 15px rgba(0, 0, 0, 0.05)';
+    modalStatusEls.badge.dataset.status = status;
     modalStatusEls.text.textContent = getDayStatusLabel(status);
 }
 
@@ -292,7 +288,7 @@ function createDayCell(year, month, day, dayStatus, isToday, holidayName, custom
 
 function applyModalHolidayState(holidayName) {
     if (holidayName) {
-        calendarEls.modalHoliday.textContent = `🎈 ${holidayName}`;
+        calendarEls.modalHoliday.textContent = holidayName;
         calendarEls.modalHoliday.classList.add('active');
         return;
     }
@@ -308,7 +304,7 @@ function updateLegendStats(stats) {
 
 function applyActiveFilter() {
     calendarEls.legendItems.forEach((item) => {
-        item.style.background = item.dataset.status === activeFilter ? 'var(--accent-soft)' : '';
+        item.classList.toggle('is-active', item.dataset.status === activeFilter);
     });
 
     if (!activeFilter) {
@@ -462,7 +458,7 @@ function openModal(year, month, day, holidayName) {
     calendarEls.modalDayWeek.textContent = `${dayOfWeek}, ${localeData.months[month].toLowerCase()} ${year}`;
 
     if (holidayName) {
-        calendarEls.modalHoliday.textContent = `🎈 ${holidayName}`;
+        calendarEls.modalHoliday.textContent = holidayName;
         calendarEls.modalHoliday.classList.add('active');
     } else {
         calendarEls.modalHoliday.textContent = '';
@@ -624,6 +620,7 @@ modalNoteEls.input.addEventListener('keydown', (e) => {
 
 // --- Swipe Навігація ---
 let touchStartX = 0;
+let touchStartY = 0;
 let touchEndX = 0;
 let touchStartTime = 0;
 const SWIPE_THRESHOLD = 50;
@@ -634,15 +631,18 @@ const calendarSection = document.querySelector('.calendar-section');
 if (calendarSection) {
     calendarSection.addEventListener('touchstart', (e) => {
         touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
         touchStartTime = Date.now();
     }, false);
 
     calendarSection.addEventListener('touchend', (e) => {
         touchEndX = e.changedTouches[0].screenX;
+        const touchEndY = e.changedTouches[0].screenY;
         const swipeDuration = Date.now() - touchStartTime;
-        const swipeDistance = Math.abs(touchEndX - touchStartX);
+        const swipeDistanceX = Math.abs(touchEndX - touchStartX);
+        const swipeDistanceY = Math.abs(touchEndY - touchStartY);
 
-        if (swipeDuration < SWIPE_TIME && swipeDistance > SWIPE_THRESHOLD) {
+        if (swipeDuration < SWIPE_TIME && swipeDistanceX > SWIPE_THRESHOLD && swipeDistanceX > swipeDistanceY * 1.5) {
             if (touchEndX < touchStartX) {
                 calendarSection.classList.add('swipe-left');
                 calendarSection.addEventListener('animationend', () => {

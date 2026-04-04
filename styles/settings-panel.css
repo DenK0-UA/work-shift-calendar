@@ -1,6 +1,6 @@
 /* --- НАЛАШТУВАННЯ --- */
 .settings-overlay {
-    z-index: 101;
+    z-index: var(--z-overlay-settings);
 }
 
 .settings-card {
@@ -75,7 +75,7 @@
     border-radius: var(--button-compact-radius);
     cursor: pointer;
     background: transparent;
-    z-index: 2;
+    z-index: var(--z-content);
 }
 
 .color-preview {
@@ -87,7 +87,7 @@
     font-size: var(--type-label-sm-size);
     font-weight: 700;
     color: white;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 1px 3px color-mix(in srgb, black 30%, transparent);
     display: flex;
     align-items: center;
     border: 1px solid color-mix(in srgb, var(--card-border-strong) 86%, transparent);
@@ -216,9 +216,9 @@
     width: 100%;
     margin-top: 0;
     min-height: var(--button-min-height);
-    padding: var(--button-compact-padding-block) var(--button-compact-padding-inline);
-    border: 1px solid var(--card-border);
-    border-radius: var(--button-compact-radius);
+    padding: var(--button-padding-block) var(--button-padding-inline);
+    border: 1px solid var(--surface-panel-muted-border);
+    border-radius: var(--button-radius);
     background: var(--surface-control);
     color: var(--text-primary);
     font: inherit;
@@ -227,13 +227,13 @@
     text-align: center;
     cursor: pointer;
     transition: var(--control-transition);
-    box-shadow: none;
+    box-shadow: var(--surface-panel-elevated-shadow);
 }
 
 .settings-check-update-btn:hover {
     background: var(--surface-control-hover);
     box-shadow: var(--surface-panel-elevated-shadow-hover);
-    transform: translateY(-1px);
+    transform: var(--button-hover-transform);
 }
 
 .settings-update-summary {
@@ -324,7 +324,7 @@
 .settings-buttons .btn-reset {
     width: 100%;
     justify-content: center;
-    padding: var(--space-4) var(--space-5);
+    padding: var(--button-padding-block) var(--button-padding-inline);
     font-size: var(--button-font-size);
     font-weight: var(--button-font-weight);
     letter-spacing: var(--button-letter-spacing);
@@ -392,7 +392,7 @@
 
 .settings-danger-btn-content {
     position: relative;
-    z-index: 1;
+    z-index: var(--z-base);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -495,9 +495,9 @@
 
     .settings-group-app .settings-check-update-btn {
         margin-top: var(--space-2);
-        padding: var(--space-3) var(--space-4);
-        border-radius: var(--button-compact-radius);
-        font-size: var(--type-label-sm-size);
+        padding: var(--button-compact-padding-block) var(--button-compact-padding-inline);
+        border-radius: var(--button-radius);
+        font-size: var(--button-font-size);
     }
 
     .settings-group-app .settings-device-id-btn {

@@ -1,6 +1,6 @@
 /* --- ПАНЕЛЬ КОЛЕГ --- */
 .profiles-overlay {
-    z-index: 115;
+    z-index: var(--z-overlay-profiles);
 }
 
 .profiles-card {
@@ -42,9 +42,9 @@
 .profile-item-color {
     width: 14px;
     height: 14px;
-    border-radius: 4px;
+    border-radius: var(--marker-cube-radius);
     flex-shrink: 0;
-    border: 2px solid rgba(0,0,0,0.1);
+    border: 2px solid var(--card-border);
 }
 
 .profile-item-info {
@@ -64,7 +64,7 @@
 .profile-item-schedule {
     font-size: var(--type-body-xs-size);
     color: var(--text-secondary);
-    margin-top: 1px;
+    margin-top: 0;
 }
 
 .profile-item-actions {
@@ -74,28 +74,36 @@
 }
 
 .profile-action-btn {
-    width: 34px;
-    height: 34px;
-    border-radius: var(--button-compact-radius);
-    border: 1px solid var(--card-border);
+    width: var(--icon-button-size);
+    height: var(--icon-button-size);
+    border-radius: var(--icon-button-radius);
+    border: 1px solid var(--surface-panel-muted-border);
     background: var(--surface-control);
     cursor: pointer;
-    font-size: var(--type-body-md-size);
+    font-size: var(--icon-size-md);
     display: flex;
     align-items: center;
     justify-content: center;
     transition: var(--control-transition);
     padding: 0;
     color: var(--text-primary);
+    box-shadow: var(--surface-panel-elevated-shadow);
 }
 
 .profile-action-btn:hover {
-    background: var(--surface-tint);
+    background: var(--surface-control-hover);
+    box-shadow: var(--surface-panel-elevated-shadow-hover);
+    transform: var(--icon-hover-transform);
 }
 
 .profile-action-btn.danger:hover {
-    background: #ff3b3022;
-    border-color: #ff3b3066;
+    background: var(--danger-soft);
+    border-color: var(--danger-soft-border);
+}
+
+.profile-action-btn .icon-glyph {
+    width: 1em;
+    height: 1em;
 }
 
 /* --- Форма додавання --- */
@@ -134,20 +142,25 @@
 }
 
 .profiles-add-toggle-icon {
-    width: 32px;
-    height: 32px;
-    flex: 0 0 32px;
+    width: var(--icon-button-size-compact);
+    height: var(--icon-button-size-compact);
+    flex: 0 0 var(--icon-button-size-compact);
     border-radius: var(--disclosure-button-radius);
     border: 1px solid var(--surface-panel-muted-border);
     background: var(--surface-control);
-    color: var(--text-primary);
+    color: var(--accent);
     box-shadow: var(--surface-panel-elevated-shadow);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: var(--type-number-xs-size);
+    font-size: var(--icon-size-sm);
     line-height: 1;
     transition: var(--control-transition);
+}
+
+.profiles-add-toggle-icon .icon-glyph {
+    width: 1em;
+    height: 1em;
 }
 
 .profiles-add-toggle:hover .profiles-add-toggle-icon {
@@ -244,7 +257,7 @@
 
 .profiles-meta-row {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(92px, 112px);
+    grid-template-columns: minmax(0, 1fr) minmax(104px, 120px);
     gap: var(--space-3);
     align-items: end;
 }
@@ -280,18 +293,20 @@
     align-items: center;
     gap: var(--space-2);
     padding: var(--field-padding);
-    border-radius: var(--field-radius);
-    background: var(--surface-input);
+    border: 1px solid color-mix(in srgb, var(--card-border-strong) 86%, transparent);
+    border-radius: var(--button-compact-radius);
+    background: color-mix(in srgb, var(--surface-panel-subtle) 72%, var(--surface-input));
     color: var(--text-primary);
     text-align: left;
     cursor: pointer;
     transition: var(--control-transition);
     box-sizing: border-box;
+    box-shadow: none;
 }
 
 .profile-color-trigger:hover {
-    background: var(--surface-input);
-    border-color: var(--card-border);
+    background: color-mix(in srgb, var(--surface-panel-subtle) 82%, var(--surface-input));
+    border-color: color-mix(in srgb, var(--accent) 24%, var(--card-border-strong));
 }
 
 .profile-color-trigger-copy {
@@ -299,7 +314,7 @@
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: var(--space-1);
 }
 
 .profile-color-trigger-title {
@@ -317,38 +332,59 @@
     width: 46px;
     min-width: 46px;
     min-height: 28px;
-    border-radius: calc(var(--field-radius) - 6px);
-    border: 1px solid color-mix(in srgb, var(--card-border) 88%, transparent);
+    border-radius: calc(var(--button-compact-radius) - 4px);
+    border: 1px solid color-mix(in srgb, var(--card-border-strong) 86%, transparent);
     background: var(--surface-control);
     box-shadow: none;
 }
 
-.profiles-meta-row .profile-color-trigger {
+.profile-color-picker-compact .profile-color-trigger {
     height: var(--field-min-height);
     min-height: var(--field-min-height);
     justify-content: center;
-    padding: var(--field-padding);
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--card-border-strong) 86%, transparent);
+    border-radius: var(--field-radius);
+    background: var(--surface-input);
+    box-shadow: none;
+    overflow: hidden;
 }
 
-.profiles-meta-row .profile-color-trigger-copy {
+.profile-color-picker-compact .profile-color-trigger-copy {
     display: none;
 }
 
-.profiles-meta-row .profile-color-preview {
-    width: 100%;
-    min-width: 0;
-    min-height: 100%;
-    height: 100%;
+.profile-color-picker-compact .profile-color-preview {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.profile-color-picker:focus-within .profile-color-trigger {
+    border-color: color-mix(in srgb, var(--accent) 44%, var(--card-border-strong));
+    box-shadow: var(--focus-ring-soft);
+}
+
+.profile-color-picker-compact:focus-within .profile-color-trigger {
+    border-color: var(--accent);
+    box-shadow: var(--focus-ring-soft);
+}
+
+.profile-color-picker-compact:focus-within .profile-color-preview {
+    border-color: color-mix(in srgb, var(--card-border-strong) 86%, transparent);
+    box-shadow: none;
 }
 
 .profile-color-modal {
     position: fixed;
     inset: 0;
-    z-index: 150;
+    z-index: var(--z-overlay-color-modal);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: var(--space-5);
+    padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
     background: var(--modal-overlay);
     opacity: 0;
     pointer-events: none;
@@ -384,8 +420,8 @@
 }
 
 .profile-color-swatch {
-    min-height: 54px;
-    padding: 6px;
+    min-height: var(--field-min-height);
+    padding: var(--space-2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -409,8 +445,8 @@
 .profile-color-swatch-chip {
     width: 100%;
     aspect-ratio: 1;
-    border-radius: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: var(--disclosure-button-radius);
+    border: 1px solid var(--card-border);
 }
 
 .profile-color-modal-actions {
@@ -420,7 +456,7 @@
 }
 
 .profile-color-modal-actions .schedule-btn-action {
-    min-height: 42px;
+    min-height: var(--icon-button-size);
     padding: var(--space-3) var(--space-2);
 }
 
@@ -432,12 +468,12 @@
     bottom: var(--space-1);
     left: 50%;
     transform: translateX(-50%);
-    z-index: 3;
+    z-index: var(--z-dots);
     align-items: center;
     justify-content: center;
     flex-wrap: nowrap;
     max-width: calc(100% - var(--space-2));
-    padding-inline: 2px;
+    padding-inline: var(--space-1);
     overflow: hidden;
 }
 
@@ -457,8 +493,8 @@
     font-size: var(--marker-cube-font-size);
     font-weight: 800;
     padding: 0;
-    background: #8E8E93;
-    color: #FFFFFF;
+    background: var(--dot-overflow-bg);
+    color: var(--text-on-accent);
     line-height: var(--marker-cube-size);
     text-align: center;
     box-shadow: var(--marker-cube-ring);
@@ -487,7 +523,7 @@
     align-items: center;
     gap: var(--space-3);
     padding: var(--space-2) 0;
-    border-bottom: 1px solid var(--surface-panel-muted-border, rgba(0,0,0,0.06));
+    border-bottom: 1px solid var(--surface-panel-muted-border);
 }
 
 .modal-profile-row:last-child {
@@ -535,11 +571,12 @@
     position: fixed;
     inset: 0;
     background: var(--modal-overlay);
-    z-index: 130;
+    z-index: var(--z-overlay-profile-edit);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: var(--space-5);
+    padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
@@ -609,8 +646,8 @@
 
 .profile-edit-date-group .control-input {
     min-height: var(--field-min-height);
-    padding-top: 14px;
-    padding-bottom: 14px;
+    padding-top: var(--space-3);
+    padding-bottom: var(--space-3);
 }
 
 .profile-edit-color-group {
@@ -640,13 +677,7 @@
 }
 
 @media (max-width: 430px) {
-    .profile-edit-color-row {
-        gap: var(--space-2);
-        padding: var(--space-3);
-    }
-
-    .profile-edit-inline-color-picker {
-        width: 84px;
-        min-width: 84px;
+    .profiles-meta-row {
+        grid-template-columns: minmax(0, 1fr) 104px;
     }
 }

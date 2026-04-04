@@ -32,6 +32,27 @@ const profileColorPickerState = {
     targetPreviewEl: null
 };
 
+function getIconMarkup(name) {
+    switch (name) {
+        case 'close':
+            return '<svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12"></path><path d="M18 6 6 18"></path></svg>';
+        case 'chevron-right':
+            return '<svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="m9.5 5 7 7-7 7"></path></svg>';
+        case 'gear':
+            return '<svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.25"></circle><path d="M19.3 15.2 20.5 16.9 18.9 18.5 17.2 17.3"></path><path d="M4.7 15.2 3.5 16.9 5.1 18.5 6.8 17.3"></path><path d="M8.8 4.7 7.1 3.5 5.5 5.1 6.7 6.8"></path><path d="M15.2 4.7 16.9 3.5 18.5 5.1 17.3 6.8"></path><path d="M12 2.5v2.3"></path><path d="M12 19.2v2.3"></path><path d="M2.5 12h2.3"></path><path d="M19.2 12h2.3"></path></svg>';
+        case 'eye':
+            return '<svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M2.5 12s3.5-5.5 9.5-5.5 9.5 5.5 9.5 5.5-3.5 5.5-9.5 5.5S2.5 12 2.5 12Z"></path><circle cx="12" cy="12" r="2.75"></circle></svg>';
+        case 'eye-off':
+            return '<svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3l18 18"></path><path d="M10.6 6.7A10.4 10.4 0 0 1 12 6.5c6 0 9.5 5.5 9.5 5.5a17 17 0 0 1-4.3 4.4"></path><path d="M8 8.1C5 9.5 2.5 12 2.5 12s3.5 5.5 9.5 5.5c1.5 0 2.9-.3 4.1-.8"></path><path d="M9.7 9.7A3.2 3.2 0 0 0 12 15.2"></path></svg>';
+        case 'edit':
+            return '<svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4.2L19 9.2 14.8 5 4 15.8V20Z"></path><path d="m12.8 7 4.2 4.2"></path></svg>';
+        case 'trash':
+            return '<svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 7.5h15"></path><path d="M9.5 3.5h5"></path><path d="M7.5 7.5l1 12h7l1-12"></path><path d="M10 11v5"></path><path d="M14 11v5"></path></svg>';
+        default:
+            return '';
+    }
+}
+
 function setExpandableSectionOpen(sectionEl, isOpen) {
     if (!sectionEl) return;
 
@@ -81,7 +102,14 @@ function setProfilesOverlayOpen(isOpen) {
 
 function syncProfileColorPreview(inputEl, previewEl) {
     if (!inputEl || !previewEl) return;
-    previewEl.style.background = inputEl.value || '#8E8E93';
+    const nextColor = inputEl.value || '#8E8E93';
+    previewEl.style.background = nextColor;
+    const triggerEl = previewEl.closest('.profile-color-trigger');
+    if (triggerEl && triggerEl.closest('.profile-color-picker-compact')) {
+        triggerEl.style.background = nextColor;
+    } else if (triggerEl) {
+        triggerEl.style.background = '';
+    }
 }
 
 function getSoftProfilePalette() {
@@ -158,7 +186,7 @@ function ensureProfileColorPicker() {
         <div class="profile-color-modal-card">
             <div class="modal-shell-header profile-color-modal-header">
                 <h2 class="profile-edit-title">Колір графіка</h2>
-                <button class="schedule-close" id="profile-color-modal-close" type="button" aria-label="Закрити">×</button>
+                <button class="schedule-close" id="profile-color-modal-close" type="button" aria-label="Закрити">${getIconMarkup('close')}</button>
             </div>
             <div class="profile-color-swatch-grid" id="profile-color-swatch-grid"></div>
             <div class="profile-color-modal-actions">
@@ -273,7 +301,9 @@ function renderProfilesList() {
         visBtn.className = 'profile-action-btn';
         visBtn.type = 'button';
         visBtn.title = profile.visible === false ? 'Показати' : 'Сховати';
-        visBtn.textContent = profile.visible === false ? '👁️‍🗨️' : '👁️';
+        visBtn.setAttribute('aria-label', profile.visible === false ? 'Показати профіль' : 'Сховати профіль');
+        visBtn.setAttribute('aria-pressed', String(profile.visible !== false));
+        visBtn.innerHTML = profile.visible === false ? getIconMarkup('eye-off') : getIconMarkup('eye');
         visBtn.addEventListener('click', () => {
             toggleProfileVisibility(profile.id);
             renderProfilesList();
@@ -284,7 +314,8 @@ function renderProfilesList() {
         editBtn.className = 'profile-action-btn';
         editBtn.type = 'button';
         editBtn.title = 'Редагувати';
-        editBtn.textContent = '✏️';
+        editBtn.setAttribute('aria-label', 'Редагувати профіль');
+        editBtn.innerHTML = getIconMarkup('edit');
         editBtn.addEventListener('click', () => {
             openEditProfile(profile);
         });
@@ -293,7 +324,8 @@ function renderProfilesList() {
         delBtn.className = 'profile-action-btn danger';
         delBtn.type = 'button';
         delBtn.title = 'Видалити';
-        delBtn.textContent = '🗑️';
+        delBtn.setAttribute('aria-label', 'Видалити профіль');
+        delBtn.innerHTML = getIconMarkup('trash');
         delBtn.addEventListener('click', () => {
             if (confirm(`Видалити профіль "${profile.name}"?`)) {
                 removeProfile(profile.id);
@@ -429,7 +461,7 @@ function openEditProfile(profile) {
         <div class="profile-edit-card">
             <div class="modal-shell-header profile-edit-header">
                 <h2 class="profile-edit-title">Редагувати: ${escapeHtml(profile.name)}</h2>
-                <button class="schedule-close profile-edit-close" id="edit-profile-close" type="button" aria-label="Закрити">×</button>
+                <button class="schedule-close profile-edit-close" id="edit-profile-close" type="button" aria-label="Закрити">${getIconMarkup('close')}</button>
             </div>
             <div class="custom-input-group">
                 <label class="custom-input-label">Назва</label>
@@ -438,7 +470,7 @@ function openEditProfile(profile) {
             <div class="profiles-schedule-row profile-edit-schedule-row">
                 <div class="profiles-schedule-templates profile-edit-schedule-templates" id="edit-profile-schedule-templates">
                     ${['5/5','4/4','5/2','3/3','2/2','custom'].map(t =>
-                        `<button class="schedule-btn schedule-btn-sm profile-edit-schedule-btn${editSelectedSchedule === t ? ' active' : ''}" data-edit-schedule="${t}" type="button"><strong>${t === 'custom' ? '⚙️' : t}</strong><span class="schedule-btn-label profile-schedule-caption profile-edit-schedule-label">${getScheduleCaptionLabel(t)}</span></button>`
+                        `<button class="schedule-btn schedule-btn-sm profile-edit-schedule-btn${editSelectedSchedule === t ? ' active' : ''}" data-edit-schedule="${t}" type="button"><strong${t === 'custom' ? ' class="schedule-btn-icon" aria-hidden="true"' : ''}>${t === 'custom' ? getIconMarkup('gear') : t}</strong><span class="schedule-btn-label profile-schedule-caption profile-edit-schedule-label">${getScheduleCaptionLabel(t)}</span></button>`
                     ).join('')}
                 </div>
             </div>
@@ -459,7 +491,7 @@ function openEditProfile(profile) {
                 </div>
                 <div class="custom-input-group profile-color-group profile-edit-color-group">
                     <label class="custom-input-label" for="edit-profile-color">Колір</label>
-                    <div class="profile-color-picker profile-edit-inline-color-picker">
+                    <div class="profile-color-picker profile-color-picker-compact profile-edit-inline-color-picker">
                         <input type="color" id="edit-profile-color" class="profile-color-input profile-color-native-input profile-edit-color-input" value="${profile.color}" aria-label="Свій колір календаря">
                         <button class="profile-color-trigger profile-edit-color-trigger custom-input control-input" id="edit-profile-color-trigger" type="button" aria-haspopup="dialog">
                             <span class="profile-color-preview" id="edit-profile-color-preview"></span>

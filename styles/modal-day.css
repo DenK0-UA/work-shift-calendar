@@ -1,6 +1,6 @@
 /* --- МОДАЛЬНЕ ВІКНО --- */
 .modal-overlay {
-    z-index: 100;
+    z-index: var(--z-overlay);
 }
 
 .modal-card {
@@ -83,6 +83,18 @@
     box-shadow: var(--surface-panel-elevated-shadow-hover);
 }
 
+.modal-status-badge[data-status="work"] {
+    background: var(--work-bg);
+    color: var(--work-text);
+    box-shadow: var(--day-work-shadow);
+}
+
+.modal-status-badge[data-status="off"] {
+    background: var(--off-bg);
+    color: var(--off-text);
+    box-shadow: var(--day-off-shadow);
+}
+
 .modal-status-actions {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -158,8 +170,8 @@
 }
 
 .modal-weather-icon {
-    width: 46px;
-    height: 46px;
+    width: calc(var(--icon-button-size) + 6px);
+    height: calc(var(--icon-button-size) + 6px);
     border-radius: var(--icon-button-radius);
     display: flex;
     align-items: center;
@@ -197,7 +209,7 @@
     border: 1px solid color-mix(in srgb, var(--surface-panel-muted-border) 76%, transparent);
     background: color-mix(in srgb, var(--surface-control) 92%, var(--surface-panel-accent));
     color: color-mix(in srgb, var(--text-secondary) 88%, var(--accent));
-    font-size: 16px;
+    font-size: var(--icon-size-sm);
     font-weight: 600;
     line-height: 1;
     box-shadow: none;
@@ -295,7 +307,7 @@
     opacity: 0;
     pointer-events: none;
     transition: var(--control-transition);
-    z-index: 220;
+    z-index: var(--z-toast);
 }
 
 .undo-toast.active {

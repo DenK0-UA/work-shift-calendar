@@ -1,6 +1,6 @@
 /* --- МОДАЛЬ ГРАФІК --- */
 .schedule-overlay {
-    z-index: 100;
+    z-index: var(--z-overlay);
 }
 
 body.app-shell-pending .main-container,
@@ -12,7 +12,7 @@ body.app-setup-pending .main-container {
 }
 
 .schedule-overlay.setup-mode {
-    z-index: 120;
+    z-index: var(--z-overlay-schedule);
 }
 
 .schedule-card {
@@ -133,7 +133,7 @@ body.app-setup-pending .main-container {
 .schedule-btn strong,
 .schedule-btn-label {
     position: relative;
-    z-index: 1;
+    z-index: var(--z-base);
 }
 
 .schedule-btn strong {
@@ -143,9 +143,17 @@ body.app-setup-pending .main-container {
 }
 
 .schedule-btn-icon {
-    font-size: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--icon-size-md);
     line-height: 1;
     transform: translateY(-1px);
+}
+
+.schedule-btn-icon .icon-glyph {
+    width: 1.1em;
+    height: 1.1em;
 }
 
 .schedule-btn:hover {
@@ -159,7 +167,7 @@ body.app-setup-pending .main-container {
     border-color: var(--accent);
     background: color-mix(in srgb, var(--accent-soft-strong) 100%, var(--surface-panel-subtle));
     color: var(--text-accent-strong);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.14);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, white 14%, transparent);
 }
 
 .schedule-btn.active::before {
@@ -235,7 +243,7 @@ body.app-setup-pending .main-container {
 
 .schedule-info {
     margin: 0;
-    padding: 0 2px;
+    padding: 0 var(--space-1);
     background: transparent;
     border: none;
     border-radius: 0;
@@ -251,12 +259,15 @@ body.app-setup-pending .main-container {
 }
 
 .schedule-info::before {
-    content: "✨";
+    content: "";
     flex: 0 0 auto;
-    font-size: var(--type-label-sm-size);
-    line-height: 1.2;
-    transform: translateY(1px);
-    opacity: 0.78;
+    width: var(--marker-cube-size);
+    height: var(--marker-cube-size);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent) 68%, white);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+    transform: translateY(2px);
+    opacity: 0.92;
 }
 
 .schedule-overlay.setup-mode .schedule-info {
@@ -271,7 +282,7 @@ body.app-setup-pending .main-container {
     padding-top: var(--space-5);
     margin-top: var(--space-3);
     background: linear-gradient(180deg, rgba(255, 255, 255, 0), var(--main-container-bg) 36%);
-    z-index: 2;
+    z-index: var(--z-content);
 }
 
 [data-theme="dark"] .schedule-buttons {
@@ -290,14 +301,14 @@ body.app-setup-pending .main-container {
     -webkit-backdrop-filter: none;
     max-width: 440px;
     max-height: min(92vh, 760px);
-    padding: 32px 28px 28px;
+    padding: calc(var(--space-7) + 4px) var(--space-7) var(--space-7);
 }
 
 .schedule-overlay.setup-mode .schedule-title {
     font-family: var(--font-family-display);
     font-size: var(--type-display-setup-size);
     line-height: var(--type-display-setup-line);
-    margin-bottom: 2px;
+    margin-bottom: var(--space-1);
     text-wrap: balance;
 }
 
@@ -308,7 +319,7 @@ body[data-theme="dark"] .schedule-onboarding {
 }
 
 body[data-theme="dark"] .schedule-onboarding-kicker {
-    background: rgba(255, 255, 255, 0.07);
+    background: color-mix(in srgb, white 7%, transparent);
     color: color-mix(in srgb, var(--accent) 62%, white);
 }
 

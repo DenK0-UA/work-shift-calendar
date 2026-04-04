@@ -7,26 +7,26 @@
     }
 
     body {
-        padding: clamp(10px, 2.4vw, 14px) clamp(8px, 2vw, 12px);
+        padding: clamp(10px, 2.4vw, 14px) clamp(var(--space-2), 2vw, var(--space-3));
     }
 
     .depth-panel {
-        padding: clamp(16px, 3vw, 20px);
-        border-radius: clamp(16px, 3.8vw, 22px);
+        padding: clamp(var(--space-4), 3vw, var(--space-5));
+        border-radius: clamp(var(--space-4), 3.8vw, 22px);
     }
 
     .header-top {
-        gap: clamp(8px, 2vw, 12px);
-        margin-bottom: clamp(12px, 2.4vw, 16px);
+        gap: clamp(var(--space-2), 2vw, var(--space-3));
+        margin-bottom: clamp(var(--space-3), 2.4vw, var(--space-4));
     }
 
     h1 {
-        font-size: clamp(22px, 5.4vw, 28px);
+        font-size: clamp(22px, 5.4vw, var(--type-display-setup-size));
         line-height: 0.98;
     }
 
     .subtitle {
-        font-size: clamp(11px, 2.8vw, 13px);
+        font-size: clamp(var(--type-body-xs-size), 2.8vw, var(--type-body-ui-size));
     }
 
     .header-actions {
@@ -35,17 +35,17 @@
 
     .btn-icon,
     .settings-btn {
-        width: clamp(34px, 8.8vw, 40px);
-        height: clamp(34px, 8.8vw, 40px);
-        border-radius: clamp(12px, 2.8vw, 15px);
-        font-size: clamp(15px, 3.8vw, 17px);
+        width: clamp(34px, 8.8vw, var(--icon-button-size));
+        height: clamp(34px, 8.8vw, var(--icon-button-size));
+        border-radius: clamp(var(--disclosure-button-radius), 2.8vw, 15px);
+        font-size: clamp(15px, 3.8vw, var(--type-title-section-size));
     }
 
     .controls-row {
         display: grid;
         grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
-        gap: clamp(8px, 2vw, 12px);
+        gap: clamp(var(--space-2), 2vw, var(--space-3));
     }
 
     .month-switcher {
@@ -55,8 +55,8 @@
 
     .month-title {
         min-width: 0;
-        font-size: clamp(13px, 3.6vw, 15px);
-        padding: 0 clamp(8px, 2vw, 14px);
+        font-size: clamp(var(--type-body-ui-size), 3.6vw, var(--type-number-xs-size));
+        padding: 0 clamp(var(--space-2), 2vw, 14px);
     }
 
     .calendar-actions {
@@ -65,32 +65,32 @@
     }
 
     .today-btn {
-        min-height: clamp(40px, 8.8vw, 44px);
+        min-height: clamp(var(--icon-button-size), 8.8vw, 44px);
         min-width: clamp(112px, 27vw, 136px);
-        padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 16px);
-        font-size: clamp(12px, 3vw, 13px);
+        padding: clamp(var(--space-2), 2vw, 10px) clamp(var(--space-3), 3vw, var(--space-4));
+        font-size: clamp(var(--type-body-sm-size), 3vw, var(--type-body-ui-size));
     }
 
     .calendar-section {
-        padding: clamp(14px, 3vw, 18px) clamp(12px, 2.8vw, 18px) clamp(16px, 3.4vw, 20px);
+        padding: clamp(14px, 3vw, var(--space-4)) clamp(var(--space-3), 2.8vw, var(--space-4)) clamp(var(--space-4), 3.4vw, var(--space-5));
     }
 
     .calendar-grid {
-        gap: clamp(5px, 1.4vw, 8px);
+        gap: clamp(5px, 1.4vw, var(--space-2));
     }
 
     .day {
-        min-height: clamp(48px, 11.5vw, 56px);
-        border-radius: clamp(14px, 3.2vw, 20px);
+        min-height: clamp(var(--button-min-height), 11.5vw, var(--field-min-height));
+        border-radius: clamp(14px, 3.2vw, var(--control-radius-md));
     }
 
     .date-num {
-        font-size: clamp(15px, 4vw, 18px);
+        font-size: clamp(var(--type-number-xs-size), 4vw, var(--icon-size-md));
     }
 
     .summary-legend {
         gap: clamp(10px, 2.4vw, 14px);
-        padding: clamp(14px, 3vw, 18px);
+        padding: clamp(14px, 3vw, var(--space-4));
         flex-wrap: wrap;
     }
 
@@ -102,7 +102,7 @@
 
     .stat-item {
         min-width: 0;
-        padding: clamp(7px, 1.8vw, 10px) clamp(8px, 2.2vw, 12px);
+        padding: clamp(7px, 1.8vw, 10px) clamp(var(--space-2), 2.2vw, var(--space-3));
         gap: clamp(7px, 1.8vw, 10px);
     }
 
@@ -113,41 +113,41 @@
 
 @media (max-width: 480px) {
     :root {
-        --modal-close-offset: 20px;
+        --modal-close-offset: var(--space-5);
     }
 
     .main-container {
-        gap: 12px;
-        padding: 8px;
+        gap: var(--space-3);
+        padding: var(--space-2);
     }
 
     body {
-        padding: 12px 8px;
+        padding: var(--space-3) var(--space-2);
     }
 
     .depth-panel {
-        border-radius: 20px;
-        padding: 18px;
+        border-radius: var(--control-radius-md);
+        padding: var(--space-4);
     }
 
     header.depth-panel {
-        padding-bottom: 18px;
+        padding-bottom: var(--space-4);
     }
 
     h1 {
-        font-size: 24px;
+        font-size: var(--type-number-md-size);
         line-height: 0.98;
     }
 
     .subtitle {
-        font-size: 12px;
+        font-size: var(--type-body-sm-size);
     }
 
     .header-top {
         flex-direction: row;
         align-items: flex-start;
-        gap: 12px;
-        margin-bottom: 14px;
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
     }
 
     .header-top > :first-child {
@@ -158,7 +158,7 @@
     .header-actions {
         flex-shrink: 0;
         justify-content: flex-end;
-        gap: 8px;
+        gap: var(--space-2);
     }
 
     .weekdays {
@@ -166,35 +166,35 @@
     }
 
     .weekdays span {
-        font-size: 12px;
-        padding: 8px 0;
+        font-size: var(--type-body-sm-size);
+        padding: var(--space-2) 0;
     }
 
     .day {
         aspect-ratio: 1;
-        padding: 8px;
+        padding: var(--space-2);
     }
 
     .date-num {
-        font-size: 16px;
+        font-size: var(--base-font-size);
     }
 
     .modal-card {
         max-width: 90vw;
-        padding: 20px;
+        padding: var(--space-5);
     }
 
     .modal-date {
-        font-size: 48px;
+        font-size: clamp(var(--type-number-lg-size), 14vw, var(--type-number-hero-size));
     }
 
     .settings-card {
         max-width: 90vw;
-        padding: 20px;
+        padding: var(--space-5);
     }
 
     .schedule-overlay {
-        padding: 10px;
+        padding: var(--space-3);
     }
 
     .schedule-overlay.setup-mode {
@@ -203,43 +203,43 @@
     }
 
     .schedule-card {
-        max-width: min(100vw - 16px, 420px);
-        padding: 20px 18px 22px;
-        border-radius: 24px;
+        max-width: min(100vw - var(--space-4), 420px);
+        padding: var(--space-5) var(--space-4) var(--space-6);
+        border-radius: var(--surface-block-radius-lg);
     }
 
     .schedule-overlay.setup-mode .schedule-card {
-        max-width: min(100vw - 16px, 420px);
-        max-height: calc(100dvh - 20px);
-        border-radius: 28px;
-        padding: 24px 20px 24px;
+        max-width: min(100vw - var(--space-4), 420px);
+        max-height: calc(100dvh - var(--space-5));
+        border-radius: var(--shell-radius);
+        padding: var(--space-6) var(--space-5) var(--space-6);
     }
 
     .schedule-title {
-        font-size: 21px;
+        font-size: var(--type-number-sm-size);
         margin-bottom: 0;
     }
 
     .schedule-overlay.setup-mode .schedule-title {
-        font-size: 24px;
+        font-size: var(--type-number-md-size);
         line-height: 1.14;
         margin-bottom: 0;
     }
 
     .schedule-intro {
-        gap: 12px;
-        margin-bottom: 12px;
+        gap: var(--space-3);
+        margin-bottom: var(--space-3);
     }
 
     .schedule-onboarding {
         margin-bottom: 0;
-        padding: 15px 15px 14px;
-        border-radius: 16px;
+        padding: var(--space-4);
+        border-radius: var(--button-compact-radius);
     }
 
     .schedule-onboarding-text {
         max-width: none;
-        font-size: 14px;
+        font-size: var(--type-body-md-size);
         line-height: 1.34;
         text-align: left;
     }
@@ -248,8 +248,8 @@
         margin: 0;
         padding: 0;
         max-width: none;
-        font-size: 10.5px;
-        line-height: 1.28;
+        font-size: var(--type-caption-xxs-size);
+        line-height: var(--type-body-xs-line);
         justify-content: flex-start;
         text-align: left;
         white-space: normal;
@@ -258,15 +258,15 @@
     }
 
     .schedule-templates {
-        gap: 12px;
-        margin-bottom: 18px;
+        gap: var(--space-3);
+        margin-bottom: var(--space-4);
     }
 
     .schedule-btn {
         min-height: 96px;
-        padding: 12px 10px;
-        border-radius: 14px;
-        gap: 6px;
+        padding: var(--space-3);
+        border-radius: var(--surface-block-radius-sm);
+        gap: var(--space-2);
     }
 
     .schedule-btn strong {
@@ -274,94 +274,94 @@
     }
 
     .schedule-btn-icon {
-        font-size: 16px;
+        font-size: var(--icon-size-sm);
     }
 
     .schedule-btn-label {
-        font-size: 11px;
+        font-size: var(--type-body-xs-size);
         line-height: 1.28;
     }
 
     .schedule-custom {
-        margin-bottom: 18px;
+        margin-bottom: var(--space-4);
     }
 
     .schedule-custom-inner {
-        padding: 14px;
-        border-radius: 14px;
+        padding: var(--space-4);
+        border-radius: var(--surface-block-radius-sm);
     }
 
     .custom-input-group {
-        margin-bottom: 10px;
+        margin-bottom: var(--space-2);
     }
 
     .schedule-buttons {
-        gap: 10px;
-        padding-top: 12px;
-        margin-top: 8px;
+        gap: var(--space-2);
+        padding-top: var(--space-3);
+        margin-top: var(--space-2);
     }
 
     .schedule-btn-action {
-        padding: 13px 16px;
-        font-size: 12px;
-        border-radius: 14px;
+        padding: var(--button-compact-padding-block) var(--button-compact-padding-inline);
+        font-size: var(--type-body-sm-size);
+        border-radius: var(--button-radius);
     }
 
     .custom-input-label {
-        font-size: 11px;
-        margin-bottom: 6px;
+        font-size: var(--type-body-xs-size);
+        margin-bottom: var(--space-2);
     }
 
     .custom-input.control-input {
-        padding: 12px 14px;
-        font-size: 13px;
+        padding: var(--space-3) var(--space-4);
+        font-size: var(--type-body-ui-size);
     }
 
     .schedule-onboarding-kicker {
-        margin-bottom: 8px;
-        font-size: 10px;
+        margin-bottom: var(--space-2);
+        font-size: var(--type-caption-xxs-size);
         letter-spacing: 0.06em;
     }
 
     .schedule-info::before {
-        font-size: 11px;
+        font-size: var(--type-body-xs-size);
     }
 
     .settings-danger-zone {
-        padding: 16px;
-        border-radius: 20px;
+        padding: var(--space-4);
+        border-radius: var(--control-radius-md);
     }
 
     .stat-item {
-        padding: 8px 10px;
-        font-size: 14px;
+        padding: var(--space-2) var(--space-3);
+        font-size: var(--type-body-md-size);
     }
 
     .stat-num {
-        font-size: 18px;
+        font-size: var(--icon-size-md);
     }
 
     .stat-label {
-        font-size: 11px;
+        font-size: var(--type-body-xs-size);
     }
 
     .month-title {
         min-width: 0;
         flex: 1;
-        padding: 0 10px;
-        font-size: 14px;
+        padding: 0 var(--space-3);
+        font-size: var(--type-body-md-size);
     }
 
     .btn-icon,
     .settings-btn {
         width: 36px;
         height: 36px;
-        font-size: 16px;
+        font-size: var(--icon-size-sm);
     }
 
     .controls-row {
         align-items: center;
-        gap: 10px;
+        gap: var(--space-2);
     }
 
     .month-switcher {
@@ -369,27 +369,27 @@
     }
 
     .calendar-actions {
-        gap: 8px;
+        gap: var(--space-2);
         flex-shrink: 0;
     }
 
     .today-btn {
-        font-size: 13px;
+        font-size: var(--type-body-ui-size);
         min-height: 42px;
-        padding: 10px 16px;
+        padding: var(--space-2) var(--space-4);
         min-width: 132px;
     }
 
     .summary-legend {
         flex-direction: row;
         align-items: center;
-        gap: 12px;
-        padding: 16px 18px;
+        gap: var(--space-3);
+        padding: var(--space-4) var(--space-4);
     }
 
     .stats {
         width: auto;
-        gap: 8px;
+        gap: var(--space-2);
     }
 
     .separator {
@@ -398,12 +398,12 @@
 
     .logo-area {
         align-self: auto;
-        font-size: 12px;
+        font-size: var(--type-body-sm-size);
         letter-spacing: 0.16em;
     }
 
     .calendar-section {
-        padding: 16px 16px 18px;
+        padding: var(--space-4) var(--space-4) var(--space-4);
     }
 
     .calendar-grid {
@@ -434,13 +434,13 @@
     }
 
     .modal-weather-inner {
-        padding: 12px 14px;
+        padding: var(--space-3) var(--space-4);
     }
 
     .modal-weather-icon {
         width: 42px;
         height: 42px;
-        font-size: 22px;
+        font-size: var(--type-number-sm-size);
     }
 
     .modal-shell-header {
@@ -448,77 +448,77 @@
     }
 
     .profiles-overlay {
-        padding: 10px;
+        padding: var(--space-3);
     }
 
     .profiles-card {
-        max-width: min(100vw - 16px, 420px);
-        max-height: calc(100dvh - 20px);
-        padding: 20px 18px 22px;
-        border-radius: 24px;
-        gap: 12px;
+        max-width: min(100vw - var(--space-4), 420px);
+        max-height: calc(100dvh - var(--space-5));
+        padding: var(--space-5) var(--space-4) var(--space-6);
+        border-radius: var(--surface-block-radius-lg);
+        gap: var(--space-3);
     }
 
     .profiles-list {
-        gap: 10px;
-        margin-bottom: 12px;
+        gap: var(--space-2);
+        margin-bottom: var(--space-3);
     }
 
     .profile-item {
-        gap: 10px;
-        padding: 12px;
-        border-radius: 16px;
+        gap: var(--space-2);
+        padding: var(--space-3);
+        border-radius: var(--button-compact-radius);
     }
 
     .profile-item-name {
-        font-size: 13px;
+        font-size: var(--type-body-ui-size);
     }
 
     .profile-item-schedule {
-        font-size: 11px;
+        font-size: var(--type-body-xs-size);
     }
 
     .profile-item-actions {
-        gap: 6px;
+        gap: var(--space-2);
     }
 
     .profile-action-btn {
         width: 36px;
         height: 36px;
-        font-size: 15px;
+        font-size: var(--type-number-xs-size);
     }
 
     .profiles-add-form {
-        padding-top: 12px;
+        padding-top: var(--space-3);
     }
 
     .profiles-add-toggle {
-        padding: 12px 14px;
-        border-radius: 16px;
+        padding: var(--space-3) var(--space-4);
+        border-radius: var(--button-compact-radius);
     }
 
     .profiles-add-heading {
-        font-size: 14px;
+        font-size: var(--type-body-md-size);
     }
 
     .profiles-schedule-templates {
-        gap: 10px;
+        gap: var(--space-2);
     }
 
     .profiles-custom-fields {
         flex-direction: column;
-        gap: 10px;
+        gap: var(--space-2);
     }
 
     .profiles-meta-row {
-        grid-template-columns: minmax(0, 1fr) 96px;
-        gap: 10px;
+        grid-template-columns: minmax(0, 1fr) 104px;
+        gap: var(--space-2);
     }
 
     .stat-item {
-        gap: 8px;
-        padding: 8px 10px;
-        border-radius: 16px;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-3);
+        border-radius: var(--button-compact-radius);
     }
 
     .calendar-section {
@@ -527,16 +527,16 @@
     }
 
     .settings-group {
-        padding: 18px;
-        border-radius: 20px;
+        padding: var(--space-4);
+        border-radius: var(--control-radius-md);
     }
 
     .settings-card {
-        gap: 12px;
+        gap: var(--space-3);
     }
 
     .profiles-card {
-        gap: 12px;
+        gap: var(--space-3);
     }
 
     .undo-toast {
@@ -553,34 +553,34 @@
 
 @media (max-width: 430px) {
     body {
-        padding: 10px 7px;
+        padding: var(--space-3) var(--space-2);
     }
 
     .main-container {
-        gap: 10px;
-        padding: 6px;
+        gap: var(--space-2);
+        padding: var(--space-2);
     }
 
     .depth-panel {
-        padding: 16px;
-        border-radius: 18px;
+        padding: var(--space-4);
+        border-radius: var(--surface-block-radius-sm);
     }
 
     .settings-card {
-        gap: 12px;
+        gap: var(--space-3);
     }
 
     header.depth-panel {
-        padding-bottom: 16px;
+        padding-bottom: var(--space-4);
     }
 
     h1 {
-        font-size: 22px;
+        font-size: var(--type-number-sm-size);
         letter-spacing: -0.04em;
     }
 
     .subtitle {
-        font-size: 12px;
+        font-size: var(--type-body-sm-size);
     }
 
     .header-actions {
@@ -591,34 +591,34 @@
     .settings-btn {
         width: 35px;
         height: 35px;
-        border-radius: 12px;
+        border-radius: var(--disclosure-button-radius);
         font-size: 15px;
     }
 
     .month-switcher {
-        padding: 5px;
-        border-radius: 18px;
+        padding: var(--space-1);
+        border-radius: var(--surface-block-radius-sm);
     }
 
     .month-title {
-        font-size: 13px;
-        padding: 0 8px;
+        font-size: var(--type-body-ui-size);
+        padding: 0 var(--space-2);
     }
 
     .today-btn {
-        min-height: 40px;
+        min-height: var(--icon-button-size);
         min-width: 120px;
-        padding: 9px 14px;
-        border-radius: 16px;
-        font-size: 12px;
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--button-compact-radius);
+        font-size: var(--type-body-sm-size);
     }
 
     .calendar-section {
-        padding: 14px 12px 16px;
+        padding: 14px var(--space-3) var(--space-4);
     }
 
     .weekdays span {
-        font-size: 11px;
+        font-size: var(--type-body-xs-size);
         padding: 6px 0;
     }
 
@@ -627,29 +627,29 @@
     }
 
     .day {
-        border-radius: 16px;
+        border-radius: var(--button-compact-radius);
     }
 
     .date-num {
-        font-size: 15px;
+        font-size: var(--type-number-xs-size);
     }
 
     .summary-legend {
-        gap: 10px;
-        padding: 14px;
+        gap: var(--space-2);
+        padding: var(--space-4);
     }
 
     .stats {
-        gap: 6px;
+        gap: var(--space-2);
     }
 
     .stat-item {
-        gap: 7px;
-        padding: 7px 9px;
+        gap: var(--space-2);
+        padding: var(--space-2);
     }
 
     .logo-area {
-        font-size: 11px;
+        font-size: var(--type-body-xs-size);
         letter-spacing: 0.12em;
     }
 
@@ -658,7 +658,7 @@
     }
 
     .profile-item {
-        padding: 11px;
+        padding: var(--space-3);
     }
 
     .profile-item-actions {
@@ -666,42 +666,42 @@
     }
 
     .profiles-meta-row {
-        grid-template-columns: minmax(0, 1fr) 88px;
-        gap: 8px;
+        grid-template-columns: minmax(0, 1fr) 104px;
+        gap: var(--space-2);
     }
 }
 
 @media (max-width: 360px) {
     body {
-        padding: 10px 6px;
+        padding: var(--space-3) var(--space-2);
     }
 
     .main-container {
-        gap: 10px;
-        padding: 6px;
+        gap: var(--space-2);
+        padding: var(--space-2);
     }
 
     .depth-panel {
-        padding: 14px;
-        border-radius: 18px;
+        padding: var(--space-4);
+        border-radius: var(--surface-block-radius-sm);
     }
 
     header.depth-panel {
-        padding-bottom: 14px;
+        padding-bottom: var(--space-4);
     }
 
     h1 {
-        font-size: 20px;
+        font-size: var(--type-number-sm-size);
         letter-spacing: -0.04em;
     }
 
     .subtitle {
-        font-size: 11px;
+        font-size: var(--type-body-xs-size);
     }
 
     .header-top {
-        gap: 10px;
-        margin-bottom: 12px;
+        gap: var(--space-2);
+        margin-bottom: var(--space-3);
     }
 
     .header-actions {
@@ -712,35 +712,35 @@
     .settings-btn {
         width: 34px;
         height: 34px;
-        border-radius: 12px;
+        border-radius: var(--disclosure-button-radius);
         font-size: 15px;
     }
 
     .month-switcher {
         width: auto;
-        padding: 5px;
-        border-radius: 18px;
+        padding: var(--space-1);
+        border-radius: var(--surface-block-radius-sm);
     }
 
     .month-title {
-        font-size: 13px;
-        padding: 0 8px;
+        font-size: var(--type-body-ui-size);
+        padding: 0 var(--space-2);
     }
 
     .today-btn {
-        min-height: 40px;
+        min-height: var(--icon-button-size);
         min-width: 120px;
-        padding: 9px 14px;
-        border-radius: 16px;
-        font-size: 12px;
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--button-compact-radius);
+        font-size: var(--type-body-sm-size);
     }
 
     .calendar-section {
-        padding: 14px 12px 16px;
+        padding: 14px var(--space-3) var(--space-4);
     }
 
     .weekdays span {
-        font-size: 11px;
+        font-size: var(--type-body-xs-size);
         padding: 6px 0;
     }
 
@@ -749,25 +749,25 @@
     }
 
     .day {
-        border-radius: 16px;
+        border-radius: var(--button-compact-radius);
     }
 
     .date-num {
-        font-size: 15px;
+        font-size: var(--type-number-xs-size);
     }
 
     .holiday-marker {
-        width: 8px;
-        height: 8px;
-        top: 4px;
-        right: 4px;
+        width: var(--space-2);
+        height: var(--space-2);
+        top: var(--space-1);
+        right: var(--space-1);
     }
 
     .summary-legend {
         flex-direction: column;
         align-items: stretch;
-        gap: 10px;
-        padding: 14px;
+        gap: var(--space-2);
+        padding: var(--space-4);
     }
 
     .stats {
@@ -777,54 +777,54 @@
 
     .logo-area {
         align-self: flex-end;
-        font-size: 11px;
+        font-size: var(--type-body-xs-size);
     }
 }
 
 @media (max-height: 820px) and (max-width: 519px) {
     .schedule-overlay.setup-mode .schedule-card {
         max-height: min(94vh, 680px);
-        padding: 22px 22px 20px;
+        padding: var(--space-6);
     }
 
     .schedule-overlay.setup-mode .schedule-title {
-        font-size: 27px;
-        margin-bottom: 12px;
+        font-size: var(--type-display-modal-size);
+        margin-bottom: var(--space-3);
     }
 
     .schedule-onboarding {
-        padding: 12px 14px 11px;
-        margin-bottom: 8px;
+        padding: var(--space-3) var(--space-4);
+        margin-bottom: var(--space-2);
     }
 
     .schedule-info {
-        margin-bottom: 12px;
+        margin-bottom: var(--space-3);
     }
 
     .schedule-templates {
-        gap: 10px;
-        margin-bottom: 18px;
+        gap: var(--space-2);
+        margin-bottom: var(--space-4);
     }
 
     .schedule-btn {
         min-height: 96px;
-        padding: 13px 10px;
+        padding: var(--space-3);
     }
 
     .schedule-custom {
-        margin-bottom: 18px;
+        margin-bottom: var(--space-4);
     }
 
     .schedule-custom-inner {
-        padding: 12px 14px;
+        padding: var(--space-3) var(--space-4);
     }
 
     .custom-input-group {
-        margin-bottom: 10px;
+        margin-bottom: var(--space-2);
     }
 
     .schedule-buttons {
-        padding-top: 12px;
+        padding-top: var(--space-3);
     }
 }
 
@@ -835,12 +835,8 @@
     }
 
     .depth-panel {
-        border-radius: 24px;
-        padding: 18px;
-    }
-
-    h1 {
-        font-size: 26px;
+        border-radius: var(--surface-block-radius-lg);
+        padding: var(--space-4);
     }
 
     .modal-card {
@@ -852,44 +848,27 @@
     }
 
     .period-stat-value {
-        font-size: 28px;
+        font-size: var(--type-display-setup-size);
     }
 }
 
 @media (min-width: 1024px) {
     .main-container {
         max-width: 560px;
-        gap: 12px;
+        gap: var(--space-3);
     }
 
     body {
-        padding: 16px 12px;
+        padding: var(--space-4) var(--space-3);
         min-height: 100vh;
     }
 
     .depth-panel {
-        padding: 16px;
-    }
-
-    h1 {
-        font-size: 24px;
-    }
-
-    .subtitle {
-        font-size: 12px;
+        padding: var(--space-4);
     }
 
     .month-title {
-        min-width: 110px;
-        font-size: 13px;
-    }
-
-    .stat-num {
-        font-size: 16px;
-    }
-
-    .stat-label {
-        font-size: 10px;
+        min-width: 120px;
     }
 }
 
@@ -898,7 +877,7 @@
     .day,
     .btn-icon,
     .stat-item {
-        transition: transform 0.15s, background 0.15s;
+        transition: var(--control-transition);
     }
 
     /* Prevent sticky hover lift on touch devices after tap. */
@@ -925,7 +904,7 @@
 
     .app-update-card {
         width: min(100%, 420px);
-        padding: 24px;
+        padding: var(--space-6);
     }
 
     .app-update-banner-actions {
