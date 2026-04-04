@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v3-2026-04-04';
+const CACHE_VERSION = 'v4-2026-04-05';
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 
@@ -12,6 +12,7 @@ const STATIC_ASSETS = [
     '/js/calendar.js',
     '/js/settings-state.js',
     '/js/insights.js',
+    '/js/overlay-controller.js',
     '/js/schedule-ui.js',
     '/js/profiles-ui.js',
     '/js/app-update.js',

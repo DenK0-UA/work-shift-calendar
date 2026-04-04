@@ -11,7 +11,7 @@ const APP_UPDATE_STORAGE_KEYS = {
 };
 
 const APP_UPDATE_DISMISS_MS = 24 * 60 * 60 * 1000;
-const APP_UPDATE_BANNER_TRANSITION_MS = 400;
+const APP_UPDATE_BANNER_TRANSITION_MS = 320;
 
 const betaAccessState = {
     installId: readOrCreateInstallId(),
@@ -54,8 +54,8 @@ function normalizeUpdateChannel(channel) {
 
 function getChannelLabel(channel) {
     return normalizeUpdateChannel(channel) === APP_UPDATE_CHANNELS.beta
-        ? 'Beta'
-        : 'Stable';
+        ? 'Бета'
+        : 'Стабільний';
 }
 
 function setAppUpdateDebugState(patch) {

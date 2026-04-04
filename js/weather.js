@@ -55,16 +55,24 @@ function getWeatherCoords() {
     });
 }
 
+function buildWeatherIcon(paths) {
+    return `<svg class="icon-glyph weather-icon-glyph" viewBox="0 0 24 24" aria-hidden="true">${paths}</svg>`;
+}
+
 function getWeatherIcon(code, isDay = 1) {
-    if (code === 0) return isDay ? '☀️' : '🌙';
-    if (code <= 3) return isDay ? '⛅' : '☁️';
-    if (code <= 48) return '🌫️';
-    if (code <= 67) return '🌧️';
-    if (code <= 77) return '❄️';
-    if (code <= 82) return '🌦️';
-    if (code <= 86) return '🌨️';
-    if (code >= 95) return '⛈️';
-    return '🌤️';
+    if (code === 0) {
+        return isDay
+            ? buildWeatherIcon('<circle cx="12" cy="12" r="4"></circle><path d="M12 2.5v2.5"></path><path d="M12 19v2.5"></path><path d="M4.5 12H7"></path><path d="M17 12h2.5"></path><path d="m5.7 5.7 1.8 1.8"></path><path d="m16.5 16.5 1.8 1.8"></path><path d="m18.3 5.7-1.8 1.8"></path><path d="m7.5 16.5-1.8 1.8"></path>')
+            : buildWeatherIcon('<path d="M15.5 4a7 7 0 1 0 4.8 12.1A8 8 0 1 1 15.5 4Z"></path>');
+    }
+    if (code <= 3) return buildWeatherIcon('<path d="M6.5 17.5h10a3.75 3.75 0 0 0 .3-7.5 5 5 0 0 0-9.8-.7A3.6 3.6 0 0 0 6.5 17.5Z"></path>');
+    if (code <= 48) return buildWeatherIcon('<path d="M6.5 11.5h10a3.75 3.75 0 0 0 .3-7.5 5 5 0 0 0-9.8-.7A3.6 3.6 0 0 0 6.5 11.5Z"></path><path d="M5 15h14"></path><path d="M7 18h10"></path>');
+    if (code <= 67) return buildWeatherIcon('<path d="M6.5 12.5h10a3.75 3.75 0 0 0 .3-7.5 5 5 0 0 0-9.8-.7A3.6 3.6 0 0 0 6.5 12.5Z"></path><path d="M9 15.5v3"></path><path d="M13 16.5v3"></path><path d="M17 15.5v3"></path>');
+    if (code <= 77) return buildWeatherIcon('<path d="M6.5 12.5h10a3.75 3.75 0 0 0 .3-7.5 5 5 0 0 0-9.8-.7A3.6 3.6 0 0 0 6.5 12.5Z"></path><path d="M9 16v3"></path><path d="M7.7 17.5h2.6"></path><path d="M13 16.5v3"></path><path d="M11.7 18h2.6"></path><path d="M17 16v3"></path><path d="M15.7 17.5h2.6"></path>');
+    if (code <= 82) return buildWeatherIcon('<path d="M6.5 12.5h10a3.75 3.75 0 0 0 .3-7.5 5 5 0 0 0-9.8-.7A3.6 3.6 0 0 0 6.5 12.5Z"></path><path d="m9 15.5-1 2"></path><path d="m13 16-1 2"></path><path d="m17 15.5-1 2"></path>');
+    if (code <= 86) return buildWeatherIcon('<path d="M6.5 12.5h10a3.75 3.75 0 0 0 .3-7.5 5 5 0 0 0-9.8-.7A3.6 3.6 0 0 0 6.5 12.5Z"></path><path d="M9 16v3"></path><path d="M13 16.5v3"></path><path d="M17 16v3"></path><path d="m8 17 2 1"></path><path d="m12 17.5 2 1"></path><path d="m16 17 2 1"></path>');
+    if (code >= 95) return buildWeatherIcon('<path d="M6.5 12.5h10a3.75 3.75 0 0 0 .3-7.5 5 5 0 0 0-9.8-.7A3.6 3.6 0 0 0 6.5 12.5Z"></path><path d="m12 13-2 4h2l-1 4 4-5h-2l2-3Z"></path>');
+    return buildWeatherIcon('<path d="M6.5 17.5h10a3.75 3.75 0 0 0 .3-7.5 5 5 0 0 0-9.8-.7A3.6 3.6 0 0 0 6.5 17.5Z"></path>');
 }
 
 function getWeatherLabel(code) {
@@ -183,7 +191,7 @@ function setModalWeather({ icon, summary, meta, hidden = false }) {
         return;
     }
 
-    document.getElementById('m-weather-icon').textContent = icon;
+    document.getElementById('m-weather-icon').innerHTML = icon;
     document.getElementById('m-weather-summary').textContent = summary;
     document.getElementById('m-weather-meta').textContent = meta;
 }
@@ -241,7 +249,7 @@ function updateModalWeather(year, month, day) {
 
     if (weatherView.type === 'loading') {
         setModalWeather({
-            icon: '⏳',
+            icon: buildWeatherIcon('<path d="M12 6v6l4 2"></path><circle cx="12" cy="12" r="8"></circle>'),
             summary: 'Завантажуємо прогноз',
             meta: 'Бориспіль · отримуємо дані для обраної дати'
         });

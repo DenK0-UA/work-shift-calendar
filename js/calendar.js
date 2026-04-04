@@ -48,7 +48,9 @@ let activeFilter = null;
 let calendarAnimationFrameId = null;
 const renderedDayEls = [];
 const supportsInteractiveHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-const MODAL_SECTION_REVEAL_DURATION_MS = 260;
+const UI_REVEAL_DURATION_MS = 260;
+const UI_TILT_RESET_DURATION_MS = 320;
+const MODAL_SECTION_REVEAL_DURATION_MS = UI_REVEAL_DURATION_MS;
 
 function setModalSectionOpen(sectionEl, isOpen) {
     if (!sectionEl) return;
@@ -403,13 +405,13 @@ function setup3DTilt(el) {
         if (resetTransitionTimer) {
             clearTimeout(resetTransitionTimer);
         }
-        el.style.transition = 'transform 0.4s ease, box-shadow 0.4s ease';
+        el.style.transition = 'transform var(--motion-duration-slow) var(--motion-ease-standard), box-shadow var(--motion-duration-slow) var(--motion-ease-standard)';
         el.style.transform = 'scale(1) rotateX(0) rotateY(0) translateZ(0)';
         el.style.boxShadow = 'none';
         resetTransitionTimer = window.setTimeout(() => {
-            el.style.transition = 'box-shadow 0.3s ease';
+            el.style.transition = 'box-shadow var(--motion-duration-base) var(--motion-ease-exit)';
             resetTransitionTimer = null;
-        }, 400);
+        }, UI_TILT_RESET_DURATION_MS);
     });
 }
 

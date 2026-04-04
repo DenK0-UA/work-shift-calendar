@@ -388,7 +388,7 @@
     background: var(--modal-overlay);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.22s ease;
+    transition: opacity var(--overlay-fade-duration) var(--motion-ease-exit);
 }
 
 .profile-color-modal.active {
@@ -407,6 +407,14 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+    transform: var(--modal-card-initial-transform);
+    opacity: 0;
+    transition: var(--modal-card-transition);
+}
+
+.profile-color-modal.active .profile-color-modal-card {
+    transform: var(--modal-card-active-transform);
+    opacity: 1;
 }
 
 .profile-color-modal-header {
@@ -438,8 +446,8 @@
 }
 
 .profile-color-swatch.is-selected {
-    border-color: var(--accent);
-    box-shadow: var(--focus-ring-soft);
+    border-color: var(--interactive-active-border);
+    box-shadow: var(--interactive-active-inset), var(--interactive-active-shadow);
 }
 
 .profile-color-swatch-chip {
@@ -579,7 +587,7 @@
     padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    transition: opacity var(--overlay-fade-duration) var(--motion-ease-exit);
 }
 
 .profile-edit-overlay.active {
@@ -598,6 +606,14 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
+    transform: var(--modal-card-initial-transform);
+    opacity: 0;
+    transition: var(--modal-card-transition);
+}
+
+.profile-edit-overlay.active .profile-edit-card {
+    transform: var(--modal-card-active-transform);
+    opacity: 1;
 }
 
 .profile-edit-card .custom-input-group {

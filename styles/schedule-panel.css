@@ -69,7 +69,7 @@ body.app-setup-pending .main-container {
     align-items: center;
     margin-bottom: var(--space-3);
     padding: var(--space-2) var(--space-3);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--kicker-bg);
     border: 1px solid var(--kicker-border);
     color: var(--accent);
@@ -164,10 +164,10 @@ body.app-setup-pending .main-container {
 }
 
 .schedule-btn.active {
-    border-color: var(--accent);
-    background: color-mix(in srgb, var(--accent-soft-strong) 100%, var(--surface-panel-subtle));
-    color: var(--text-accent-strong);
-    box-shadow: inset 0 0 0 1px color-mix(in srgb, white 14%, transparent);
+    border-color: var(--interactive-active-border);
+    background: var(--interactive-active-bg);
+    color: var(--interactive-active-color);
+    box-shadow: var(--interactive-active-inset);
 }
 
 .schedule-btn.active::before {
@@ -237,7 +237,6 @@ body.app-setup-pending .main-container {
 
 .custom-input {
     padding: var(--space-3);
-    border-width: 2px;
     font-weight: 600;
 }
 
@@ -263,7 +262,7 @@ body.app-setup-pending .main-container {
     flex: 0 0 auto;
     width: var(--marker-cube-size);
     height: var(--marker-cube-size);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: color-mix(in srgb, var(--accent) 68%, white);
     box-shadow: 0 0 0 4px var(--accent-soft);
     transform: translateY(2px);
@@ -330,7 +329,7 @@ body[data-theme="dark"] .schedule-info {
 }
 
 .schedule-overlay.setup-mode .schedule-card > * {
-    animation: scheduleSetupFadeIn 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation: scheduleSetupFadeIn var(--motion-duration-enter) var(--motion-ease-emphasized) both;
 }
 
 .schedule-overlay.setup-mode .schedule-title {

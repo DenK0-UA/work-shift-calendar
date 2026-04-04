@@ -15,9 +15,58 @@ function generateProfileId() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
+function normalizeProfileName(name, index = 0) {
+    if (typeof name === 'string' && name.trim()) {
+        return name.trim();
+    }
+    return `Графік ${index + 1}`;
+}
+
+function normalizeProfileColor(color) {
+    if (typeof color !== 'string' || !color.trim()) {
+        return DEFAULT_PROFILE_COLORS[0];
+    }
+    return color.trim().toLowerCase();
+}
+
+function normalizeProfileSchedule(scheduleConfig) {
+    return getNormalizedScheduleConfig(scheduleConfig || {});
+}
+
+function normalizeProfileRecord(profile, index = 0) {
+    if (!profile || typeof profile !== 'object') {
+        return null;
+    }
+
+    return {
+        id: typeof profile.id === 'string' && profile.id.trim() ? profile.id : generateProfileId(),
+        name: normalizeProfileName(profile.name, index),
+        color: normalizeProfileColor(profile.color),
+        schedule: normalizeProfileSchedule(profile.schedule),
+        visible: profile.visible !== false
+    };
+}
+
 function ensureProfilesState() {
     if (!profilesState.profiles) {
-        profilesState.profiles = safeReadJson(PROFILES_STORAGE_KEY, []);
+        const savedProfiles = safeReadJson(PROFILES_STORAGE_KEY, []);
+        const safeProfiles = Array.isArray(savedProfiles)
+            ? savedProfiles.map((profile, index) => normalizeProfileRecord(profile, index)).filter(Boolean)
+            : [];
+
+        profilesState.profiles = safeProfiles;
+
+        try {
+            if (JSON.stringify(savedProfiles) !== JSON.stringify(safeProfiles)) {
+                if (safeProfiles.length === 0) {
+                    localStorage.removeItem(PROFILES_STORAGE_KEY);
+                } else {
+                    localStorage.setItem(PROFILES_STORAGE_KEY, JSON.stringify(safeProfiles));
+                }
+            }
+        } catch (e) {
+            console.warn('Не вдалось нормалізувати профілі', e);
+        }
     }
     return profilesState.profiles;
 }
@@ -36,18 +85,11 @@ function persistProfiles() {
 }
 
 function getProfiles() {
-    return ensureProfilesState().map(p => ({ ...p, schedule: { ...p.schedule } }));
+    return ensureProfilesState().map((profile, index) => normalizeProfileRecord(profile, index));
 }
 
 function getVisibleProfiles() {
-    return ensureProfilesState().filter(p => p.visible !== false);
-}
-
-function normalizeProfileColor(color) {
-    if (typeof color !== 'string' || !color.trim()) {
-        return DEFAULT_PROFILE_COLORS[0];
-    }
-    return color.trim().toLowerCase();
+    return ensureProfilesState().filter((profile) => profile?.visible !== false);
 }
 
 function getNextProfileColor() {

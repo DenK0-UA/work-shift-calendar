@@ -22,7 +22,9 @@ const profilesEls = {
 let selectedProfileSchedule = null;
 let editingProfileId = null;
 let isAddFormOpen = false;
-const EXPANDABLE_SECTION_DURATION_MS = 260;
+const PROFILES_UI_REVEAL_DURATION_MS = 260;
+const PROFILES_UI_OVERLAY_FADE_DURATION_MS = 320;
+const EXPANDABLE_SECTION_DURATION_MS = PROFILES_UI_REVEAL_DURATION_MS;
 const profileColorPickerState = {
     overlayEl: null,
     paletteGridEl: null,
@@ -90,11 +92,22 @@ function setProfilesAddFormOpen(isOpen) {
 
 function setProfilesOverlayOpen(isOpen) {
     if (!profilesEls.overlay) return;
+
+    document.body.classList.toggle('profiles-open', Boolean(isOpen));
+
     if (isOpen) {
-        renderProfilesList();
-        resetAddForm();
-        setProfilesAddFormOpen(getProfiles().length === 0);
         profilesEls.overlay.classList.add('active');
+        try {
+            renderProfilesList();
+            resetAddForm();
+            setProfilesAddFormOpen(getProfiles().length === 0);
+        } catch (error) {
+            console.error('[Profiles] Не вдалося відкрити панель графіків:', error);
+            if (profilesEls.list) {
+                profilesEls.list.innerHTML = '';
+            }
+            setProfilesAddFormOpen(true);
+        }
     } else {
         profilesEls.overlay.classList.remove('active');
     }
@@ -128,7 +141,7 @@ function closeProfileColorPicker() {
         if (profileColorPickerState.overlayEl && !profileColorPickerState.overlayEl.classList.contains('active')) {
             profileColorPickerState.overlayEl.hidden = true;
         }
-    }, 220);
+    }, PROFILES_UI_OVERLAY_FADE_DURATION_MS);
 }
 
 function applyProfileColorPickerSelection() {
@@ -239,13 +252,23 @@ function getScheduleCaptionLabel(scheduleKey) {
 }
 
 function resetAddForm() {
-    profilesEls.nameInput.value = '';
+    if (profilesEls.nameInput) {
+        profilesEls.nameInput.value = '';
+    }
     selectedProfileSchedule = null;
     setExpandableSectionOpen(profilesEls.customFields, false);
-    profilesEls.workDaysInput.value = '';
-    profilesEls.offDaysInput.value = '';
-    profilesEls.startDateInput.value = new Date().toISOString().slice(0, 10);
-    profilesEls.colorInput.value = getNextProfileColor();
+    if (profilesEls.workDaysInput) {
+        profilesEls.workDaysInput.value = '';
+    }
+    if (profilesEls.offDaysInput) {
+        profilesEls.offDaysInput.value = '';
+    }
+    if (profilesEls.startDateInput) {
+        profilesEls.startDateInput.value = new Date().toISOString().slice(0, 10);
+    }
+    if (profilesEls.colorInput) {
+        profilesEls.colorInput.value = getNextProfileColor();
+    }
     syncProfileColorPreview(profilesEls.colorInput, profilesEls.colorPreview);
     syncProfileTemplateBtns();
 }
@@ -268,6 +291,8 @@ function formatProfileStartDate(startDate) {
 }
 
 function renderProfilesList() {
+    if (!profilesEls.list) return;
+
     const profiles = getProfiles();
     profilesEls.list.innerHTML = '';
 
@@ -404,23 +429,25 @@ if (profilesEls.colorTrigger) {
     });
 }
 
-profilesEls.addBtn.addEventListener('click', () => {
-    const data = buildScheduleFromForm(false);
-    if (!data) return;
+if (profilesEls.addBtn) {
+    profilesEls.addBtn.addEventListener('click', () => {
+        const data = buildScheduleFromForm(false);
+        if (!data) return;
 
-    const profile = addProfile(data.name, {
-        type: data.type,
-        workDays: data.workDays,
-        offDays: data.offDays,
-        startDate: data.startDate
+        const profile = addProfile(data.name, {
+            type: data.type,
+            workDays: data.workDays,
+            offDays: data.offDays,
+            startDate: data.startDate
+        });
+        updateProfile(profile.id, { color: data.color });
+
+        resetAddForm();
+        setProfilesAddFormOpen(false);
+        renderProfilesList();
+        renderCalendar(currentState.year, currentState.month);
     });
-    updateProfile(profile.id, { color: data.color });
-
-    resetAddForm();
-    setProfilesAddFormOpen(false);
-    renderProfilesList();
-    renderCalendar(currentState.year, currentState.month);
-});
+}
 
 if (profilesEls.addToggle) {
     profilesEls.addToggle.addEventListener('click', () => {
@@ -429,21 +456,75 @@ if (profilesEls.addToggle) {
 }
 
 // --- Open / close ---
-profilesEls.openBtn.addEventListener('click', () => setProfilesOverlayOpen(true));
-profilesEls.closeBtn.addEventListener('click', () => setProfilesOverlayOpen(false));
-profilesEls.overlay.addEventListener('click', (e) => {
-    if (e.target === profilesEls.overlay) setProfilesOverlayOpen(false);
+function openProfilesOverlay(event) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+
+    if (window.AppShellOverlays?.open) {
+        window.AppShellOverlays.open('profiles', { event, reason: 'api' });
+        return;
+    }
+
+    setProfilesOverlayOpen(true);
+}
+
+function closeProfilesOverlay(event) {
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+
+    if (window.AppShellOverlays?.close) {
+        window.AppShellOverlays.close('profiles', { event, reason: 'api' });
+        return;
+    }
+
+    setProfilesOverlayOpen(false);
+}
+
+const profilesOverlayController = window.AppShellOverlays?.registerOverlay({
+    id: 'profiles',
+    overlay: profilesEls.overlay,
+    openButtons: profilesEls.openBtn,
+    closeButtons: profilesEls.closeBtn,
+    onOpen: () => {
+        setProfilesOverlayOpen(true);
+        return true;
+    },
+    onClose: () => {
+        setProfilesOverlayOpen(false);
+        return true;
+    },
+    closeOnEscape: false
 });
+
+if (!profilesOverlayController) {
+    if (profilesEls.openBtn) {
+        profilesEls.openBtn.addEventListener('click', openProfilesOverlay);
+    }
+    if (profilesEls.closeBtn) {
+        profilesEls.closeBtn.addEventListener('click', closeProfilesOverlay);
+    }
+    if (profilesEls.overlay) {
+        profilesEls.overlay.addEventListener('click', (e) => {
+            if (e.target === profilesEls.overlay) {
+                closeProfilesOverlay(e);
+            }
+        });
+    }
+}
+
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && profileColorPickerState.overlayEl?.classList.contains('active')) {
         closeProfileColorPicker();
         return;
     }
 
-    if (e.key === 'Escape' && profilesEls.overlay.classList.contains('active')) {
-        setProfilesOverlayOpen(false);
+    if (e.key === 'Escape' && profilesEls.overlay?.classList.contains('active')) {
+        closeProfilesOverlay(e);
     }
 });
+
+window.openProfilesOverlay = () => openProfilesOverlay();
+window.closeProfilesOverlay = () => closeProfilesOverlay();
 
 // --- Edit profile (inline overlay) ---
 let editSelectedSchedule = null;
@@ -573,9 +654,12 @@ function openEditProfile(profile) {
 
 function closeEditProfile() {
     if (editOverlayEl) {
-        editOverlayEl.classList.remove('active');
-        editOverlayEl.remove();
+        const overlayToClose = editOverlayEl;
+        overlayToClose.classList.remove('active');
         editOverlayEl = null;
+        window.setTimeout(() => {
+            overlayToClose.remove();
+        }, PROFILES_UI_OVERLAY_FADE_DURATION_MS);
     }
     editingProfileId = null;
 }

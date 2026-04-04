@@ -197,8 +197,8 @@ const refreshAppUpdateSettingsUI = async () => {
 
     if (settingsEls.appUpdateChannelSummary) {
         settingsEls.appUpdateChannelSummary.textContent = effectiveChannel === 'beta'
-            ? 'Отримуєте Beta-оновлення'
-            : 'Отримуєте Stable-оновлення';
+            ? 'Отримуєте бета-оновлення'
+            : 'Отримуєте стабільні оновлення';
     }
 
     if (settingsEls.appUpdateSummary) {
@@ -207,7 +207,9 @@ const refreshAppUpdateSettingsUI = async () => {
         if (!debugMatchesCurrentChannel) {
             summaryText = `Канал змінено на ${channelLabel}. Перевірте оновлення для цього каналу.`;
         } else if (debugState?.status === 'update-available' && debugState.availableVersion) {
-            summaryText = `Доступна новіша ${channelLabel.toLowerCase()}-версія ${debugState.availableVersion}.`;
+            summaryText = effectiveChannel === 'beta'
+                ? `Доступна новіша бета-версія ${debugState.availableVersion}.`
+                : `Доступна новіша стабільна версія ${debugState.availableVersion}.`;
         } else if (debugState?.status === 'dismissed' && debugState.availableVersion) {
             const untilText = formatUpdateTime(debugState.dismissedUntil);
             summaryText = untilText
@@ -309,7 +311,7 @@ if (settingsEls.hardResetBtn) {
     settingsEls.hardResetBtn.innerHTML = `
         <span class="settings-danger-btn-fill" aria-hidden="true"></span>
         <span class="settings-danger-btn-content">
-            <span class="settings-danger-btn-title">Hard reset</span>
+            <span class="settings-danger-btn-title">Повне очищення</span>
         </span>
     `;
 }
@@ -374,7 +376,7 @@ const clearHardResetHold = () => {
 
     if (settingsEls.hardResetBtn) {
         settingsEls.hardResetBtn.classList.remove('is-holding');
-        setHardResetButtonState('Hard reset', 0);
+        setHardResetButtonState('Повне очищення', 0);
     }
 };
 
@@ -406,18 +408,23 @@ const startHardResetHold = () => {
     settingsEls.hardResetBtn.classList.add('is-holding');
     updateHardResetProgress();
 
-    hardResetHoldTimer = window.setTimeout(() => {
+    hardResetHoldTimer = window.setTimeout(async () => {
         hardResetHoldTimer = null;
         hardResetHoldStartedAt = 0;
         settingsEls.hardResetBtn.classList.remove('is-holding');
         setHardResetButtonState('\u041f\u0456\u0434\u0442\u0432\u0435\u0440\u0434\u0436\u0435\u043d\u043d\u044f...', 100);
 
-        if (confirm('Це повністю очистить графік, ручні зміни, нотатки і всі локальні налаштування. Свята залишяться. Продовжити?')) {
-            hardResetAllData();
+        if (!confirm('Це повністю очистить графік, ручні зміни, нотатки, графіки і всі локальні налаштування. Свята залишяться. Продовжити?')) {
+            clearHardResetHold();
             return;
         }
 
-        clearHardResetHold();
+        try {
+            await hardResetAllData();
+        } catch (error) {
+            console.error('Не вдалося виконати повне очищення', error);
+            clearHardResetHold();
+        }
     }, HARD_RESET_HOLD_MS);
 };
 
@@ -430,33 +437,52 @@ document.addEventListener('app-update:state-changed', () => {
     refreshAppUpdateSettingsUI().catch(e => console.error('[AppUpdate] Error updating UI:', e));
 });
 
-if (settingsEls.settingsBtn && settingsEls.overlay) {
-    settingsEls.settingsBtn.addEventListener('click', () => {
+const settingsOverlayController = window.AppShellOverlays?.registerOverlay({
+    id: 'settings',
+    overlay: settingsEls.overlay,
+    openButtons: settingsEls.settingsBtn,
+    closeButtons: settingsEls.closeBtn,
+    onOpen: () => {
         console.log('[AppUpdate] Settings clicked, refreshing UI');
         setSettingsOverlayOpen(true);
-        refreshAppUpdateSettingsUI();
-    });
-}
-
-if (settingsEls.closeBtn && settingsEls.overlay) {
-    settingsEls.closeBtn.addEventListener('click', () => {
+        refreshAppUpdateSettingsUI().catch((error) => console.error('[AppUpdate] Error opening settings:', error));
+        return true;
+    },
+    onClose: () => {
         setSettingsOverlayOpen(false);
-    });
-}
+        return true;
+    }
+});
 
-if (settingsEls.overlay) {
-    settingsEls.overlay.addEventListener('click', (event) => {
-        if (event.target === settingsEls.overlay) {
+if (!settingsOverlayController) {
+    if (settingsEls.settingsBtn && settingsEls.overlay) {
+        settingsEls.settingsBtn.addEventListener('click', () => {
+            console.log('[AppUpdate] Settings clicked, refreshing UI');
+            setSettingsOverlayOpen(true);
+            refreshAppUpdateSettingsUI();
+        });
+    }
+
+    if (settingsEls.closeBtn && settingsEls.overlay) {
+        settingsEls.closeBtn.addEventListener('click', () => {
+            setSettingsOverlayOpen(false);
+        });
+    }
+
+    if (settingsEls.overlay) {
+        settingsEls.overlay.addEventListener('click', (event) => {
+            if (event.target === settingsEls.overlay) {
+                setSettingsOverlayOpen(false);
+            }
+        });
+    }
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && settingsEls.overlay?.classList.contains('active')) {
             setSettingsOverlayOpen(false);
         }
     });
 }
-
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && settingsEls.overlay?.classList.contains('active')) {
-        setSettingsOverlayOpen(false);
-    }
-});
 
 settingsEls.themeModeBtns.forEach((button) => {
     button.addEventListener('click', () => {

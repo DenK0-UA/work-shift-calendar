@@ -20,8 +20,8 @@
 .modal-day-week {
     font-size: var(--type-number-xs-size);
     color: var(--text-secondary);
-    font-weight: 500;
-    margin-bottom: var(--space-6);
+    font-weight: 700;
+    margin-bottom: var(--space-5);
     text-transform: capitalize;
 }
 
@@ -122,9 +122,10 @@
 }
 
 .modal-status-action.active {
-    background: color-mix(in srgb, var(--accent-soft-strong) 74%, var(--surface-panel-subtle));
-    border-color: var(--accent);
-    color: var(--accent);
+    background: var(--interactive-active-bg-soft);
+    border-color: var(--interactive-active-border);
+    color: var(--interactive-active-color);
+    box-shadow: var(--interactive-active-inset), var(--interactive-active-shadow);
 }
 
 .modal-status-reset.active {
@@ -170,14 +171,14 @@
 }
 
 .modal-weather-icon {
-    width: calc(var(--icon-button-size) + 6px);
-    height: calc(var(--icon-button-size) + 6px);
+    width: var(--icon-weather-badge-size);
+    height: var(--icon-weather-badge-size);
     border-radius: var(--icon-button-radius);
     display: flex;
     align-items: center;
     justify-content: center;
     background: var(--surface-badge);
-    font-size: var(--type-number-md-size);
+    font-size: var(--icon-size-weather);
     flex-shrink: 0;
     box-shadow: none;
 }
@@ -188,7 +189,7 @@
 
 .modal-weather-summary {
     font-size: var(--type-title-card-size);
-    font-weight: 800;
+    font-weight: 700;
     line-height: var(--type-title-card-line);
     color: var(--text-primary);
 }
@@ -343,13 +344,13 @@
 @keyframes fluidIn {
     from {
         opacity: 0;
-        transform: translateY(10px) scale(0.98) rotateX(2deg);
-        filter: blur(2px);
+        transform: translateY(8px) scale(0.985);
+        filter: blur(1px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0) scale(1) rotateX(0deg);
+        transform: translateY(0) scale(1);
         filter: blur(0);
     }
 }

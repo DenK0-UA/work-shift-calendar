@@ -10,6 +10,33 @@
         padding: clamp(10px, 2.4vw, 14px) clamp(var(--space-2), 2vw, var(--space-3));
     }
 
+    .modal-overlay,
+    .settings-overlay,
+    .schedule-overlay,
+    .profiles-overlay,
+    .app-update-overlay {
+        align-items: flex-start;
+        padding-top: max(var(--space-3), calc(env(safe-area-inset-top, 0px) + var(--space-2)));
+        padding-bottom: max(var(--space-4), calc(env(safe-area-inset-bottom, 0px) + var(--space-4)));
+    }
+
+    .modal-card,
+    .settings-card,
+    .schedule-card,
+    .profiles-card {
+        scrollbar-width: none;
+        scrollbar-gutter: auto;
+    }
+
+    .modal-card::-webkit-scrollbar,
+    .settings-card::-webkit-scrollbar,
+    .schedule-card::-webkit-scrollbar,
+    .profiles-card::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+        display: none;
+    }
+
     .depth-panel {
         padding: clamp(var(--space-4), 3vw, var(--space-5));
         border-radius: clamp(var(--space-4), 3.8vw, 22px);
@@ -880,6 +907,29 @@
         transition: var(--control-transition);
     }
 
+    button,
+    .day,
+    .btn-icon,
+    .settings-btn,
+    .today-btn,
+    .theme-toggle-btn,
+    .schedule-btn,
+    .schedule-btn-action,
+    .settings-btn-action,
+    .theme-mode-btn,
+    .period-btn,
+    .profile-action-btn,
+    .profiles-add-toggle,
+    .profile-color-trigger,
+    .modal-close,
+    .modal-status-action,
+    .weather-refresh {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
     /* Prevent sticky hover lift on touch devices after tap. */
     button:hover,
     .btn-icon:hover,
@@ -890,16 +940,29 @@
     .schedule-btn-action:hover,
     .settings-btn-action:hover,
     .theme-mode-btn:hover,
-    .period-btn:hover {
+    .period-btn:hover,
+    .profile-action-btn:hover,
+    .profiles-add-toggle:hover,
+    .profile-color-trigger:hover,
+    .weather-refresh:hover,
+    .modal-close:hover,
+    .modal-status-action:hover,
+    .stat-item:hover,
+    .period-stat-card:hover,
+    .depth-panel:hover {
         transform: none !important;
+        filter: none !important;
     }
 
     .day:active {
-        transform: scale(0.95) !important;
+        transform: scale(0.985) !important;
     }
 
-    .btn-icon:active {
-        transform: scale(0.92) !important;
+    .btn-icon:active,
+    .settings-btn:active,
+    .profile-action-btn:active,
+    .weather-refresh:active {
+        transform: scale(0.98) !important;
     }
 
     .app-update-card {
@@ -920,15 +983,15 @@
 
 /* Swipe анімація */
 .calendar-section {
-    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: var(--swipe-transition);
 }
 
 .calendar-section.swipe-left {
-    animation: swipeOut 0.3s ease-out forwards;
+    animation: var(--swipe-out-left-animation);
 }
 
 .calendar-section.swipe-right {
-    animation: swipeOutRight 0.3s ease-out forwards;
+    animation: var(--swipe-out-right-animation);
 }
 
 @keyframes swipeOut {
@@ -937,7 +1000,7 @@
         opacity: 1;
     }
     to {
-        transform: translateX(-100px);
+        transform: translateX(-56px);
         opacity: 0;
     }
 }
@@ -948,7 +1011,7 @@
         opacity: 1;
     }
     to {
-        transform: translateX(100px);
+        transform: translateX(56px);
         opacity: 0;
     }
 }

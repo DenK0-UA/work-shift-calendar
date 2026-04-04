@@ -25,7 +25,7 @@
                     <p class="subtitle">Графік 5/5. Старт: сьогодні</p>
                 </div>
                 <div class="header-actions">
-                    <button class="settings-btn" id="profiles-btn" title="Графіки" aria-label="Графіки">
+                    <button class="settings-btn" id="profiles-btn" type="button" aria-label="Графіки">
                         <svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true">
                             <circle cx="9" cy="9" r="3.25"></circle>
                             <path d="M4.5 18a4.5 4.5 0 0 1 9 0"></path>
@@ -33,7 +33,7 @@
                             <path d="M14.5 18a3.8 3.8 0 0 1 5.5-3.4"></path>
                         </svg>
                     </button>
-                    <button class="settings-btn" id="schedule-btn" title="Відкрити графік" aria-label="Відкрити графік">
+                    <button class="settings-btn" id="schedule-btn" type="button" aria-label="Відкрити графік">
                         <svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true">
                             <rect x="3.5" y="5" width="17" height="15" rx="3"></rect>
                             <path d="M7.5 3.5v4"></path>
@@ -43,7 +43,7 @@
                             <path d="M13 13h3"></path>
                         </svg>
                     </button>
-                    <button class="settings-btn" id="settings-btn" title="Відкрити налаштування" aria-label="Відкрити налаштування">
+                    <button class="settings-btn" id="settings-btn" type="button" aria-label="Відкрити налаштування">
                         <svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true">
                             <circle cx="12" cy="12" r="3.25"></circle>
                             <path d="M19.3 15.2 20.5 16.9 18.9 18.5 17.2 17.3"></path>
@@ -56,7 +56,7 @@
                             <path d="M19.2 12h2.3"></path>
                         </svg>
                     </button>
-                    <button class="settings-btn theme-toggle-btn" id="theme-btn" title="Змінити тему" aria-label="Змінити тему" data-theme-icon="auto">
+                    <button class="settings-btn theme-toggle-btn" id="theme-btn" type="button" aria-label="Змінити тему" data-theme-icon="auto">
                         <span class="theme-toggle-glyph" aria-hidden="true"></span>
                     </button>
                 </div>
@@ -184,11 +184,16 @@
                 <button class="modal-status-action" id="m-set-off" type="button">Вихідний</button>
                 <button class="modal-status-action modal-status-reset" id="m-reset-status" type="button">За графіком</button>
             </div>
-            <div class="modal-status-caption helper-text" id="m-status-caption">Статус визначено Вашим графіком</div>
+            <div class="modal-status-caption helper-text" id="m-status-caption">Статус визначено вашим графіком</div>
 
             <div class="modal-weather modal-reveal-section" id="m-weather" hidden>
                 <div class="modal-weather-inner">
-                    <div class="modal-weather-icon" id="m-weather-icon">⏳</div>
+                    <div class="modal-weather-icon" id="m-weather-icon" aria-hidden="true">
+                        <svg class="icon-glyph weather-icon-glyph" viewBox="0 0 24 24">
+                            <path d="M12 6v6l4 2"></path>
+                            <circle cx="12" cy="12" r="8"></circle>
+                        </svg>
+                    </div>
                     <div class="modal-weather-content">
                         <div class="modal-weather-summary" id="m-weather-summary">Завантажуємо прогноз...</div>
                         <div class="modal-weather-meta helper-text" id="m-weather-meta">Бориспіль · прогноз для обраного дня</div>
@@ -206,7 +211,7 @@
                 <textarea
                     class="modal-note-input modal-note-textarea control-input"
                     id="m-note-input"
-                    placeholder="Це нотатки"
+                    placeholder="Нотатка на день"
                     maxlength="280"
                     rows="3"
                 ></textarea>
@@ -279,7 +284,7 @@
                 <label class="settings-label">Застосунок</label>
                 <div class="settings-meta-card" id="app-version-trigger">
                     <span class="settings-meta-title">Версія <span id="app-version-value">1.0.0</span></span>
-                    <span class="settings-meta-caption helper-text" id="app-update-channel-summary">Отримуєте Stable-оновлення</span>
+                    <span class="settings-meta-caption helper-text" id="app-update-channel-summary">Отримуєте стабільні оновлення</span>
                 </div>
                 <div class="settings-channel-block" id="update-channel-group" hidden>
                     <div class="settings-channel-block-inner">
@@ -288,8 +293,8 @@
                             <p class="settings-channel-help helper-text" id="update-channel-help"></p>
                         </div>
                         <div class="theme-mode-switcher" id="update-channel-switcher">
-                            <button class="theme-mode-btn" type="button" data-update-channel="stable">Stable</button>
-                            <button class="theme-mode-btn" type="button" data-update-channel="beta">Beta</button>
+                            <button class="theme-mode-btn" type="button" data-update-channel="stable">Стабільний</button>
+                            <button class="theme-mode-btn" type="button" data-update-channel="beta">Бета</button>
                         </div>
                     </div>
                 </div>
@@ -303,8 +308,8 @@
             </div>
 
             <div class="settings-danger-zone">
-                <p class="settings-danger-text">Hard reset очистить графік, ручні зміни, нотатки і всі візуальні налаштування. Свята залишаться.</p>
-                <button class="settings-danger-btn" id="hard-reset-btn" type="button">Утримуй для hard reset</button>
+                <p class="settings-danger-text">Повне очищення видалить графік, ручні зміни, нотатки й усі візуальні налаштування. Свята залишаться.</p>
+                <button class="settings-danger-btn" id="hard-reset-btn" type="button">Утримуй для повного очищення</button>
             </div>
         </div>
     </div>
@@ -328,7 +333,7 @@
                 </div>
 
                 <div class="schedule-info helper-text helper-text-inline">
-                    Готовий варіант або власний.
+                    Оберіть готовий варіант або свій.
                 </div>
             </div>
 
@@ -401,7 +406,7 @@
             <div class="schedule-intro">
                 <div class="modal-shell-header">
                     <h2 class="schedule-title"><span>Графіки</span></h2>
-                    <button class="schedule-close" id="profiles-overlay-close" aria-label="Закрити">
+                    <button class="schedule-close" id="profiles-overlay-close" type="button" aria-label="Закрити">
                         <svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M6 6l12 12"></path>
                             <path d="M18 6 6 18"></path>
@@ -480,6 +485,7 @@
     <script src="js/calendar.js"></script>
     <script src="js/settings-state.js"></script>
     <script src="js/insights.js"></script>
+    <script src="js/overlay-controller.js"></script>
     <script src="js/schedule-ui.js"></script>
     <script src="js/profiles-ui.js"></script>
     <script src="js/app-update.js"></script>

@@ -90,7 +90,7 @@
 
 .date-num {
     font-family: var(--font-family-numeric);
-    font-size: clamp(17px, 2.5vw, 20px);
+    font-size: var(--type-number-calendar-size, clamp(17px, 2.5vw, 20px));
     font-weight: 700;
     position: relative;
 }
@@ -136,7 +136,7 @@
     padding: var(--surface-block-padding-sm);
     border-radius: var(--surface-block-radius-sm);
     border: 1px solid transparent;
-    transition: background 0.2s;
+    transition: var(--control-transition);
     user-select: none;
 }
 
@@ -151,8 +151,8 @@
 }
 
 .stat-item.is-active {
-    border-color: var(--surface-panel-accent-border);
-    box-shadow: var(--surface-panel-accent-shadow);
+    border-color: var(--interactive-active-border);
+    box-shadow: var(--interactive-active-inset), var(--interactive-active-shadow);
 }
 
 [data-theme="dark"] .stat-item:hover {

@@ -7,12 +7,12 @@
     };
     const APP_STORAGE_PREFIXES = ['appUpdate:'];
     const STYLE_PRESET_DEFINITIONS = Object.freeze([
-        Object.freeze({ id: 'current', label: 'Current' })
+        Object.freeze({ id: 'current', label: 'Поточний' })
     ]);
     const THEME_MODE_DEFINITIONS = Object.freeze([
-        Object.freeze({ id: 'auto', label: 'Auto' }),
-        Object.freeze({ id: 'light', label: 'Light' }),
-        Object.freeze({ id: 'dark', label: 'Dark' })
+        Object.freeze({ id: 'auto', label: 'Авто' }),
+        Object.freeze({ id: 'light', label: 'Світла' }),
+        Object.freeze({ id: 'dark', label: 'Темна' })
     ]);
     const DEFAULT_STYLE_PRESET = 'current';
     const DEFAULT_THEME_MODE = 'auto';
@@ -35,12 +35,18 @@
     };
 
     let visualSwitchTimeoutId = null;
+    const VISUAL_SWITCH_GUARD_MS = 320;
     const FALLBACK_STYLE_PRESET = DEFAULT_STYLE_PRESET;
 
     const STYLE_PRESET_IDS = new Set(STYLE_PRESET_DEFINITIONS.map((item) => item.id));
     const THEME_MODE_IDS = new Set(THEME_MODE_DEFINITIONS.map((item) => item.id));
+    const COLOR_HEX_FALLBACK = '#808080';
+    const DAY_COLOR_CSS_VARS = Object.freeze({
+        workColor: '--work-bg',
+        offColor: '--off-bg'
+    });
 
-    const normalizeHexColor = (value, fallback = '#34C759') => {
+    const normalizeHexColor = (value, fallback = COLOR_HEX_FALLBACK) => {
         if (typeof value !== 'string') return fallback;
         const trimmed = value.trim();
         if (!trimmed) return fallback;
@@ -58,7 +64,7 @@
         return fallback;
     };
 
-    const hexToRgb = (value, fallback = '#34C759') => {
+    const hexToRgb = (value, fallback = COLOR_HEX_FALLBACK) => {
         const normalized = normalizeHexColor(value, fallback).replace('#', '');
         const safeHex = normalized.length === 6 ? normalized : fallback.replace('#', '');
         return {
@@ -83,7 +89,7 @@
     const toRgba = ({ r, g, b }, alpha) => `rgba(${r}, ${g}, ${b}, ${alpha})`;
 
     const getContrastTextColor = (value) => {
-        const { r, g, b } = hexToRgb(value, '#34C759');
+        const { r, g, b } = hexToRgb(value, COLOR_HEX_FALLBACK);
         const brightness = (r * 299 + g * 587 + b * 114) / 1000;
         return brightness >= 150 ? '#142033' : '#FFFFFF';
     };
@@ -135,9 +141,14 @@
         }
     };
 
+    const readThemeColorFromComputedStyles = (computedStyles, cssVarName) => {
+        const rawValue = computedStyles?.getPropertyValue(cssVarName) || '';
+        return normalizeHexColor(rawValue, COLOR_HEX_FALLBACK);
+    };
+
     const readDayColorsFromComputedStyles = (computedStyles) => ({
-        workColor: normalizeHexColor(computedStyles.getPropertyValue('--work-bg'), '#DBE7F3'),
-        offColor: normalizeHexColor(computedStyles.getPropertyValue('--off-bg'), '#1F9D73')
+        workColor: readThemeColorFromComputedStyles(computedStyles, DAY_COLOR_CSS_VARS.workColor),
+        offColor: readThemeColorFromComputedStyles(computedStyles, DAY_COLOR_CSS_VARS.offColor)
     });
 
     const normalizePublicStylePreset = (stylePreset) => {
@@ -162,7 +173,7 @@
     const withTemporaryThemeContext = ({ stylePreset = DEFAULT_STYLE_PRESET, themeName = 'light', ignoreCustomColors = true } = {}, callback) => {
         const body = document.body;
         if (!body || typeof callback !== 'function') {
-            return { workColor: '#DBE7F3', offColor: '#1F9D73' };
+            return readDayColorsFromComputedStyles(getComputedStyle(document.documentElement));
         }
 
         const previousState = {
@@ -202,8 +213,9 @@
     };
 
     const matchesBuiltInPalette = (workColor, offColor) => {
-        const normalizedWork = normalizeHexColor(workColor, '#E5E5EA');
-        const normalizedOff = normalizeHexColor(offColor, '#34C759');
+        const defaultLightColors = getDefaultDayColors(FALLBACK_STYLE_PRESET, 'light');
+        const normalizedWork = normalizeHexColor(workColor, defaultLightColors.workColor);
+        const normalizedOff = normalizeHexColor(offColor, defaultLightColors.offColor);
         const themeNames = ['light', 'dark'];
 
         return themeNames.some((themeName) => {
@@ -217,10 +229,12 @@
     };
 
     const applyColors = (workColor, offColor) => {
-        const normalizedWork = normalizeHexColor(workColor, '#E5E5EA');
-        const normalizedOff = normalizeHexColor(offColor, '#34C759');
-        const workRgb = hexToRgb(normalizedWork, '#E5E5EA');
-        const offRgb = hexToRgb(normalizedOff, '#34C759');
+        const currentTheme = document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        const defaultColors = getDefaultDayColors(FALLBACK_STYLE_PRESET, currentTheme);
+        const normalizedWork = normalizeHexColor(workColor, defaultColors.workColor);
+        const normalizedOff = normalizeHexColor(offColor, defaultColors.offColor);
+        const workRgb = hexToRgb(normalizedWork, defaultColors.workColor);
+        const offRgb = hexToRgb(normalizedOff, defaultColors.offColor);
         const isDarkTheme = document.body.getAttribute('data-theme') === 'dark';
         const workStart = mixHex(normalizedWork, '#FFFFFF', isDarkTheme ? 0.12 : 0.34);
         const workEnd = mixHex(normalizedWork, '#000000', isDarkTheme ? 0.14 : 0.04);
@@ -305,8 +319,8 @@
                     settingsState.customSettings = {
                         ...savedSettings,
                         isCustomColors: true,
-                        workColor: normalizeHexColor(savedSettings.workColor, '#E5E5EA'),
-                        offColor: normalizeHexColor(savedSettings.offColor, '#34C759')
+                        workColor: normalizeHexColor(savedSettings.workColor, getDefaultDayColors(FALLBACK_STYLE_PRESET, 'light').workColor),
+                        offColor: normalizeHexColor(savedSettings.offColor, getDefaultDayColors(FALLBACK_STYLE_PRESET, 'light').offColor)
                     };
                 } else {
                     safeStorageRemove(STORAGE_KEYS.settings);
@@ -328,13 +342,13 @@
 
     const saveCustomSettings = (workColor, offColor) => {
         hydrateSettingsState();
-        const normalizedWork = normalizeHexColor(workColor, '#E5E5EA');
-        const normalizedOff = normalizeHexColor(offColor, '#34C759');
         const currentStyle = normalizePublicStylePreset(
             document.body.getAttribute('data-style') || settingsState.savedStylePreset
         );
         const currentTheme = document.body.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
         const defaultColors = getDefaultDayColors(currentStyle, currentTheme);
+        const normalizedWork = normalizeHexColor(workColor, defaultColors.workColor);
+        const normalizedOff = normalizeHexColor(offColor, defaultColors.offColor);
 
         if (normalizedWork === defaultColors.workColor && normalizedOff === defaultColors.offColor) {
             settingsState.customSettings = null;
@@ -379,28 +393,78 @@
         location.reload();
     };
 
-    const hardResetAllData = () => {
+    const clearPrefixedStorageKeys = (storage, prefixes) => {
+        if (!storage || !Array.isArray(prefixes) || prefixes.length === 0) {
+            return;
+        }
+
+        const keysToRemove = [];
+        for (let index = 0; index < storage.length; index++) {
+            const key = storage.key(index);
+            if (key && prefixes.some((prefix) => key.startsWith(prefix))) {
+                keysToRemove.push(key);
+            }
+        }
+
+        keysToRemove.forEach((key) => storage.removeItem(key));
+    };
+
+    const clearRuntimeUserData = () => {
+        settingsState.customSettings = null;
+        settingsState.savedStylePreset = DEFAULT_STYLE_PRESET;
+        settingsState.savedThemeMode = DEFAULT_THEME_MODE;
+        clearCustomColors();
+
+        if (typeof clearAllProfiles === 'function') {
+            try {
+                clearAllProfiles();
+            } catch (error) {
+                console.warn('Не вдалося очистити графіки в памʼяті', error);
+            }
+        }
+    };
+
+    const clearBrowserCaches = async () => {
+        try {
+            if ('caches' in window) {
+                const cacheKeys = await caches.keys();
+                await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+            }
+        } catch (error) {
+            console.warn('Не вдалося очистити кеш застосунку', error);
+        }
+
+        try {
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                await Promise.all(registrations.map((registration) => registration.unregister()));
+            }
+        } catch (error) {
+            console.warn('Не вдалося скинути service worker', error);
+        }
+    };
+
+    const hardResetAllData = async () => {
         const allKeysToRemove = [
             ...Object.values(STORAGE_KEYS),
             ...getScheduleStorageKeys(),
             'colleagueProfiles'
         ];
+
         try {
             allKeysToRemove.forEach((key) => localStorage.removeItem(key));
+            clearPrefixedStorageKeys(localStorage, APP_STORAGE_PREFIXES);
 
-            const keysToRemove = [];
-            for (let index = 0; index < localStorage.length; index++) {
-                const key = localStorage.key(index);
-                if (key && APP_STORAGE_PREFIXES.some((prefix) => key.startsWith(prefix))) {
-                    keysToRemove.push(key);
-                }
+            if (window.sessionStorage) {
+                allKeysToRemove.forEach((key) => sessionStorage.removeItem(key));
+                clearPrefixedStorageKeys(sessionStorage, APP_STORAGE_PREFIXES);
             }
-
-            keysToRemove.forEach((key) => localStorage.removeItem(key));
         } catch (e) {
-            console.warn('Не вдалося виконати hard reset', e);
+            console.warn('Не вдалося виконати повне очищення', e);
         }
 
+        clearRuntimeUserData();
+        await clearBrowserCaches();
         location.reload();
     };
 
@@ -413,7 +477,7 @@
         visualSwitchTimeoutId = window.setTimeout(() => {
             document.body.classList.remove('is-visual-switching');
             visualSwitchTimeoutId = null;
-        }, 220);
+        }, VISUAL_SWITCH_GUARD_MS);
     };
 
     const setStylePreset = (stylePreset, stylePresetBtns) => {

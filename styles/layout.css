@@ -21,8 +21,14 @@
     justify-content: center;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1), backdrop-filter 0.4s ease;
+    transition: var(--overlay-fade-transition);
     padding: var(--space-5);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y pinch-zoom;
+    scroll-padding-top: calc(env(safe-area-inset-top, 0px) + var(--space-4));
+    scroll-padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--space-4));
 }
 
 .modal-overlay {
@@ -84,15 +90,35 @@
 .settings-card,
 .schedule-card,
 .profiles-card {
-    scrollbar-width: none;
+    min-height: 0;
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--text-secondary) 18%, transparent) transparent;
+    scrollbar-gutter: stable both-edges;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y pinch-zoom;
 }
 
 .modal-card::-webkit-scrollbar,
 .settings-card::-webkit-scrollbar,
 .schedule-card::-webkit-scrollbar,
 .profiles-card::-webkit-scrollbar {
-    display: none;
+    width: 4px;
+}
+
+.modal-card::-webkit-scrollbar-thumb,
+.settings-card::-webkit-scrollbar-thumb,
+.schedule-card::-webkit-scrollbar-thumb,
+.profiles-card::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--text-secondary) 18%, transparent);
+    border-radius: var(--radius-pill);
+}
+
+.modal-card::-webkit-scrollbar-track,
+.settings-card::-webkit-scrollbar-track,
+.schedule-card::-webkit-scrollbar-track,
+.profiles-card::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .depth-panel {
@@ -104,7 +130,7 @@
     position: relative;
     overflow: hidden;
     transition: var(--panel-transition);
-    animation: panelLiftIn 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation: var(--panel-enter-animation);
 }
 
 .depth-panel > * {
@@ -150,6 +176,8 @@ h1 {
     display: flex;
     gap: var(--space-3);
     align-items: center;
+    position: relative;
+    z-index: calc(var(--z-header) + 1);
 }
 
 .legend-circle-work {
@@ -235,7 +263,6 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 }
 
 .custom-input.control-input {
-    border-width: 2px;
     font-weight: 600;
 }
 
@@ -359,7 +386,8 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 .schedule-btn-action,
 .modal-close,
 .modal-note-btn,
-.undo-toast-btn {
+.undo-toast-btn,
+.settings-check-update-btn {
     flex: 1;
     display: inline-flex;
     align-items: center;
@@ -378,7 +406,8 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 
 .btn-apply,
 .schedule-btn-action.primary,
-.modal-note-save {
+.modal-note-save,
+.settings-update-download-btn {
     background: var(--surface-button-accent);
     color: var(--text-on-accent);
     border-color: var(--surface-button-accent-border);
@@ -387,7 +416,8 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 
 .btn-apply:hover,
 .schedule-btn-action.primary:hover,
-.modal-note-save:hover {
+.modal-note-save:hover,
+.settings-update-download-btn:hover {
     transform: var(--button-hover-transform);
     box-shadow: var(--surface-button-accent-shadow);
 }
@@ -402,7 +432,8 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 .schedule-btn-action.secondary,
 .modal-close,
 .modal-note-clear,
-.undo-toast-btn {
+.undo-toast-btn,
+.settings-check-update-btn {
     background: var(--surface-control);
     color: var(--text-primary);
     border-color: var(--surface-panel-muted-border);
@@ -413,7 +444,8 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 .schedule-btn-action.secondary:hover,
 .modal-close:hover,
 .modal-note-clear:hover,
-.undo-toast-btn:hover {
+.undo-toast-btn:hover,
+.settings-check-update-btn:hover {
     background: var(--surface-control-hover);
     box-shadow: var(--surface-panel-elevated-shadow-hover);
     transform: var(--button-hover-transform);
@@ -567,7 +599,7 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 }
 
 .period-btn {
-    border: none;
+    border: 1px solid transparent;
     background: transparent;
     color: var(--text-secondary);
     border-radius: var(--button-compact-radius);
@@ -580,9 +612,10 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 }
 
 .period-btn.active {
-    background: var(--surface-control);
-    color: var(--accent);
-    box-shadow: var(--surface-panel-elevated-shadow);
+    background: var(--interactive-active-bg);
+    border-color: var(--interactive-active-border);
+    color: var(--interactive-active-color);
+    box-shadow: var(--interactive-active-inset), var(--interactive-active-shadow);
 }
 
 .period-btn:hover {
@@ -640,7 +673,7 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 
 .theme-mode-btn {
     flex: 1;
-    border: none;
+    border: 1px solid transparent;
     background: transparent;
     color: var(--text-secondary);
     border-radius: var(--button-compact-radius);
@@ -656,9 +689,10 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 }
 
 .theme-mode-btn.active {
-    background: var(--surface-control);
-    color: var(--accent);
-    box-shadow: var(--surface-panel-elevated-shadow);
+    background: var(--interactive-active-bg);
+    border-color: var(--interactive-active-border);
+    color: var(--interactive-active-color);
+    box-shadow: var(--interactive-active-inset), var(--interactive-active-shadow);
 }
 
 h1 {

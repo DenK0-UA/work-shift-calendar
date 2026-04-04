@@ -27,8 +27,7 @@ function syncScheduleModalState() {
     updateScheduleApplyState();
 }
 
-function openScheduleModal(options = {}) {
-    const setupMode = options.setupMode === true;
+function prepareScheduleOverlay(setupMode = false) {
     isSetupPending = setupMode;
 
     if (setupMode) {
@@ -40,6 +39,17 @@ function openScheduleModal(options = {}) {
     }
 
     syncScheduleModalState();
+}
+
+function openScheduleModal(options = {}) {
+    const setupMode = options.setupMode === true;
+
+    if (window.AppShellOverlays?.open) {
+        window.AppShellOverlays.open('schedule', { setupMode, reason: options.reason || 'api' });
+        return;
+    }
+
+    prepareScheduleOverlay(setupMode);
     scheduleEls.overlay.classList.add('active');
 }
 
@@ -51,28 +61,44 @@ scheduleEls.templateBtns.forEach((btn) => {
     });
 });
 
-scheduleEls.scheduleBtn.addEventListener('click', () => {
-    openScheduleModal();
-});
-
 const closeScheduleModal = () => {
     if (isSetupPending) {
-        return;
+        return false;
     }
 
     scheduleEls.overlay.classList.remove('active');
+    return true;
 };
 
-scheduleEls.closeBtn.addEventListener('click', closeScheduleModal);
-scheduleEls.closeBtn2.addEventListener('click', closeScheduleModal);
-scheduleEls.overlay.addEventListener('click', (e) => {
-    if (e.target === scheduleEls.overlay) closeScheduleModal();
+const scheduleOverlayController = window.AppShellOverlays?.registerOverlay({
+    id: 'schedule',
+    overlay: scheduleEls.overlay,
+    openButtons: scheduleEls.scheduleBtn,
+    closeButtons: [scheduleEls.closeBtn, scheduleEls.closeBtn2],
+    onOpen: ({ setupMode = false } = {}) => {
+        prepareScheduleOverlay(setupMode);
+        scheduleEls.overlay.classList.add('active');
+        return true;
+    },
+    onClose: () => closeScheduleModal()
 });
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && scheduleEls.overlay.classList.contains('active')) {
-        closeScheduleModal();
-    }
-});
+
+if (!scheduleOverlayController) {
+    scheduleEls.scheduleBtn.addEventListener('click', () => {
+        openScheduleModal();
+    });
+
+    scheduleEls.closeBtn.addEventListener('click', closeScheduleModal);
+    scheduleEls.closeBtn2.addEventListener('click', closeScheduleModal);
+    scheduleEls.overlay.addEventListener('click', (e) => {
+        if (e.target === scheduleEls.overlay) closeScheduleModal();
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && scheduleEls.overlay.classList.contains('active')) {
+            closeScheduleModal();
+        }
+    });
+}
 
 scheduleEls.applyBtn.addEventListener('click', () => {
     if (!selectedSchedule) {
