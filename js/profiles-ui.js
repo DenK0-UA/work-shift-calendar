@@ -9,6 +9,7 @@ const profilesEls = {
     addCollapse: document.getElementById('profiles-add-collapse'),
     nameInput: document.getElementById('profile-name'),
     colorPreview: document.getElementById('profile-color-preview'),
+    colorTrigger: document.getElementById('profile-color-trigger'),
     templateBtns: document.querySelectorAll('[data-profile-schedule]'),
     customFields: document.getElementById('profile-custom-fields'),
     workDaysInput: document.getElementById('profile-work-days'),
@@ -22,6 +23,14 @@ let selectedProfileSchedule = null;
 let editingProfileId = null;
 let isAddFormOpen = false;
 const EXPANDABLE_SECTION_DURATION_MS = 260;
+const profileColorPickerState = {
+    overlayEl: null,
+    paletteGridEl: null,
+    customInputEl: null,
+    pendingColor: '#8E8E93',
+    targetInputEl: null,
+    targetPreviewEl: null
+};
 
 function setExpandableSectionOpen(sectionEl, isOpen) {
     if (!sectionEl) return;
@@ -75,6 +84,121 @@ function syncProfileColorPreview(inputEl, previewEl) {
     previewEl.style.background = inputEl.value || '#8E8E93';
 }
 
+function getSoftProfilePalette() {
+    if (typeof getProfilePaletteColors === 'function') {
+        return getProfilePaletteColors();
+    }
+
+    return ['#C8876B', '#6DA58B', '#7E8FC9', '#68B5BF', '#C47E9B', '#D0A45F'];
+}
+
+function closeProfileColorPicker() {
+    if (!profileColorPickerState.overlayEl) return;
+
+    profileColorPickerState.overlayEl.classList.remove('active');
+    window.setTimeout(() => {
+        if (profileColorPickerState.overlayEl && !profileColorPickerState.overlayEl.classList.contains('active')) {
+            profileColorPickerState.overlayEl.hidden = true;
+        }
+    }, 220);
+}
+
+function applyProfileColorPickerSelection() {
+    const { targetInputEl, targetPreviewEl, pendingColor } = profileColorPickerState;
+    if (!targetInputEl) {
+        closeProfileColorPicker();
+        return;
+    }
+
+    targetInputEl.value = pendingColor;
+    targetInputEl.dispatchEvent(new Event('input', { bubbles: true }));
+    syncProfileColorPreview(targetInputEl, targetPreviewEl);
+    closeProfileColorPicker();
+}
+
+function renderProfileColorPalette() {
+    if (!profileColorPickerState.paletteGridEl) return;
+
+    const palette = getSoftProfilePalette();
+    profileColorPickerState.paletteGridEl.innerHTML = '';
+
+    palette.forEach((color) => {
+        const swatchBtn = document.createElement('button');
+        swatchBtn.type = 'button';
+        swatchBtn.className = 'profile-color-swatch';
+        swatchBtn.dataset.color = color;
+        const isSelected = color.toLowerCase() === profileColorPickerState.pendingColor.toLowerCase();
+        swatchBtn.classList.toggle('is-selected', isSelected);
+        swatchBtn.setAttribute('aria-label', `Колір ${color}`);
+        swatchBtn.setAttribute('aria-pressed', String(isSelected));
+
+        const chip = document.createElement('span');
+        chip.className = 'profile-color-swatch-chip';
+        chip.style.background = color;
+        swatchBtn.appendChild(chip);
+
+        swatchBtn.addEventListener('click', () => {
+            profileColorPickerState.pendingColor = color;
+            renderProfileColorPalette();
+        });
+
+        profileColorPickerState.paletteGridEl.appendChild(swatchBtn);
+    });
+}
+
+function ensureProfileColorPicker() {
+    if (profileColorPickerState.overlayEl) {
+        return profileColorPickerState.overlayEl;
+    }
+
+    const overlayEl = document.createElement('div');
+    overlayEl.className = 'profile-color-modal';
+    overlayEl.hidden = true;
+    overlayEl.innerHTML = `
+        <div class="profile-color-modal-card">
+            <div class="modal-shell-header profile-color-modal-header">
+                <h2 class="profile-edit-title">Колір графіка</h2>
+                <button class="schedule-close" id="profile-color-modal-close" type="button" aria-label="Закрити">×</button>
+            </div>
+            <div class="profile-color-swatch-grid" id="profile-color-swatch-grid"></div>
+            <div class="profile-color-modal-actions">
+                <button class="schedule-btn-action secondary" id="profile-color-cancel-btn" type="button">Скасувати</button>
+                <button class="schedule-btn-action primary" id="profile-color-apply-btn" type="button">Застосувати</button>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(overlayEl);
+
+    profileColorPickerState.overlayEl = overlayEl;
+    profileColorPickerState.paletteGridEl = overlayEl.querySelector('#profile-color-swatch-grid');
+
+    overlayEl.querySelector('#profile-color-modal-close').addEventListener('click', closeProfileColorPicker);
+    overlayEl.querySelector('#profile-color-cancel-btn').addEventListener('click', closeProfileColorPicker);
+    overlayEl.querySelector('#profile-color-apply-btn').addEventListener('click', applyProfileColorPickerSelection);
+    overlayEl.addEventListener('click', (event) => {
+        if (event.target === overlayEl) {
+            closeProfileColorPicker();
+        }
+    });
+
+    return overlayEl;
+}
+
+function openProfileColorPicker(targetInputEl, targetPreviewEl) {
+    if (!targetInputEl || !targetPreviewEl) return;
+
+    ensureProfileColorPicker();
+    profileColorPickerState.targetInputEl = targetInputEl;
+    profileColorPickerState.targetPreviewEl = targetPreviewEl;
+    profileColorPickerState.pendingColor = targetInputEl.value || '#8E8E93';
+    renderProfileColorPalette();
+    profileColorPickerState.overlayEl.hidden = false;
+    requestAnimationFrame(() => {
+        profileColorPickerState.overlayEl.classList.add('active');
+    });
+}
+
 function getScheduleCaptionLabel(scheduleKey) {
     switch (scheduleKey) {
         case '5/5': return '5 роб. / 5 вих.';
@@ -82,7 +206,7 @@ function getScheduleCaptionLabel(scheduleKey) {
         case '5/2': return '5 роб. / 2 вих.';
         case '3/3': return '3 роб. / 3 вих.';
         case '2/2': return '2 роб. / 2 вих.';
-        default: return 'Кастомний';
+        default: return 'Свій';
     }
 }
 
@@ -242,6 +366,12 @@ if (profilesEls.colorInput) {
     });
 }
 
+if (profilesEls.colorTrigger) {
+    profilesEls.colorTrigger.addEventListener('click', () => {
+        openProfileColorPicker(profilesEls.colorInput, profilesEls.colorPreview);
+    });
+}
+
 profilesEls.addBtn.addEventListener('click', () => {
     const data = buildScheduleFromForm(false);
     if (!data) return;
@@ -273,6 +403,11 @@ profilesEls.overlay.addEventListener('click', (e) => {
     if (e.target === profilesEls.overlay) setProfilesOverlayOpen(false);
 });
 document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && profileColorPickerState.overlayEl?.classList.contains('active')) {
+        closeProfileColorPicker();
+        return;
+    }
+
     if (e.key === 'Escape' && profilesEls.overlay.classList.contains('active')) {
         setProfilesOverlayOpen(false);
     }
@@ -317,18 +452,23 @@ function openEditProfile(profile) {
                     <input type="number" id="edit-profile-off-days" class="custom-input control-input" min="1" max="30" value="${profile.schedule.offDays}">
                 </div>
             </div>
-            <div class="custom-input-group profile-edit-date-group">
-                <label class="custom-input-label">Початок зміни</label>
-                <input type="date" id="edit-profile-start-date" class="custom-input control-input" value="${formatScheduleStartDateForInput(profile.schedule.startDate)}">
-            </div>
-            <div class="profile-edit-color-row">
-                <div class="profile-edit-color-copy">
-                    <label class="custom-input-label" for="edit-profile-color">Колір</label>
-                    <span class="helper-text profile-edit-color-help">Колір зміни в календарі</span>
+            <div class="profiles-meta-row profile-edit-meta-row">
+                <div class="custom-input-group profile-edit-date-group">
+                    <label class="custom-input-label">Початок зміни</label>
+                    <input type="date" id="edit-profile-start-date" class="custom-input control-input" value="${formatScheduleStartDateForInput(profile.schedule.startDate)}">
                 </div>
-                <div class="profile-color-picker profile-edit-inline-color-picker">
-                    <input type="color" id="edit-profile-color" class="profile-color-input profile-edit-color-input" value="${profile.color}" aria-label="Колір календаря">
-                    <div class="profile-color-preview" id="edit-profile-color-preview"></div>
+                <div class="custom-input-group profile-color-group profile-edit-color-group">
+                    <label class="custom-input-label" for="edit-profile-color">Колір</label>
+                    <div class="profile-color-picker profile-edit-inline-color-picker">
+                        <input type="color" id="edit-profile-color" class="profile-color-input profile-color-native-input profile-edit-color-input" value="${profile.color}" aria-label="Свій колір календаря">
+                        <button class="profile-color-trigger profile-edit-color-trigger custom-input control-input" id="edit-profile-color-trigger" type="button" aria-haspopup="dialog">
+                            <span class="profile-color-preview" id="edit-profile-color-preview"></span>
+                            <span class="profile-color-trigger-copy">
+                                <span class="profile-color-trigger-title">М'яка палітра</span>
+                                <span class="helper-text profile-color-trigger-help">Або свій колір</span>
+                            </span>
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="profile-edit-actions">
@@ -343,10 +483,16 @@ function openEditProfile(profile) {
 
     const editColorInput = document.getElementById('edit-profile-color');
     const editColorPreview = document.getElementById('edit-profile-color-preview');
+    const editColorTrigger = document.getElementById('edit-profile-color-trigger');
     syncProfileColorPreview(editColorInput, editColorPreview);
     if (editColorInput) {
         editColorInput.addEventListener('input', () => {
             syncProfileColorPreview(editColorInput, editColorPreview);
+        });
+    }
+    if (editColorTrigger) {
+        editColorTrigger.addEventListener('click', () => {
+            openProfileColorPicker(editColorInput, editColorPreview);
         });
     }
 

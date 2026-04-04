@@ -242,39 +242,186 @@
     flex: 1;
 }
 
+.profiles-meta-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(92px, 112px);
+    gap: var(--space-3);
+    align-items: end;
+}
+
+.profiles-meta-row > .custom-input-group {
+    margin-bottom: 0;
+}
+
+.profile-color-group {
+    min-width: 0;
+}
+
 .profile-color-picker {
     position: relative;
     width: 100%;
-    min-height: 52px;
+    min-height: var(--field-min-height);
 }
 
 .profile-color-input {
     position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
+    width: 1px;
+    height: 1px;
+    inset: auto;
     opacity: 0;
-    z-index: 2;
+    pointer-events: none;
+}
+
+.profile-color-trigger {
+    width: 100%;
+    min-height: var(--field-min-height);
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--field-padding);
+    border-radius: var(--field-radius);
+    background: var(--surface-input);
+    color: var(--text-primary);
+    text-align: left;
     cursor: pointer;
+    transition: var(--control-transition);
+    box-sizing: border-box;
+}
+
+.profile-color-trigger:hover {
+    background: var(--surface-input);
+    border-color: var(--card-border);
+}
+
+.profile-color-trigger-copy {
+    min-width: 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.profile-color-trigger-title {
+    font-size: var(--type-label-sm-size);
+    font-weight: 700;
+    line-height: var(--type-label-sm-line);
+}
+
+.profile-color-trigger-help {
+    font-size: var(--type-body-xs-size);
+    line-height: var(--type-body-xs-line);
 }
 
 .profile-color-preview {
-    width: 100%;
-    min-height: 52px;
-    border-radius: var(--button-compact-radius);
-    border: 1px solid var(--card-border);
+    width: 46px;
+    min-width: 46px;
+    min-height: 28px;
+    border-radius: calc(var(--field-radius) - 6px);
+    border: 1px solid color-mix(in srgb, var(--card-border) 88%, transparent);
     background: var(--surface-control);
     box-shadow: none;
 }
 
-.profile-color-input::-webkit-color-swatch-wrapper {
-    padding: 0;
+.profiles-meta-row .profile-color-trigger {
+    height: var(--field-min-height);
+    min-height: var(--field-min-height);
+    justify-content: center;
+    padding: var(--field-padding);
 }
 
-.profile-color-input::-webkit-color-swatch,
-.profile-color-input::-moz-color-swatch {
-    border: none;
-    border-radius: var(--icon-button-radius);
+.profiles-meta-row .profile-color-trigger-copy {
+    display: none;
+}
+
+.profiles-meta-row .profile-color-preview {
+    width: 100%;
+    min-width: 0;
+    min-height: 100%;
+    height: 100%;
+}
+
+.profile-color-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: var(--modal-overlay);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+}
+
+.profile-color-modal.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.profile-color-modal-card {
+    width: 100%;
+    max-width: 360px;
+    padding: var(--space-5);
+    border-radius: var(--shell-radius);
+    background: var(--main-container-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.profile-color-modal-header {
+    gap: var(--space-3);
+}
+
+.profile-color-swatch-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--space-2);
+}
+
+.profile-color-swatch {
+    min-height: 54px;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--button-compact-radius);
+    border: 1px solid var(--card-border);
+    background: var(--surface-control);
+    cursor: pointer;
+    transition: var(--control-transition);
+}
+
+.profile-color-swatch:hover {
+    background: var(--surface-control-hover);
+    border-color: var(--surface-panel-muted-border);
+}
+
+.profile-color-swatch.is-selected {
+    border-color: var(--accent);
+    box-shadow: var(--focus-ring-soft);
+}
+
+.profile-color-swatch-chip {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.profile-color-modal-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+}
+
+.profile-color-modal-actions .schedule-btn-action {
+    min-height: 42px;
+    padding: var(--space-3) var(--space-2);
 }
 
 /* --- Точки на клітинках календаря --- */
@@ -411,10 +558,17 @@
     max-width: 360px;
     border: 1px solid var(--card-border);
     box-shadow: var(--card-shadow);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.profile-edit-card .custom-input-group {
+    margin-bottom: 0;
 }
 
 .profile-edit-header {
-    margin-bottom: var(--space-4);
+    margin-bottom: 0;
 }
 
 .profile-edit-title {
@@ -427,7 +581,7 @@
 }
 
 .profile-edit-schedule-row {
-    margin-bottom: var(--space-2);
+    margin-bottom: 0;
 }
 
 .profile-edit-schedule-templates {
@@ -450,58 +604,35 @@
 }
 
 .profile-edit-date-group {
-    margin-bottom: var(--space-3);
-}
-
-.profile-edit-date-group .control-input {
-    min-height: 48px;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-.profile-edit-color-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-4);
-    border: 1px solid var(--card-border);
-    border-radius: var(--surface-block-radius-sm);
-    background: var(--surface-panel-subtle);
-}
-
-.profile-edit-color-copy {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-}
-
-.profile-edit-color-copy .custom-input-label {
     margin-bottom: 0;
 }
 
-.profile-edit-color-help {
-    font-size: var(--type-body-xs-size);
-    line-height: var(--type-body-xs-line);
-    color: var(--text-secondary);
+.profile-edit-date-group .control-input {
+    min-height: var(--field-min-height);
+    padding-top: 14px;
+    padding-bottom: 14px;
+}
+
+.profile-edit-color-group {
+    margin-bottom: 0;
 }
 
 .profile-edit-inline-color-picker {
-    width: 92px;
-    min-width: 92px;
+    width: 100%;
+    min-width: 0;
 }
 
 .profile-edit-color-input,
 .profile-edit-inline-color-picker,
+.profile-edit-inline-color-picker .profile-color-trigger,
 .profile-edit-inline-color-picker .profile-color-preview {
-    min-height: 44px;
+    min-height: var(--field-min-height);
 }
 
 .profile-edit-actions {
     display: flex;
     gap: var(--space-3);
-    margin-top: var(--space-4);
+    margin-top: 0;
 }
 
 .profile-edit-actions .schedule-btn-action {

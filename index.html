@@ -300,7 +300,7 @@
                 </button>
                 <button class="schedule-btn" data-schedule="custom">
                     <strong class="schedule-btn-icon">⚙️</strong>
-                    <span class="schedule-btn-label">Кастомний</span>
+                    <span class="schedule-btn-label">Свій</span>
                 </button>
             </div>
 
@@ -359,7 +359,7 @@
                             <button class="schedule-btn schedule-btn-sm" data-profile-schedule="5/2" type="button"><strong>5/2</strong><span class="schedule-btn-label profile-schedule-caption">5 роб. / 2 вих.</span></button>
                             <button class="schedule-btn schedule-btn-sm" data-profile-schedule="3/3" type="button"><strong>3/3</strong><span class="schedule-btn-label profile-schedule-caption">3 роб. / 3 вих.</span></button>
                             <button class="schedule-btn schedule-btn-sm" data-profile-schedule="2/2" type="button"><strong>2/2</strong><span class="schedule-btn-label profile-schedule-caption">2 роб. / 2 вих.</span></button>
-                            <button class="schedule-btn schedule-btn-sm" data-profile-schedule="custom" type="button"><strong>⚙️</strong><span class="schedule-btn-label profile-schedule-caption">Кастомний</span></button>
+                            <button class="schedule-btn schedule-btn-sm" data-profile-schedule="custom" type="button"><strong>⚙️</strong><span class="schedule-btn-label profile-schedule-caption">Свій</span></button>
                         </div>
                     </div>
                     <div class="profiles-custom-fields" id="profile-custom-fields" hidden>
@@ -372,15 +372,23 @@
                             <input type="number" id="profile-off-days" class="custom-input control-input" min="1" max="30" placeholder="5">
                         </div>
                     </div>
-                    <div class="custom-input-group">
-                        <label class="custom-input-label">Початок зміни</label>
-                        <input type="date" id="profile-start-date" class="custom-input control-input">
-                    </div>
-                    <div class="custom-input-group">
-                        <label class="custom-input-label">Колір</label>
-                        <div class="profile-color-picker">
-                            <input type="color" id="profile-color" class="profile-color-input" aria-label="Колір календаря">
-                            <div class="profile-color-preview" id="profile-color-preview"></div>
+                    <div class="profiles-meta-row">
+                        <div class="custom-input-group">
+                            <label class="custom-input-label">Початок зміни</label>
+                            <input type="date" id="profile-start-date" class="custom-input control-input">
+                        </div>
+                        <div class="custom-input-group profile-color-group">
+                            <label class="custom-input-label">Колір</label>
+                            <div class="profile-color-picker">
+                                <input type="color" id="profile-color" class="profile-color-input profile-color-native-input" aria-label="Свій колір календаря">
+                                <button class="profile-color-trigger custom-input control-input" id="profile-color-trigger" type="button" aria-haspopup="dialog">
+                                    <span class="profile-color-preview" id="profile-color-preview"></span>
+                                    <span class="profile-color-trigger-copy">
+                                        <span class="profile-color-trigger-title">М'яка палітра</span>
+                                        <span class="helper-text profile-color-trigger-help">Або свій колір</span>
+                                    </span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <button class="schedule-btn-action primary" id="profile-add-btn" type="button">Додати</button>

@@ -203,6 +203,7 @@ h1 {
 
 .control-input {
     width: 100%;
+    min-height: var(--field-min-height);
     border: 1px solid var(--card-border);
     background: var(--surface-input);
     color: var(--text-primary);
@@ -215,7 +216,7 @@ h1 {
 }
 
 input[type="date"].control-input {
-    min-height: 56px;
+    min-height: var(--field-min-height);
     padding-right: 18px;
     appearance: none;
     -webkit-appearance: none;

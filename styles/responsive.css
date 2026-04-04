@@ -510,6 +510,11 @@
         gap: 10px;
     }
 
+    .profiles-meta-row {
+        grid-template-columns: minmax(0, 1fr) 96px;
+        gap: 10px;
+    }
+
     .stat-item {
         gap: 8px;
         padding: 8px 10px;
@@ -658,6 +663,11 @@
 
     .profile-item-actions {
         gap: 5px;
+    }
+
+    .profiles-meta-row {
+        grid-template-columns: minmax(0, 1fr) 88px;
+        gap: 8px;
     }
 }
 

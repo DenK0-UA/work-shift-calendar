@@ -2,9 +2,9 @@
 const PROFILES_STORAGE_KEY = 'colleagueProfiles';
 
 const DEFAULT_PROFILE_COLORS = [
-    '#FF9800', '#4CAF50', '#9C27B0', '#00BCD4',
-    '#E91E63', '#2196F3', '#FF5722', '#607D8B',
-    '#3F51B5', '#009688', '#FFC107', '#795548'
+    '#C97B63', '#D39A52', '#9E9A63', '#739B74',
+    '#5FA59B', '#6EA9C7', '#7E90CC', '#8D7BC3',
+    '#B779A2', '#C97886', '#8C96A3', '#B78D73'
 ];
 
 const profilesState = {
@@ -47,6 +47,10 @@ function getNextProfileColor() {
     const profiles = ensureProfilesState();
     const usedColors = new Set(profiles.map(p => p.color));
     return DEFAULT_PROFILE_COLORS.find(c => !usedColors.has(c)) || DEFAULT_PROFILE_COLORS[profiles.length % DEFAULT_PROFILE_COLORS.length];
+}
+
+function getProfilePaletteColors() {
+    return [...DEFAULT_PROFILE_COLORS];
 }
 
 function addProfile(name, scheduleConfig) {
