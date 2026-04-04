@@ -16,9 +16,11 @@
     --off-bg: #1f9d73;
     --off-text: #ffffff;
 
-    --holiday-color: #d13438;
+    --holiday-color: #C89B3C;
     --holiday-marker-ring: rgba(251, 253, 255, 0.94);
-    --holiday-marker-shadow: 0 4px 10px rgba(209, 52, 56, 0.24);
+    --holiday-marker-shadow: 0 4px 10px rgba(200, 155, 60, 0.24);
+    --holiday-day-ring: rgba(200, 155, 60, 0.42);
+    --holiday-day-glow: 0 0 0 2px rgba(200, 155, 60, 0.22), 0 8px 18px rgba(200, 155, 60, 0.14);
     --glass-bg: transparent;
     --glass-border: transparent;
     --card-border: rgba(24, 33, 45, 0.16);
@@ -62,8 +64,56 @@
     --surface-button-accent-shadow: 0 1px 2px rgba(25, 103, 210, 0.24), 0 6px 16px rgba(25, 103, 210, 0.18);
     --field-radius: 18px;
     --field-padding: 14px 16px;
-    --helper-text-size: 13px;
-    --helper-line-height: 1.5;
+    --type-display-page-size: clamp(28px, 4vw, 34px);
+    --type-display-page-line: 0.96;
+    --type-display-page-track: -0.06em;
+    --type-display-modal-size: 26px;
+    --type-display-modal-line: 1.1;
+    --type-display-modal-track: -0.04em;
+    --type-display-setup-size: 28px;
+    --type-display-setup-line: 1.1;
+    --type-title-section-size: 17px;
+    --type-title-section-line: 1.2;
+    --type-title-section-track: -0.03em;
+    --type-title-card-size: 15px;
+    --type-title-card-line: 1.3;
+    --type-title-card-track: -0.01em;
+    --type-body-md-size: 14px;
+    --type-body-md-line: 1.45;
+    --type-body-ui-size: 13px;
+    --type-body-ui-line: 1.45;
+    --type-body-sm-size: 12px;
+    --type-body-sm-line: 1.45;
+    --type-body-xs-size: 11px;
+    --type-body-xs-line: 1.35;
+    --type-label-md-size: 13px;
+    --type-label-md-line: 1.3;
+    --type-label-md-track: 0.01em;
+    --type-label-sm-size: 12px;
+    --type-label-sm-line: 1.3;
+    --type-label-sm-track: 0.02em;
+    --type-label-xs-size: 11px;
+    --type-label-xs-line: 1.25;
+    --type-label-xs-track: 0.04em;
+    --type-caption-xxs-size: 10px;
+    --type-caption-xxs-line: 1.15;
+    --type-number-hero-size: 58px;
+    --type-number-hero-line: 1;
+    --type-number-hero-track: -2px;
+    --type-number-lg-size: 26px;
+    --type-number-lg-line: 1;
+    --type-number-lg-track: -0.05em;
+    --type-number-md-size: 24px;
+    --type-number-md-line: 1;
+    --type-number-md-track: -0.04em;
+    --type-number-sm-size: 22px;
+    --type-number-sm-line: 1;
+    --type-number-sm-track: -0.04em;
+    --type-number-xs-size: 15px;
+    --type-number-xs-line: 1;
+    --type-number-xs-track: -0.03em;
+    --helper-text-size: var(--type-body-ui-size);
+    --helper-line-height: var(--type-body-ui-line);
     --focus-ring-soft: 0 0 0 3px rgba(25, 103, 210, 0.16);
     --focus-ring-strong: 0 0 0 3px rgba(25, 103, 210, 0.22);
     --text-on-accent: #ffffff;
@@ -73,7 +123,32 @@
     --panel-radius: 28px;
     --control-radius-sm: 16px;
     --control-radius-md: 20px;
+    --surface-block-radius-lg: 24px;
+    --surface-block-radius-md: 20px;
+    --surface-block-radius-sm: 18px;
     --panel-padding: 24px;
+    --surface-block-padding-lg: var(--space-5);
+    --surface-block-padding-md: var(--space-4);
+    --surface-block-padding-sm: var(--space-3);
+    --button-padding-block: var(--space-4);
+    --button-padding-inline: var(--space-5);
+    --button-font-size: var(--type-body-ui-size);
+    --button-font-weight: 700;
+    --button-letter-spacing: 0;
+    --button-min-height: 48px;
+    --button-radius: var(--control-radius-md);
+    --button-compact-padding-block: var(--space-3);
+    --button-compact-padding-inline: var(--space-4);
+    --button-compact-radius: 16px;
+    --icon-button-size: 40px;
+    --icon-button-radius: var(--control-radius-sm);
+    --modal-close-offset: var(--space-7);
+    --disclosure-button-radius: 12px;
+    --marker-cube-size: 10px;
+    --marker-cube-radius: 3px;
+    --marker-cube-gap: 3px;
+    --marker-cube-font-size: 7px;
+    --marker-cube-ring: 0 0 0 1px transparent;
     --section-gap: 16px;
     --space-1: 4px;
     --space-2: 8px;
@@ -85,9 +160,9 @@
     --kicker-bg: #eef3fb;
     --kicker-border: rgba(25, 103, 210, 0.14);
     --base-font-size: 16px;
-    --font-family-base: "Google Sans", "Roboto", "Noto Sans", sans-serif;
-    --font-family-display: "Google Sans", "Roboto", "Noto Sans", sans-serif;
-    --font-family-numeric: "Google Sans", "Roboto", "Noto Sans", sans-serif;
+    --font-family-base: "Google Sans", "Noto Sans", sans-serif;
+    --font-family-display: "Google Sans", "Noto Sans", sans-serif;
+    --font-family-numeric: "Google Sans", "Noto Sans", sans-serif;
     --font-family: var(--font-family-base);
     --page-gradient: linear-gradient(180deg, #eef2f8 0%, #e9eef5 100%);
     --page-side-glow: none;
@@ -114,6 +189,10 @@
     --calendar-day-hover-transform: translateY(-1px);
     --control-transition: background-color 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease, opacity 0.18s ease;
     --panel-transition: box-shadow 0.2s ease, transform 0.18s ease;
+    --expand-reveal-offset: calc(var(--space-2) * -1);
+    --expand-reveal-size-duration: 0.26s;
+    --expand-reveal-fade-duration: 0.24s;
+    --expand-reveal-easing: ease;
     --modal-card-initial-transform: translateY(24px) scale(0.98);
     --modal-card-active-transform: translateY(0) scale(1);
     --modal-card-transition: transform 0.24s ease, opacity 0.2s ease;
@@ -138,9 +217,11 @@
     --off-bg: #2aa876;
     --off-text: #ffffff;
 
-    --holiday-color: #ff6b6b;
+    --holiday-color: #E2B85B;
     --holiday-marker-ring: rgba(18, 26, 40, 0.96);
-    --holiday-marker-shadow: 0 4px 12px rgba(255, 107, 107, 0.28);
+    --holiday-marker-shadow: 0 4px 12px rgba(226, 184, 91, 0.28);
+    --holiday-day-ring: rgba(226, 184, 91, 0.48);
+    --holiday-day-glow: 0 0 0 2px rgba(226, 184, 91, 0.24), 0 10px 22px rgba(226, 184, 91, 0.14);
     --glass-bg: transparent;
     --glass-border: transparent;
     --card-border: rgba(227, 232, 242, 0.12);
@@ -179,16 +260,16 @@
     --surface-badge: #243447;
     --surface-badge-shadow: none;
     --surface-danger-badge: rgba(255, 69, 58, 0.12);
-    --surface-button-accent: #a8c7fa;
-    --surface-button-accent-border: #a8c7fa;
-    --surface-button-accent-shadow: 0 1px 2px rgba(168, 199, 250, 0.18), 0 8px 18px rgba(0, 0, 0, 0.2);
+    --surface-button-accent: #4f8df7;
+    --surface-button-accent-border: #5d98ff;
+    --surface-button-accent-shadow: 0 2px 6px rgba(79, 141, 247, 0.34), 0 10px 22px rgba(0, 0, 0, 0.24);
     --field-radius: 18px;
     --field-padding: 14px 16px;
     --helper-text-size: 13px;
     --helper-line-height: 1.55;
     --focus-ring-soft: 0 0 0 3px rgba(168, 199, 250, 0.18);
     --focus-ring-strong: 0 0 0 3px rgba(168, 199, 250, 0.26);
-    --text-on-accent: #08244c;
+    --text-on-accent: #f7fbff;
     --text-accent-strong: color-mix(in srgb, var(--accent) 84%, white);
     --modal-overlay: rgba(8, 11, 17, 0.64);
     --page-gradient: linear-gradient(180deg, #111318 0%, #171b22 100%);
@@ -206,6 +287,7 @@
     --day-off-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     --day-work-hover-shadow: 0 2px 4px rgba(0, 0, 0, 0.24);
     --day-off-hover-shadow: 0 2px 4px rgba(0, 0, 0, 0.24);
+    --marker-cube-ring: 0 0 0 1px transparent;
 }
 
 * {
@@ -237,16 +319,17 @@ body {
 h1,
 .settings-title,
 .schedule-title,
-.panel-title {
+.panel-title,
+.profile-edit-title,
+.app-update-banner-title {
     font-family: var(--font-family-display);
-    font-weight: 700;
-    letter-spacing: -0.03em;
+    font-weight: 800;
 }
 
 .subtitle,
 .settings-label,
 .schedule-onboarding-kicker {
-    letter-spacing: 0.02em;
+    letter-spacing: var(--type-label-sm-track);
     text-transform: none;
 }
 

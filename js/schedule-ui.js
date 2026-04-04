@@ -5,7 +5,7 @@ const scheduleEls = {
     closeBtn2: document.getElementById('schedule-overlay-close2'),
     applyBtn: document.getElementById('apply-schedule'),
     onboarding: document.getElementById('schedule-onboarding'),
-    templateBtns: document.querySelectorAll('.schedule-btn'),
+    templateBtns: document.querySelectorAll('[data-schedule]'),
     customForm: document.getElementById('custom-schedule-form'),
     customWorkDays: document.getElementById('custom-work-days'),
     customOffDays: document.getElementById('custom-off-days'),

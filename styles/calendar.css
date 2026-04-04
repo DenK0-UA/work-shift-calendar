@@ -95,27 +95,29 @@
     position: relative;
 }
 
-.holiday-marker {
-    z-index: 2;
+.day[data-holiday] {
+    border-color: var(--holiday-day-ring);
+    box-shadow: var(--holiday-day-glow), var(--day-work-shadow);
+}
+
+.day[data-holiday][data-status="off"] {
+    box-shadow: var(--holiday-day-glow), var(--day-off-shadow);
+}
+
+.day.today[data-holiday] {
+    box-shadow: var(--holiday-day-glow), var(--calendar-today-shadow) !important;
 }
 
 .holiday-marker {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-    width: 8px;
-    height: 8px;
-    background-color: var(--holiday-color);
-    border-radius: 50%;
-    box-shadow: 0 0 0 2px var(--holiday-marker-ring), var(--holiday-marker-shadow);
+    display: none;
 }
 
 .summary-legend {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 18px;
-    padding: 18px 20px;
+    gap: var(--space-5);
+    padding: var(--space-5);
     background: var(--main-container-bg);
 }
 
@@ -128,11 +130,11 @@
 .stat-item {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-3);
     cursor: pointer;
     flex: 1;
-    padding: 10px 12px;
-    border-radius: 18px;
+    padding: var(--surface-block-padding-sm);
+    border-radius: var(--surface-block-radius-sm);
     border: 1px solid transparent;
     transition: background 0.2s;
     user-select: none;
@@ -148,24 +150,27 @@
 }
 
 .legend-circle {
-    width: 15px;
-    height: 15px;
-    border-radius: 50%;
-    box-shadow: none;
+    width: var(--marker-cube-size);
+    height: var(--marker-cube-size);
+    border-radius: var(--marker-cube-radius);
+    border: 1px solid var(--calendar-day-border);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .stat-num {
     font-family: var(--font-family-numeric);
-    font-size: 24px;
+    font-size: var(--type-number-md-size);
     font-weight: 800;
     font-variant-numeric: tabular-nums;
-    letter-spacing: -0.04em;
+    line-height: var(--type-number-md-line);
+    letter-spacing: var(--type-number-md-track);
 }
 
 .stat-label {
-    font-size: 13px;
+    font-size: var(--type-body-ui-size);
     color: var(--text-secondary);
     font-weight: 600;
+    line-height: var(--type-body-ui-line);
 }
 
 .separator {
@@ -176,11 +181,11 @@
 
 .logo-area {
     font-family: var(--font-family-display);
-    font-size: 13px;
+    font-size: var(--type-label-md-size);
     font-weight: 800;
     color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.14em;
     opacity: 0.52;
     white-space: nowrap;
 }

@@ -11,6 +11,7 @@ const APP_UPDATE_STORAGE_KEYS = {
 };
 
 const APP_UPDATE_DISMISS_MS = 24 * 60 * 60 * 1000;
+const APP_UPDATE_BANNER_TRANSITION_MS = 400;
 
 const betaAccessState = {
     installId: readOrCreateInstallId(),
@@ -405,8 +406,17 @@ function hideAppUpdateBanner() {
         return;
     }
 
-    appUpdateEls.banner.hidden = true;
     appUpdateEls.banner.classList.remove('active');
+
+    if (appUpdateEls.banner._hideTimerId) {
+        clearTimeout(appUpdateEls.banner._hideTimerId);
+    }
+
+    appUpdateEls.banner._hideTimerId = window.setTimeout(() => {
+        appUpdateEls.banner.hidden = true;
+        appUpdateEls.banner._hideTimerId = null;
+    }, APP_UPDATE_BANNER_TRANSITION_MS);
+
     appUpdateEls.downloadBtn?.removeAttribute('data-download-url');
     appUpdateEls.dismissBtn?.removeAttribute('data-version');
     appUpdateEls.dismissBtn?.removeAttribute('data-channel');
@@ -421,8 +431,16 @@ function showAppUpdateBanner(manifest) {
     appUpdateEls.downloadBtn.dataset.downloadUrl = manifest.apkUrl;
     appUpdateEls.dismissBtn.dataset.version = manifest.version;
     appUpdateEls.dismissBtn.dataset.channel = manifest.channel;
+
+    if (appUpdateEls.banner._hideTimerId) {
+        clearTimeout(appUpdateEls.banner._hideTimerId);
+        appUpdateEls.banner._hideTimerId = null;
+    }
+
     appUpdateEls.banner.hidden = false;
-    appUpdateEls.banner.classList.add('active');
+    requestAnimationFrame(() => {
+        appUpdateEls.banner.classList.add('active');
+    });
 }
 
 function withCacheBust(url) {

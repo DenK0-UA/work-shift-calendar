@@ -51,8 +51,39 @@ let hardResetHoldStartedAt = 0;
 let applySelectedThemeMode = null;
 let installIdHintResetTimer = null;
 let appVersionTapCount = 0;
+const SETTINGS_REVEAL_DURATION_MS = 260;
 const isDevUiMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const APP_VERSION_TAP_TO_ENABLE_BETA_THRESHOLD = 20;
+
+const setRevealSectionOpen = (sectionEl, isOpen) => {
+    if (!sectionEl) {
+        return;
+    }
+
+    if (sectionEl._hideTimerId) {
+        clearTimeout(sectionEl._hideTimerId);
+        sectionEl._hideTimerId = null;
+    }
+
+    if (isOpen) {
+        sectionEl.classList.add('is-collapsed');
+        sectionEl.hidden = false;
+        requestAnimationFrame(() => {
+            sectionEl.classList.remove('is-collapsed');
+        });
+        return;
+    }
+
+    sectionEl.classList.add('is-collapsed');
+    sectionEl._hideTimerId = window.setTimeout(() => {
+        sectionEl.hidden = true;
+        sectionEl._hideTimerId = null;
+    }, SETTINGS_REVEAL_DURATION_MS);
+};
+
+const setSettingsRevealState = (sectionEl, isOpen) => {
+    setRevealSectionOpen(sectionEl, isOpen);
+};
 
 const copyTextToClipboard = async (text) => {
     if (navigator.clipboard?.writeText) {
@@ -80,8 +111,8 @@ const showAppVersionHint = (message) => {
         clearTimeout(installIdHintResetTimer);
     }
 
-    settingsEls.appVersionHint.hidden = false;
     settingsEls.appVersionHint.textContent = message;
+    setSettingsRevealState(settingsEls.appVersionHint, true);
     installIdHintResetTimer = window.setTimeout(() => {
         installIdHintResetTimer = null;
         refreshAppUpdateSettingsUI();
@@ -190,8 +221,8 @@ const refreshAppUpdateSettingsUI = async () => {
             summaryText = 'Не вдалося перевірити оновлення. Спробуйте ще раз трохи пізніше.';
         }
 
-        settingsEls.appUpdateSummary.hidden = !summaryText;
         settingsEls.appUpdateSummary.textContent = summaryText;
+        setSettingsRevealState(settingsEls.appUpdateSummary, Boolean(summaryText));
     }
 
     if (settingsEls.appUpdateDownloadInline) {
@@ -199,12 +230,12 @@ const refreshAppUpdateSettingsUI = async () => {
         const availableVersion = debugState?.availableVersion || '';
         const canDownload = debugMatchesCurrentChannel && debugState?.status === 'update-available' && Boolean(downloadUrl);
 
-        settingsEls.appUpdateDownloadInline.hidden = !canDownload;
         settingsEls.appUpdateDownloadInline.disabled = !canDownload;
         settingsEls.appUpdateDownloadInline.textContent = availableVersion
             ? `Завантажити ${availableVersion}`
             : 'Завантажити оновлення';
         settingsEls.appUpdateDownloadInline.dataset.downloadUrl = canDownload ? downloadUrl : '';
+        setSettingsRevealState(settingsEls.appUpdateDownloadInline, canDownload);
     }
 
     if (settingsEls.appUpdateCheckNow) {
@@ -218,8 +249,8 @@ const refreshAppUpdateSettingsUI = async () => {
 
     if (settingsEls.appUpdateDebugStatus) {
         if (!isDevUiMode) {
-            settingsEls.appUpdateDebugStatus.hidden = true;
             settingsEls.appUpdateDebugStatus.textContent = '';
+            setSettingsRevealState(settingsEls.appUpdateDebugStatus, false);
         } else {
         const checkedAt = debugState?.checkedAt
             ? new Date(debugState.checkedAt).toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
@@ -239,23 +270,15 @@ const refreshAppUpdateSettingsUI = async () => {
         }
 
         const shouldHideDebugStatus = debugState?.status === 'disabled' || debugParts.length === 0;
-        settingsEls.appUpdateDebugStatus.hidden = shouldHideDebugStatus;
         settingsEls.appUpdateDebugStatus.textContent = shouldHideDebugStatus
             ? ''
             : debugParts.join('\n');
+        setSettingsRevealState(settingsEls.appUpdateDebugStatus, !shouldHideDebugStatus);
         }
     }
 
     if (settingsEls.updateChannelGroup) {
-        const shouldHide = !betaAllowed;
-        settingsEls.updateChannelGroup.hidden = shouldHide;
-        // Backup: также установить display:none для полной уверенности
-        if (shouldHide) {
-            settingsEls.updateChannelGroup.style.display = 'none';
-        } else {
-            settingsEls.updateChannelGroup.style.display = '';
-        }
-        console.log('[AppUpdate] Channel group visibility:', { betaAllowed, shouldHide, hidden: settingsEls.updateChannelGroup.hidden, installId: betaAccessState?.installId });
+        setRevealSectionOpen(settingsEls.updateChannelGroup, betaAllowed);
     }
 
     settingsEls.updateChannelBtns.forEach((button) => {
@@ -271,7 +294,7 @@ const refreshAppUpdateSettingsUI = async () => {
 
     if (settingsEls.appVersionHint && !installIdHintResetTimer) {
         settingsEls.appVersionHint.textContent = '';
-        settingsEls.appVersionHint.hidden = true;
+        setSettingsRevealState(settingsEls.appVersionHint, false);
     }
 };
 
@@ -508,8 +531,8 @@ if (settingsEls.appUpdateCheckNow) {
 
         if (window.AppUpdate.isNativeAndroidApp?.() !== true) {
             if (settingsEls.appUpdateSummary) {
-                settingsEls.appUpdateSummary.hidden = false;
                 settingsEls.appUpdateSummary.textContent = 'Перевірка оновлень працює тільки в Android-додатку.';
+                setSettingsRevealState(settingsEls.appUpdateSummary, true);
             }
             return;
         }

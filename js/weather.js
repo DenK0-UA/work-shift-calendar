@@ -147,9 +147,37 @@ function getWeatherForDate(year, month, day) {
     return weatherForecastCache[getWeatherDateKey(year, month, day)] || null;
 }
 
+const MODAL_REVEAL_DURATION_MS = 260;
+
+function setModalRevealState(sectionEl, isOpen) {
+    if (!sectionEl) {
+        return;
+    }
+
+    if (sectionEl._hideTimerId) {
+        clearTimeout(sectionEl._hideTimerId);
+        sectionEl._hideTimerId = null;
+    }
+
+    if (isOpen) {
+        sectionEl.classList.add('is-collapsed');
+        sectionEl.hidden = false;
+        requestAnimationFrame(() => {
+            sectionEl.classList.remove('is-collapsed');
+        });
+        return;
+    }
+
+    sectionEl.classList.add('is-collapsed');
+    sectionEl._hideTimerId = window.setTimeout(() => {
+        sectionEl.hidden = true;
+        sectionEl._hideTimerId = null;
+    }, MODAL_REVEAL_DURATION_MS);
+}
+
 function setModalWeather({ icon, summary, meta, hidden = false }) {
     const weatherBlock = document.getElementById('m-weather');
-    weatherBlock.hidden = hidden;
+    setModalRevealState(weatherBlock, !hidden);
 
     if (hidden) {
         return;

@@ -48,6 +48,31 @@ let activeFilter = null;
 let calendarAnimationFrameId = null;
 const renderedDayEls = [];
 const supportsInteractiveHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+const MODAL_SECTION_REVEAL_DURATION_MS = 260;
+
+function setModalSectionOpen(sectionEl, isOpen) {
+    if (!sectionEl) return;
+
+    if (sectionEl._hideTimerId) {
+        clearTimeout(sectionEl._hideTimerId);
+        sectionEl._hideTimerId = null;
+    }
+
+    if (isOpen) {
+        sectionEl.classList.add('is-collapsed');
+        sectionEl.hidden = false;
+        requestAnimationFrame(() => {
+            sectionEl.classList.remove('is-collapsed');
+        });
+        return;
+    }
+
+    sectionEl.classList.add('is-collapsed');
+    sectionEl._hideTimerId = window.setTimeout(() => {
+        sectionEl.hidden = true;
+        sectionEl._hideTimerId = null;
+    }, MODAL_SECTION_REVEAL_DURATION_MS);
+}
 
 function getDayStatusLabel(status) {
     return status === 'work' ? 'Робочий день' : 'Вихідний день';
@@ -116,7 +141,7 @@ function showUndoToast(message, undoState) {
 
     undoToastTimerId = window.setTimeout(() => {
         hideUndoToast();
-    }, 5200);
+    }, 3000);
 }
 
 function applyDayStatusChange(nextStatus) {
@@ -136,8 +161,10 @@ function applyDayStatusChange(nextStatus) {
 
     const changedTo = getDayStatus(year, month, day);
     const undoLabel = normalizedNextStatus === null
-        ? 'Повернуто значення за графіком'
-        : `Встановлено ${getDayStatusChangeLabel(changedTo)}`;
+        ? 'За графіком'
+        : changedTo === 'work'
+            ? 'Робочий день'
+            : 'Вихідний день';
 
     showUndoToast(undoLabel, { year, month, day, previousCustomStatus });
 }
@@ -215,6 +242,35 @@ function createDayCell(year, month, day, dayStatus, isToday, holidayName, custom
         const holidayMarker = document.createElement('div');
         holidayMarker.className = 'holiday-marker';
         dayEl.appendChild(holidayMarker);
+    }
+
+    // --- Профілі колег: оверлей точки ---
+    if (typeof getVisibleProfilesForDay === 'function') {
+        const profileStatuses = getVisibleProfilesForDay(year, month, day);
+        const workingProfiles = profileStatuses.filter(p => p.status === 'work');
+        if (workingProfiles.length > 0) {
+            const dotsContainer = document.createElement('div');
+            dotsContainer.className = 'profile-dots';
+            const maxVisibleSlots = 3;
+            const hasOverflow = workingProfiles.length > maxVisibleSlots;
+            const maxColoredDots = hasOverflow ? maxVisibleSlots - 1 : maxVisibleSlots;
+            const toShow = workingProfiles.slice(0, maxColoredDots);
+            toShow.forEach(p => {
+                const dot = document.createElement('span');
+                dot.className = 'profile-dot';
+                dot.style.background = p.color;
+                dot.title = p.name;
+                dotsContainer.appendChild(dot);
+            });
+            if (hasOverflow) {
+                const more = document.createElement('span');
+                more.className = 'profile-dot profile-dot-more';
+                more.textContent = '+';
+                more.title = `Ще ${workingProfiles.length - (maxVisibleSlots - 1)} графік(и)`;
+                dotsContainer.appendChild(more);
+            }
+            dayEl.appendChild(dotsContainer);
+        }
     }
 
     dayEl.addEventListener('keydown', (event) => {
@@ -418,9 +474,69 @@ function openModal(year, month, day, holidayName) {
     activeModalSavedNote = getDayNote(year, month, day);
     modalNoteEls.input.value = activeModalSavedNote;
     updateModalNoteActions();
+    renderModalProfiles(year, month, day);
 
     calendarEls.modal.classList.add('active');
     syncSelectedDayCell();
+}
+
+function renderModalProfiles(year, month, day) {
+    const container = document.getElementById('m-profiles');
+    if (!container) return;
+
+    if (typeof getVisibleProfilesForDay !== 'function') {
+        setModalSectionOpen(container, false);
+        return;
+    }
+
+    const allProfiles = typeof getProfiles === 'function' ? getProfiles() : [];
+    if (allProfiles.length === 0) {
+        setModalSectionOpen(container, false);
+        return;
+    }
+
+    const profileStatuses = allProfiles.map(p => ({
+        ...p,
+        status: getProfileDayStatus(p, year, month, day),
+        isVisible: p.visible !== false
+    }));
+
+    setModalSectionOpen(container, true);
+    container.innerHTML = '';
+
+    const inner = document.createElement('div');
+    inner.className = 'modal-profiles-inner';
+
+    const heading = document.createElement('div');
+    heading.className = 'modal-profiles-heading';
+    heading.textContent = 'Графіки';
+    inner.appendChild(heading);
+
+    profileStatuses.forEach(p => {
+        const row = document.createElement('div');
+        row.className = 'modal-profile-row';
+        if (!p.isVisible) row.classList.add('dimmed');
+
+        const dot = document.createElement('span');
+        dot.className = 'modal-profile-dot';
+        dot.style.background = p.color;
+
+        const nameEl = document.createElement('span');
+        nameEl.className = 'modal-profile-name';
+        nameEl.textContent = p.name;
+
+        const badge = document.createElement('span');
+        badge.className = 'modal-profile-badge';
+        badge.dataset.status = p.status;
+        badge.textContent = p.status === 'work' ? 'Робочий' : 'Вихідний';
+
+        row.appendChild(dot);
+        row.appendChild(nameEl);
+        row.appendChild(badge);
+        inner.appendChild(row);
+    });
+
+    container.appendChild(inner);
 }
 
 function updateModalNoteActions() {

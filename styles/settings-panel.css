@@ -6,7 +6,7 @@
 .settings-card {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: var(--space-3);
     max-width: 380px;
     max-height: 80vh;
     overflow-y: auto;
@@ -14,34 +14,48 @@
 
 .settings-title {
     font-family: var(--font-family-display);
-    font-size: 26px;
+    font-size: var(--type-display-modal-size);
     font-weight: 800;
-    margin-bottom: 2px;
-    text-align: left;
-    letter-spacing: -0.04em;
+    margin-bottom: 0;
+    text-align: center;
+    line-height: var(--type-display-modal-line);
+    letter-spacing: var(--type-display-modal-track);
 }
 
 .settings-group {
     margin: 0;
-    padding: 18px;
-    border-radius: 22px;
+    padding: var(--surface-block-padding-lg);
+    border-radius: var(--surface-block-radius-lg);
     border: 1px solid var(--surface-panel-subtle-border);
     background: var(--surface-panel-subtle);
     box-shadow: none;
 }
 
 .settings-label {
-    font-size: 13px;
+    font-size: var(--type-label-md-size);
     font-weight: 700;
     text-transform: none;
-    letter-spacing: 0.01em;
+    line-height: var(--type-label-md-line);
+    letter-spacing: var(--type-label-md-track);
     color: var(--text-secondary);
-    margin-bottom: 12px;
+    margin-bottom: var(--space-3);
     display: block;
 }
 
 .settings-group-color {
-    padding-bottom: 16px;
+    padding-bottom: var(--space-4);
+}
+
+.settings-group > .settings-help-text,
+.settings-danger-text {
+    font-size: var(--type-body-xs-size);
+    line-height: var(--type-body-xs-line);
+    letter-spacing: 0;
+}
+
+.settings-group > .settings-help-text {
+    margin: 0;
+    color: var(--text-secondary);
 }
 
 .color-picker-wrapper {
@@ -58,7 +72,7 @@
     height: 100%;
     opacity: 0;
     border: none;
-    border-radius: 16px;
+    border-radius: var(--button-compact-radius);
     cursor: pointer;
     background: transparent;
     z-index: 2;
@@ -67,10 +81,10 @@
 .color-preview {
     width: 100%;
     min-height: 56px;
-    padding: 14px 16px;
-    border-radius: 16px;
+    padding: var(--field-padding);
+    border-radius: var(--button-compact-radius);
     text-align: left;
-    font-size: 12px;
+    font-size: var(--type-label-sm-size);
     font-weight: 700;
     color: white;
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -90,9 +104,9 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 4px;
-    padding: 14px 16px;
-    border-radius: 20px;
+    gap: var(--space-1);
+    padding: var(--field-padding);
+    border-radius: var(--surface-block-radius-md);
     border: 1px solid var(--card-border);
     background: var(--surface-panel-muted);
     color: var(--text-primary);
@@ -101,9 +115,10 @@
 }
 
 .settings-meta-title {
-    font-size: 15px;
+    font-size: var(--type-title-card-size);
     font-weight: 700;
-    letter-spacing: -0.01em;
+    line-height: var(--type-title-card-line);
+    letter-spacing: var(--type-title-card-track);
 }
 
 .settings-meta-caption {
@@ -117,8 +132,8 @@
 .settings-group-app .settings-channel-help,
 .settings-group-app .settings-device-id-label,
 .settings-group-app .settings-device-id-value {
-    font-size: 11px;
-    line-height: 1.3;
+    font-size: var(--type-body-xs-size);
+    line-height: var(--type-body-xs-line);
 }
 
 .settings-group-app #app-version-hint {
@@ -128,11 +143,33 @@
 }
 
 .settings-channel-block {
+    overflow: hidden;
+    max-height: 220px;
+    opacity: 1;
+    margin-top: 0;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition: max-height var(--expand-reveal-size-duration) var(--expand-reveal-easing), opacity var(--expand-reveal-fade-duration) var(--expand-reveal-easing), transform var(--expand-reveal-fade-duration) var(--expand-reveal-easing), margin-top var(--expand-reveal-fade-duration) var(--expand-reveal-easing);
+}
+
+.settings-channel-block[hidden] {
+    display: none;
+}
+
+.settings-channel-block.is-collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    transform: translateY(var(--expand-reveal-offset));
+    pointer-events: none;
+}
+
+.settings-channel-block-inner {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    padding: 12px 14px;
-    border-radius: 18px;
+    gap: var(--space-2);
+    padding: var(--surface-block-padding-sm) var(--surface-block-padding-md);
+    border-radius: var(--surface-block-radius-sm);
     border: 1px solid var(--surface-panel-subtle-border);
     background: color-mix(in srgb, var(--surface-panel-muted) 76%, transparent);
 }
@@ -141,12 +178,13 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: var(--space-3);
 }
 
 .settings-channel-label {
-    font-size: 12px;
+    font-size: var(--type-label-sm-size);
     font-weight: 700;
+    line-height: var(--type-label-sm-line);
     color: var(--text-secondary);
 }
 
@@ -156,17 +194,17 @@
 }
 
 .settings-device-id-btn {
-    margin-top: 2px;
+    margin-top: var(--space-1);
     display: block;
     width: 100%;
-    padding: 10px 12px;
+    padding: var(--space-3);
     border: 1px dashed color-mix(in srgb, var(--accent) 24%, var(--card-border));
-    border-radius: 16px;
+    border-radius: var(--button-compact-radius);
     background: color-mix(in srgb, var(--accent-soft) 42%, transparent);
     color: var(--text-secondary);
     font: inherit;
-    font-size: 12px;
-    line-height: 1.35;
+    font-size: var(--type-body-sm-size);
+    line-height: var(--type-body-xs-line);
     text-align: left;
     cursor: pointer;
     white-space: pre-line;
@@ -177,14 +215,15 @@
 .settings-check-update-btn {
     width: 100%;
     margin-top: 0;
-    padding: 12px 14px;
+    min-height: var(--button-min-height);
+    padding: var(--button-compact-padding-block) var(--button-compact-padding-inline);
     border: 1px solid var(--card-border);
-    border-radius: 16px;
+    border-radius: var(--button-compact-radius);
     background: var(--surface-control);
     color: var(--text-primary);
     font: inherit;
-    font-size: 13px;
-    font-weight: 700;
+    font-size: var(--button-font-size);
+    font-weight: var(--button-font-weight);
     text-align: center;
     cursor: pointer;
     transition: var(--control-transition);
@@ -199,6 +238,28 @@
 
 .settings-update-summary {
     margin-top: 0;
+}
+
+.settings-reveal {
+    overflow: hidden;
+    max-height: 120px;
+    opacity: 1;
+    margin-top: 0;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition: max-height var(--expand-reveal-size-duration) var(--expand-reveal-easing), opacity var(--expand-reveal-fade-duration) var(--expand-reveal-easing), transform var(--expand-reveal-fade-duration) var(--expand-reveal-easing), margin-top var(--expand-reveal-fade-duration) var(--expand-reveal-easing);
+}
+
+.settings-reveal[hidden] {
+    display: none;
+}
+
+.settings-reveal.is-collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0;
+    transform: translateY(var(--expand-reveal-offset));
+    pointer-events: none;
 }
 
 .settings-update-download-btn {
@@ -220,7 +281,7 @@
 .settings-group-app {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: var(--space-2);
 }
 
 .settings-device-id-label,
@@ -229,9 +290,9 @@
 }
 
 .settings-device-id-label {
-    margin-bottom: 3px;
+    margin-bottom: var(--space-1);
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: var(--type-label-xs-track);
     text-transform: uppercase;
     opacity: 0.58;
 }
@@ -256,17 +317,17 @@
 .settings-buttons {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: var(--space-2);
     margin: 0;
 }
 
 .settings-buttons .btn-reset {
     width: 100%;
     justify-content: center;
-    padding: 14px 18px;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: -0.01em;
+    padding: var(--space-4) var(--space-5);
+    font-size: var(--button-font-size);
+    font-weight: var(--button-font-weight);
+    letter-spacing: var(--button-letter-spacing);
     text-transform: none;
     box-shadow: var(--surface-panel-elevated-shadow);
 }
@@ -274,8 +335,8 @@
 .settings-danger-zone {
     position: relative;
     margin: 0;
-    padding: 18px;
-    border-radius: 24px;
+    padding: var(--surface-block-padding-lg);
+    border-radius: var(--surface-block-radius-lg);
     border: 1px solid var(--surface-panel-danger-border);
     background: var(--surface-panel-danger);
     box-shadow: none;
@@ -285,37 +346,36 @@
     content: "Небезпечна дія";
     display: inline-flex;
     align-items: center;
-    margin-bottom: 12px;
-    padding: 6px 10px;
+    margin-bottom: var(--space-3);
+    padding: var(--space-2) var(--space-3);
     border-radius: 999px;
     background: var(--surface-danger-badge);
     color: var(--surface-panel-danger-text);
-    font-size: 11px;
+    font-size: var(--type-label-xs-size);
     font-weight: 700;
-    letter-spacing: 0.03em;
+    line-height: var(--type-label-xs-line);
+    letter-spacing: var(--type-label-xs-track);
     text-transform: uppercase;
 }
 
 .settings-danger-text {
-    font-size: 13px;
-    line-height: 1.6;
     color: var(--text-secondary);
 }
 
 .settings-danger-btn {
     --hold-progress: 0%;
-    margin-top: 16px;
+    margin-top: var(--space-4);
     position: relative;
     width: 100%;
     overflow: hidden;
     padding: 0;
-    border-radius: 18px;
+    border-radius: var(--surface-block-radius-sm);
     border: 1px solid var(--surface-panel-danger-button-border);
     background: var(--surface-panel-danger-button);
     color: var(--surface-panel-danger-text);
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
+    font-size: var(--button-font-size);
+    font-weight: var(--button-font-weight);
+    letter-spacing: var(--button-letter-spacing);
     text-transform: none;
     cursor: pointer;
     transition: var(--control-transition);
@@ -336,14 +396,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 50px;
-    padding: 12px 16px;
+    min-height: var(--button-min-height);
+    padding: var(--button-compact-padding-block) var(--button-compact-padding-inline);
 }
 
 .settings-danger-btn-title {
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
+    font-size: var(--button-font-size);
+    font-weight: var(--button-font-weight);
+    letter-spacing: var(--button-letter-spacing);
     text-transform: none;
     text-align: center;
 }
@@ -389,27 +449,27 @@
 
 @media (max-width: 720px) {
     .settings-card {
-        gap: 12px;
+        gap: var(--space-3);
     }
 
     .settings-group-app {
-        padding: 18px;
+        padding: var(--space-5);
     }
 
     .settings-group-app .settings-label {
-        margin-bottom: 10px;
+        margin-bottom: var(--space-3);
     }
 
     .settings-group-app .settings-meta-btn {
-        padding: 14px 16px;
-        gap: 4px;
-        border-radius: 18px;
+        padding: var(--field-padding);
+        gap: var(--space-1);
+        border-radius: var(--surface-block-radius-sm);
     }
 
     .settings-channel-block {
-        padding: 10px 12px;
-        gap: 6px;
-        border-radius: 16px;
+        padding: var(--space-3);
+        gap: var(--space-2);
+        border-radius: var(--button-compact-radius);
     }
 
     .settings-channel-head {
@@ -423,27 +483,27 @@
     }
 
     .settings-group-app .settings-meta-title {
-        font-size: 14px;
+        font-size: var(--type-body-md-size);
     }
 
     .settings-group-app .settings-help-text,
     .settings-group-app .settings-update-debug {
-        font-size: 10px;
-        line-height: 1.45;
-        margin-top: 8px;
+        font-size: var(--type-caption-xxs-size);
+        line-height: var(--type-body-ui-line);
+        margin-top: var(--space-2);
     }
 
     .settings-group-app .settings-check-update-btn {
-        margin-top: 8px;
-        padding: 12px 14px;
-        border-radius: 14px;
-        font-size: 12px;
+        margin-top: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        border-radius: var(--button-compact-radius);
+        font-size: var(--type-label-sm-size);
     }
 
     .settings-group-app .settings-device-id-btn {
-        margin-top: 4px;
-        padding: 10px 12px;
-        border-radius: 14px;
+        margin-top: var(--space-1);
+        padding: var(--space-3);
+        border-radius: var(--button-compact-radius);
     }
 
     .settings-group-app .settings-device-id-label {

@@ -24,22 +24,22 @@ body.app-setup-pending .main-container {
 .schedule-intro {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    margin-bottom: 18px;
+    gap: var(--space-3);
+    margin-bottom: var(--space-3);
 }
 
 .schedule-title {
     font-family: var(--font-family-display);
-    font-size: 26px;
+    font-size: var(--type-display-modal-size);
     font-weight: 800;
     margin: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 0;
     text-align: center;
-    letter-spacing: -0.04em;
-    line-height: 1.1;
+    letter-spacing: var(--type-display-modal-track);
+    line-height: var(--type-display-modal-line);
 }
 
 .schedule-title-emoji {
@@ -47,13 +47,14 @@ body.app-setup-pending .main-container {
     line-height: 1;
     transform: translateY(-1px);
     opacity: 0.92;
+    margin-right: 0;
 }
 
 .schedule-onboarding {
     display: none;
     margin: 0;
-    padding: 18px 18px 16px;
-    border-radius: 22px;
+    padding: var(--surface-block-padding-lg) var(--surface-block-padding-lg) var(--surface-block-padding-md);
+    border-radius: var(--surface-block-radius-lg);
     background: var(--surface-panel-accent);
     border: 1px solid var(--surface-panel-accent-border);
     box-shadow: none;
@@ -66,23 +67,24 @@ body.app-setup-pending .main-container {
 .schedule-onboarding-kicker {
     display: inline-flex;
     align-items: center;
-    margin-bottom: 10px;
-    padding: 6px 10px;
+    margin-bottom: var(--space-3);
+    padding: var(--space-2) var(--space-3);
     border-radius: 999px;
     background: var(--kicker-bg);
     border: 1px solid var(--kicker-border);
     color: var(--accent);
-    font-size: 11px;
+    font-size: var(--type-label-xs-size);
     font-weight: 700;
-    letter-spacing: 0.04em;
+    line-height: var(--type-label-xs-line);
+    letter-spacing: var(--type-label-xs-track);
     text-transform: none;
 }
 
 .schedule-onboarding-text {
     margin: 0;
     max-width: none;
-    font-size: 16px;
-    line-height: 1.35;
+    font-size: var(--type-body-md-size);
+    line-height: var(--type-body-md-line);
     font-weight: 700;
     color: var(--text-primary);
     text-align: left;
@@ -93,28 +95,28 @@ body.app-setup-pending .main-container {
 .schedule-templates {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-    margin-bottom: 24px;
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
 }
 
 .schedule-btn {
     position: relative;
     overflow: hidden;
     min-height: 110px;
-    padding: 18px 14px;
+    padding: var(--space-5) var(--space-4);
     border: 1px solid var(--card-border);
-    border-radius: 20px;
+    border-radius: var(--surface-block-radius-md);
     background: var(--surface-panel-subtle);
     color: var(--text-primary);
     font-weight: 600;
-    font-size: 14px;
+    font-size: var(--type-body-md-size);
     cursor: pointer;
     transition: var(--control-transition);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: var(--space-2);
     text-align: center;
     box-shadow: none;
 }
@@ -136,8 +138,8 @@ body.app-setup-pending .main-container {
 
 .schedule-btn strong {
     font-family: var(--font-family-numeric);
-    font-size: 22px;
-    letter-spacing: -0.04em;
+    font-size: var(--type-number-sm-size);
+    letter-spacing: var(--type-number-sm-track);
 }
 
 .schedule-btn-icon {
@@ -169,42 +171,64 @@ body.app-setup-pending .main-container {
 }
 
 .schedule-btn-label {
-    font-size: 13px;
+    font-size: var(--type-body-ui-size);
     opacity: 0.9;
     font-weight: 600;
-    line-height: 1.32;
+    line-height: var(--type-body-ui-line);
 }
 
 .schedule-custom {
-    margin-bottom: 18px;
-    padding: 18px;
-    border-radius: 20px;
-    background: var(--surface-panel-subtle);
-    border: 1px solid var(--surface-panel-subtle-border);
-    display: none;
+    margin-bottom: var(--space-5);
+    display: block;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(var(--expand-reveal-offset));
+    margin-top: 0;
+    pointer-events: none;
     box-shadow: none;
+    transition: max-height var(--expand-reveal-size-duration) var(--expand-reveal-easing), opacity var(--expand-reveal-fade-duration) var(--expand-reveal-easing), transform var(--expand-reveal-fade-duration) var(--expand-reveal-easing), margin-top var(--expand-reveal-fade-duration) var(--expand-reveal-easing);
 }
 
 .schedule-custom.active {
-    display: block;
+    max-height: 320px;
+    opacity: 1;
+    transform: translateY(0);
+    margin-top: 0;
+    pointer-events: auto;
+}
+
+.schedule-custom-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--surface-block-padding-lg);
+    border-radius: var(--surface-block-radius-md);
+    background: var(--surface-panel-subtle);
+    border: 1px solid var(--surface-panel-subtle-border);
 }
 
 .custom-input-group {
-    margin-bottom: 16px;
+    margin-bottom: var(--space-4);
+}
+
+.schedule-custom .custom-input-group:last-child {
+    margin-bottom: 0;
 }
 
 .custom-input-label {
-    font-size: 12px;
+    font-size: var(--type-label-sm-size);
     font-weight: 700;
     color: var(--text-secondary);
-    margin-bottom: 8px;
+    margin-bottom: var(--space-2);
     display: block;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    line-height: var(--type-label-sm-line);
+    letter-spacing: var(--type-label-xs-track);
 }
 
 .custom-input {
-    padding: 10px 12px;
+    padding: var(--space-3);
     border-width: 2px;
     font-weight: 600;
 }
@@ -220,19 +244,19 @@ body.app-setup-pending .main-container {
     justify-content: flex-start;
     text-align: left;
     color: color-mix(in srgb, var(--text-secondary) 90%, transparent);
-    font-size: 11.5px;
-    line-height: 1.45;
+    font-size: var(--type-body-xs-size);
+    line-height: var(--type-body-ui-line);
     white-space: nowrap;
     opacity: 1;
 }
 
 .schedule-info::before {
-    content: "⏱️";
+    content: "✨";
     flex: 0 0 auto;
-    font-size: 12px;
+    font-size: var(--type-label-sm-size);
     line-height: 1.2;
     transform: translateY(1px);
-    opacity: 0.8;
+    opacity: 0.78;
 }
 
 .schedule-overlay.setup-mode .schedule-info {
@@ -241,11 +265,11 @@ body.app-setup-pending .main-container {
 
 .schedule-buttons {
     display: flex;
-    gap: 12px;
+    gap: var(--space-3);
     position: sticky;
     bottom: 0;
-    padding-top: 20px;
-    margin-top: 10px;
+    padding-top: var(--space-5);
+    margin-top: var(--space-3);
     background: linear-gradient(180deg, rgba(255, 255, 255, 0), var(--main-container-bg) 36%);
     z-index: 2;
 }
@@ -266,13 +290,13 @@ body.app-setup-pending .main-container {
     -webkit-backdrop-filter: none;
     max-width: 440px;
     max-height: min(92vh, 760px);
-    padding: 34px 30px 30px;
+    padding: 32px 28px 28px;
 }
 
 .schedule-overlay.setup-mode .schedule-title {
     font-family: var(--font-family-display);
-    font-size: 28px;
-    line-height: 1.1;
+    font-size: var(--type-display-setup-size);
+    line-height: var(--type-display-setup-line);
     margin-bottom: 2px;
     text-wrap: balance;
 }

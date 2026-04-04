@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v1';
+const CACHE_VERSION = 'v3-2026-04-04';
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 
@@ -8,10 +8,12 @@ const STATIC_ASSETS = [
     '/data/config.js',
     '/js/weather.js',
     '/js/schedule.js',
+    '/js/profiles.js',
     '/js/calendar.js',
     '/js/settings-state.js',
     '/js/insights.js',
     '/js/schedule-ui.js',
+    '/js/profiles-ui.js',
     '/js/app-update.js',
     '/js/ui.js',
     '/styles/theme.css',
@@ -20,6 +22,7 @@ const STATIC_ASSETS = [
     '/styles/modal-day.css',
     '/styles/settings-panel.css',
     '/styles/schedule-panel.css',
+    '/styles/profiles.css',
     '/styles/responsive.css'
 ];
 
@@ -90,6 +93,23 @@ async function networkFirstWithCache(request) {
     }
 }
 
+async function networkFirstForAppShell(request) {
+    const cache = await caches.open(STATIC_CACHE);
+    try {
+        const response = await fetch(request);
+        if (response.ok) {
+            cache.put(request, response.clone());
+        }
+        return response;
+    } catch {
+        const cached = await cache.match(request);
+        if (cached) {
+            return cached;
+        }
+        return Response.error();
+    }
+}
+
 async function cacheFirstWithNetwork(request) {
     const cached = await caches.match(request);
     if (cached) {
@@ -115,6 +135,11 @@ self.addEventListener('fetch', (event) => {
     }
 
     const url = new URL(request.url);
+
+    if (url.origin === self.location.origin) {
+        event.respondWith(networkFirstForAppShell(request));
+        return;
+    }
 
     if (isNetworkFirst(url)) {
         event.respondWith(networkFirstWithCache(request));

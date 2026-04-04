@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Work Schedule & Weather</title>
     <link rel="stylesheet" href="styles/theme.css">
     <link rel="stylesheet" href="styles/layout.css">
@@ -11,10 +11,11 @@
     <link rel="stylesheet" href="styles/modal-day.css">
     <link rel="stylesheet" href="styles/settings-panel.css">
     <link rel="stylesheet" href="styles/schedule-panel.css">
+    <link rel="stylesheet" href="styles/profiles.css">
     <link rel="stylesheet" href="styles/responsive.css">
 </head>
 
-<body class="app-shell-pending">
+<body class="app-shell-pending" data-style="current">
 
     <div class="main-container">
         <header class="depth-panel">
@@ -24,6 +25,7 @@
                     <p class="subtitle">Графік 5/5. Старт: сьогодні</p>
                 </div>
                 <div class="header-actions">
+                    <button class="settings-btn" id="profiles-btn" title="Графіки" aria-label="Графіки">👥</button>
                     <button class="settings-btn" id="schedule-btn" title="Відкрити графік" aria-label="Відкрити графік">📅</button>
                     <button class="settings-btn" id="settings-btn" title="Відкрити налаштування" aria-label="Відкрити налаштування">⚙️</button>
                     <button class="settings-btn theme-toggle-btn" id="theme-btn" title="Змінити тему" aria-label="Змінити тему" data-theme-icon="auto">
@@ -144,13 +146,15 @@
             </div>
             <div class="modal-status-caption helper-text" id="m-status-caption">Статус визначено Вашим графіком</div>
 
-            <div class="modal-weather" id="m-weather" hidden>
-                <div class="modal-weather-icon" id="m-weather-icon">⏳</div>
-                <div class="modal-weather-content">
-                    <div class="modal-weather-summary" id="m-weather-summary">Завантажуємо прогноз...</div>
-                    <div class="modal-weather-meta helper-text" id="m-weather-meta">Бориспіль · прогноз для обраного дня</div>
+            <div class="modal-weather modal-reveal-section" id="m-weather" hidden>
+                <div class="modal-weather-inner">
+                    <div class="modal-weather-icon" id="m-weather-icon">⏳</div>
+                    <div class="modal-weather-content">
+                        <div class="modal-weather-summary" id="m-weather-summary">Завантажуємо прогноз...</div>
+                        <div class="modal-weather-meta helper-text" id="m-weather-meta">Бориспіль · прогноз для обраного дня</div>
+                    </div>
+                    <button class="weather-refresh modal-weather-refresh" id="modal-weather-refresh" type="button" aria-label="Оновити погоду">↻</button>
                 </div>
-                <button class="weather-refresh modal-weather-refresh" id="modal-weather-refresh" type="button" aria-label="Оновити погоду">↻</button>
             </div>
 
             <div class="modal-note" id="m-note-block">
@@ -167,6 +171,8 @@
                 </div>
             </div>
 
+            <div class="modal-profiles modal-reveal-section" id="m-profiles" hidden></div>
+
             <button class="modal-close" id="modal-close">Добре</button>
         </div>
     </div>
@@ -178,8 +184,10 @@
 
     <div class="settings-overlay" id="settings-overlay">
         <div class="settings-card">
-            <button class="settings-close" id="settings-overlay-close">✕</button>
-            <h2 class="settings-title">🎨 Вигляд</h2>
+            <div class="modal-shell-header">
+                <h2 class="settings-title">Вигляд</h2>
+                <button class="settings-close" id="settings-overlay-close" aria-label="Закрити">×</button>
+            </div>
 
             <div class="settings-group">
                 <label class="settings-label">Режим теми</label>
@@ -224,20 +232,22 @@
                     <span class="settings-meta-caption helper-text" id="app-update-channel-summary">Отримуєте Stable-оновлення</span>
                 </div>
                 <div class="settings-channel-block" id="update-channel-group" hidden>
-                    <div class="settings-channel-head">
-                        <span class="settings-channel-label">Канал оновлень</span>
-                        <p class="settings-channel-help helper-text" id="update-channel-help"></p>
-                    </div>
-                    <div class="theme-mode-switcher" id="update-channel-switcher">
-                        <button class="theme-mode-btn" type="button" data-update-channel="stable">Stable</button>
-                        <button class="theme-mode-btn" type="button" data-update-channel="beta">Beta</button>
+                    <div class="settings-channel-block-inner">
+                        <div class="settings-channel-head">
+                            <span class="settings-channel-label">Канал оновлень</span>
+                            <p class="settings-channel-help helper-text" id="update-channel-help"></p>
+                        </div>
+                        <div class="theme-mode-switcher" id="update-channel-switcher">
+                            <button class="theme-mode-btn" type="button" data-update-channel="stable">Stable</button>
+                            <button class="theme-mode-btn" type="button" data-update-channel="beta">Beta</button>
+                        </div>
                     </div>
                 </div>
-                <p class="settings-help-text helper-text" id="app-version-hint" hidden></p>
+                <p class="settings-help-text helper-text settings-reveal" id="app-version-hint" hidden></p>
                 <button class="settings-check-update-btn" id="app-update-check-now" type="button">Перевірити оновлення</button>
-                <p class="settings-update-summary helper-text" id="app-update-summary" hidden></p>
-                <button class="settings-check-update-btn settings-update-download-btn" id="app-update-download-inline" type="button" hidden>Завантажити оновлення</button>
-                <p class="settings-update-debug helper-text" id="app-update-debug-status">
+                <p class="settings-update-summary helper-text settings-reveal" id="app-update-summary" hidden></p>
+                <button class="settings-check-update-btn settings-update-download-btn settings-reveal" id="app-update-download-inline" type="button" hidden>Завантажити оновлення</button>
+                <p class="settings-update-debug helper-text settings-reveal" id="app-update-debug-status" hidden>
                     Статус перевірки оновлення: ще не запускалась.
                 </p>
             </div>
@@ -251,9 +261,11 @@
 
     <div class="schedule-overlay" id="schedule-overlay">
         <div class="schedule-card">
-            <button class="schedule-close" id="schedule-overlay-close">✕</button>
             <div class="schedule-intro">
-                <h2 class="schedule-title"><span class="schedule-title-emoji" aria-hidden="true">📅</span><span>Ваш графік</span></h2>
+                <div class="modal-shell-header">
+                    <h2 class="schedule-title"><span>Ваш графік</span></h2>
+                    <button class="schedule-close" id="schedule-overlay-close" aria-label="Закрити">×</button>
+                </div>
 
                 <div class="schedule-onboarding" id="schedule-onboarding">
                     <span class="schedule-onboarding-kicker">Перший крок</span>
@@ -261,7 +273,7 @@
                 </div>
 
                 <div class="schedule-info helper-text helper-text-inline">
-                    Можна вибрати готовий варіант або налаштувати свій.
+                    Готовий варіант або власний.
                 </div>
             </div>
 
@@ -293,13 +305,15 @@
             </div>
 
             <div class="schedule-custom" id="custom-schedule-form">
-                <div class="custom-input-group">
-                    <label class="custom-input-label">Дні роботи</label>
-                    <input type="number" id="custom-work-days" class="custom-input control-input" min="0" max="30" placeholder="Наприклад: 5">
-                </div>
-                <div class="custom-input-group">
-                    <label class="custom-input-label">Дні вихідних</label>
-                    <input type="number" id="custom-off-days" class="custom-input control-input" min="0" max="30" placeholder="Наприклад: 2">
+                <div class="schedule-custom-inner">
+                    <div class="custom-input-group">
+                        <label class="custom-input-label">Дні роботи</label>
+                        <input type="number" id="custom-work-days" class="custom-input control-input" min="0" max="30" placeholder="Наприклад: 5">
+                    </div>
+                    <div class="custom-input-group">
+                        <label class="custom-input-label">Дні вихідних</label>
+                        <input type="number" id="custom-off-days" class="custom-input control-input" min="0" max="30" placeholder="Наприклад: 2">
+                    </div>
                 </div>
             </div>
 
@@ -315,18 +329,99 @@
         </div>
     </div>
 
+    <div class="profiles-overlay" id="profiles-overlay">
+        <div class="profiles-card">
+            <div class="schedule-intro">
+                <div class="modal-shell-header">
+                    <h2 class="schedule-title"><span>Графіки</span></h2>
+                    <button class="schedule-close" id="profiles-overlay-close" aria-label="Закрити">×</button>
+                </div>
+                <p class="schedule-info helper-text helper-text-inline">Додайте графіки для перегляду.</p>
+            </div>
+
+            <div class="profiles-list" id="profiles-list"></div>
+
+            <div class="profiles-add-form" id="profiles-add-form">
+                <button class="profiles-add-toggle" id="profiles-add-toggle" type="button" aria-expanded="false" aria-controls="profiles-add-collapse">
+                    <span class="profiles-add-heading">Додати графік</span>
+                    <span class="profiles-add-toggle-icon" id="profiles-add-toggle-icon" aria-hidden="true">❯</span>
+                </button>
+
+                <div class="profiles-add-collapse" id="profiles-add-collapse">
+                    <div class="custom-input-group">
+                        <label class="custom-input-label">Назва</label>
+                        <input type="text" id="profile-name" class="custom-input control-input" maxlength="30" placeholder="Наприклад: Графік 2/2">
+                    </div>
+                    <div class="profiles-schedule-row">
+                        <div class="profiles-schedule-templates" id="profile-schedule-templates">
+                            <button class="schedule-btn schedule-btn-sm" data-profile-schedule="5/5" type="button"><strong>5/5</strong><span class="schedule-btn-label profile-schedule-caption">5 роб. / 5 вих.</span></button>
+                            <button class="schedule-btn schedule-btn-sm" data-profile-schedule="4/4" type="button"><strong>4/4</strong><span class="schedule-btn-label profile-schedule-caption">4 роб. / 4 вих.</span></button>
+                            <button class="schedule-btn schedule-btn-sm" data-profile-schedule="5/2" type="button"><strong>5/2</strong><span class="schedule-btn-label profile-schedule-caption">5 роб. / 2 вих.</span></button>
+                            <button class="schedule-btn schedule-btn-sm" data-profile-schedule="3/3" type="button"><strong>3/3</strong><span class="schedule-btn-label profile-schedule-caption">3 роб. / 3 вих.</span></button>
+                            <button class="schedule-btn schedule-btn-sm" data-profile-schedule="2/2" type="button"><strong>2/2</strong><span class="schedule-btn-label profile-schedule-caption">2 роб. / 2 вих.</span></button>
+                            <button class="schedule-btn schedule-btn-sm" data-profile-schedule="custom" type="button"><strong>⚙️</strong><span class="schedule-btn-label profile-schedule-caption">Кастомний</span></button>
+                        </div>
+                    </div>
+                    <div class="profiles-custom-fields" id="profile-custom-fields" hidden>
+                        <div class="custom-input-group">
+                            <label class="custom-input-label">Дні роботи</label>
+                            <input type="number" id="profile-work-days" class="custom-input control-input" min="1" max="30" placeholder="5">
+                        </div>
+                        <div class="custom-input-group">
+                            <label class="custom-input-label">Дні вихідних</label>
+                            <input type="number" id="profile-off-days" class="custom-input control-input" min="1" max="30" placeholder="5">
+                        </div>
+                    </div>
+                    <div class="custom-input-group">
+                        <label class="custom-input-label">Початок зміни</label>
+                        <input type="date" id="profile-start-date" class="custom-input control-input">
+                    </div>
+                    <div class="custom-input-group">
+                        <label class="custom-input-label">Колір</label>
+                        <div class="profile-color-picker">
+                            <input type="color" id="profile-color" class="profile-color-input" aria-label="Колір календаря">
+                            <div class="profile-color-preview" id="profile-color-preview"></div>
+                        </div>
+                    </div>
+                    <button class="schedule-btn-action primary" id="profile-add-btn" type="button">Додати</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="data/config.js"></script>
     <script src="js/weather.js"></script>
     <script src="js/schedule.js"></script>
+    <script src="js/profiles.js"></script>
     <script src="js/calendar.js"></script>
     <script src="js/settings-state.js"></script>
     <script src="js/insights.js"></script>
     <script src="js/schedule-ui.js"></script>
+    <script src="js/profiles-ui.js"></script>
     <script src="js/app-update.js"></script>
     <script src="js/ui.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(() => {});
+            window.addEventListener('load', async () => {
+                const isLocalDevHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
+                if (isLocalDevHost) {
+                    try {
+                        const registrations = await navigator.serviceWorker.getRegistrations();
+                        await Promise.all(registrations.map((registration) => registration.unregister()));
+
+                        if ('caches' in window) {
+                            const cacheKeys = await caches.keys();
+                            await Promise.all(cacheKeys.map((key) => caches.delete(key)));
+                        }
+                    } catch (_) {}
+                    return;
+                }
+
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => registration.update())
+                    .catch(() => {});
+            });
         }
     </script>
 </body>

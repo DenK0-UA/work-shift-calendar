@@ -112,6 +112,10 @@
 }
 
 @media (max-width: 480px) {
+    :root {
+        --modal-close-offset: 20px;
+    }
+
     .main-container {
         gap: 12px;
         padding: 8px;
@@ -223,8 +227,8 @@
     }
 
     .schedule-intro {
-        gap: 10px;
-        margin-bottom: 18px;
+        gap: 12px;
+        margin-bottom: 12px;
     }
 
     .schedule-onboarding {
@@ -248,7 +252,9 @@
         line-height: 1.28;
         justify-content: flex-start;
         text-align: left;
-        white-space: nowrap;
+        white-space: normal;
+        overflow-wrap: anywhere;
+        text-wrap: balance;
     }
 
     .schedule-templates {
@@ -277,8 +283,11 @@
     }
 
     .schedule-custom {
-        padding: 14px;
         margin-bottom: 18px;
+    }
+
+    .schedule-custom-inner {
+        padding: 14px;
         border-radius: 14px;
     }
 
@@ -424,7 +433,7 @@
         flex: 1;
     }
 
-    .modal-weather {
+    .modal-weather-inner {
         padding: 12px 14px;
     }
 
@@ -432,6 +441,73 @@
         width: 42px;
         height: 42px;
         font-size: 22px;
+    }
+
+    .modal-shell-header {
+        gap: var(--space-3);
+    }
+
+    .profiles-overlay {
+        padding: 10px;
+    }
+
+    .profiles-card {
+        max-width: min(100vw - 16px, 420px);
+        max-height: calc(100dvh - 20px);
+        padding: 20px 18px 22px;
+        border-radius: 24px;
+        gap: 12px;
+    }
+
+    .profiles-list {
+        gap: 10px;
+        margin-bottom: 12px;
+    }
+
+    .profile-item {
+        gap: 10px;
+        padding: 12px;
+        border-radius: 16px;
+    }
+
+    .profile-item-name {
+        font-size: 13px;
+    }
+
+    .profile-item-schedule {
+        font-size: 11px;
+    }
+
+    .profile-item-actions {
+        gap: 6px;
+    }
+
+    .profile-action-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 15px;
+    }
+
+    .profiles-add-form {
+        padding-top: 12px;
+    }
+
+    .profiles-add-toggle {
+        padding: 12px 14px;
+        border-radius: 16px;
+    }
+
+    .profiles-add-heading {
+        font-size: 14px;
+    }
+
+    .profiles-schedule-templates {
+        gap: 10px;
+    }
+
+    .profiles-custom-fields {
+        flex-direction: column;
+        gap: 10px;
     }
 
     .stat-item {
@@ -454,15 +530,19 @@
         gap: 12px;
     }
 
+    .profiles-card {
+        gap: 12px;
+    }
+
     .undo-toast {
-        bottom: calc(env(safe-area-inset-bottom, 0px) + 132px);
-        max-width: min(88vw, 360px);
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 112px);
+        max-width: min(82vw, 280px);
     }
 
     .modal-overlay.active ~ .undo-toast,
     .schedule-overlay.active ~ .undo-toast,
     .settings-overlay.active ~ .undo-toast {
-        bottom: calc(env(safe-area-inset-bottom, 0px) + 176px);
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 152px);
     }
 }
 
@@ -482,7 +562,7 @@
     }
 
     .settings-card {
-        gap: 10px;
+        gap: 12px;
     }
 
     header.depth-panel {
@@ -566,6 +646,18 @@
     .logo-area {
         font-size: 11px;
         letter-spacing: 0.12em;
+    }
+
+    .profiles-schedule-templates {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .profile-item {
+        padding: 11px;
+    }
+
+    .profile-item-actions {
+        gap: 5px;
     }
 }
 
@@ -711,6 +803,10 @@
 
     .schedule-custom {
         margin-bottom: 18px;
+    }
+
+    .schedule-custom-inner {
+        padding: 12px 14px;
     }
 
     .custom-input-group {

@@ -9,6 +9,7 @@
 .modal-overlay,
 .settings-overlay,
 .schedule-overlay,
+.profiles-overlay,
 .app-update-overlay {
     position: fixed;
     inset: 0;
@@ -45,6 +46,7 @@
 .modal-overlay.active,
 .settings-overlay.active,
 .schedule-overlay.active,
+.profiles-overlay.active,
 .app-update-overlay.active {
     opacity: 1;
     pointer-events: auto;
@@ -55,6 +57,7 @@
 .modal-card,
 .settings-card,
 .schedule-card,
+.profiles-card,
 .app-update-card {
     position: relative;
     background: var(--main-container-bg);
@@ -73,15 +76,32 @@
 .modal-overlay.active .modal-card,
 .settings-overlay.active .settings-card,
 .schedule-overlay.active .schedule-card,
+.profiles-overlay.active .profiles-card,
 .app-update-overlay.active .app-update-card {
     transform: var(--modal-card-active-transform);
     opacity: 1;
 }
 
+.modal-card,
+.settings-card,
+.schedule-card,
+.profiles-card {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+
+.modal-card::-webkit-scrollbar,
+.settings-card::-webkit-scrollbar,
+.schedule-card::-webkit-scrollbar,
+.profiles-card::-webkit-scrollbar {
+    display: none;
+}
+
 .depth-panel {
     background: var(--main-container-bg);
     border-radius: var(--panel-radius);
-    padding: 22px;
+    padding: var(--space-6);
     box-shadow: var(--card-shadow);
     border: 1px solid var(--card-border);
     position: relative;
@@ -106,7 +126,7 @@
 }
 
 header {
-    padding-bottom: 22px;
+    padding-bottom: var(--space-6);
     z-index: 10;
 }
 
@@ -114,33 +134,35 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 16px;
-    margin-bottom: 18px;
+    gap: var(--space-4);
+    margin-bottom: var(--space-5);
 }
 
 h1 {
     font-family: var(--font-family-display);
-    font-size: clamp(28px, 4vw, 34px);
-    letter-spacing: -0.06em;
+    font-size: var(--type-display-page-size);
+    letter-spacing: var(--type-display-page-track);
 }
 
 .subtitle {
-    font-size: clamp(13px, 2vw, 14px);
+    font-size: var(--type-body-md-size);
 }
 
 
 .header-actions {
     display: flex;
-    gap: 10px;
+    gap: var(--space-3);
     align-items: center;
 }
 
 .legend-circle-work {
-    background: var(--work-bg);
+    background: var(--work-bg-start);
+    box-shadow: var(--day-work-shadow);
 }
 
 .legend-circle-off {
-    background: var(--off-bg);
+    background: var(--off-bg-start);
+    box-shadow: var(--day-off-shadow);
 }
 
 .stat-num-primary {
@@ -176,7 +198,7 @@ h1 {
 .helper-text-inline {
     display: flex;
     align-items: flex-start;
-    gap: 8px;
+    gap: var(--space-2);
 }
 
 .control-input {
@@ -186,7 +208,7 @@ h1 {
     color: var(--text-primary);
     border-radius: var(--field-radius);
     padding: var(--field-padding);
-    font-size: 14px;
+    font-size: var(--type-body-md-size);
     font-weight: 500;
     transition: var(--control-transition);
     outline: none;
@@ -226,14 +248,14 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 .calendar-actions {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-3);
 }
 
 .app-update-card {
     max-width: 420px;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: var(--space-5);
     border: 1px solid var(--surface-panel-accent-border);
     background: var(--surface-panel-accent);
     box-shadow: var(--surface-panel-accent-shadow);
@@ -242,26 +264,27 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 .app-update-banner-copy {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: var(--space-2);
     min-width: 0;
 }
 
 .app-update-banner-title {
     font-family: var(--font-family-display);
-    font-size: 17px;
+    font-size: var(--type-title-section-size);
     font-weight: 700;
-    letter-spacing: -0.02em;
+    line-height: var(--type-title-section-line);
+    letter-spacing: var(--type-title-section-track);
 }
 
 .app-update-banner-text {
     color: var(--text-secondary);
-    font-size: 13px;
-    line-height: 1.45;
+    font-size: var(--type-body-ui-size);
+    line-height: var(--type-body-ui-line);
 }
 
 .app-update-banner-actions {
     display: flex;
-    gap: 10px;
+    gap: var(--space-3);
     align-items: center;
     justify-content: flex-end;
 }
@@ -298,7 +321,6 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 .settings-close,
 .schedule-close,
 .panel-toggle-icon {
-    position: absolute;
     background: var(--surface-control);
     border: 1px solid var(--surface-panel-muted-border);
     width: 40px;
@@ -313,11 +335,17 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
     transition: var(--control-transition);
 }
 
+.modal-shell-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--space-4);
+}
+
 .settings-close,
 .schedule-close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
+    position: static;
+    flex: 0 0 auto;
     border: 1px solid var(--surface-panel-muted-border);
     cursor: pointer;
 }
@@ -338,10 +366,12 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 14px 20px;
-    border-radius: var(--control-radius-md);
-    font-weight: 700;
-    font-size: 13px;
+    min-height: var(--button-min-height);
+    padding: var(--button-padding-block) var(--button-padding-inline);
+    border-radius: var(--button-radius);
+    font-weight: var(--button-font-weight);
+    font-size: var(--button-font-size);
+    letter-spacing: var(--button-letter-spacing);
     cursor: pointer;
     transition: var(--control-transition);
     text-align: center;
@@ -407,7 +437,7 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 .schedule-btn,
 .theme-mode-btn,
 .period-btn {
-    border-radius: var(--control-radius-md);
+    border-radius: var(--button-radius);
 }
 
 .modal-weather-refresh {
@@ -422,14 +452,14 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 .insights-panel {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: var(--space-4);
 }
 
 .panel-heading {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: start;
-    gap: 12px;
+    gap: var(--space-3);
 }
 
 .panel-heading > :first-child {
@@ -438,17 +468,18 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 
 .panel-title {
     font-family: var(--font-family-display);
-    font-size: 17px;
+    font-size: var(--type-title-section-size);
     font-weight: 800;
-    letter-spacing: -0.03em;
+    line-height: var(--type-title-section-line);
+    letter-spacing: var(--type-title-section-track);
     color: var(--text-primary);
 }
 
 .panel-subtitle {
-    margin-top: 4px;
-    font-size: 12px;
+    margin-top: var(--space-1);
+    font-size: var(--type-body-sm-size);
     color: var(--text-secondary);
-    line-height: 1.45;
+    line-height: var(--type-body-sm-line);
     white-space: normal;
     overflow-wrap: anywhere;
 }
@@ -469,13 +500,13 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 
 .panel-toggle-icon {
     position: static;
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
+    width: calc(var(--icon-button-size) - 6px);
+    height: calc(var(--icon-button-size) - 6px);
+    border-radius: var(--disclosure-button-radius);
     border-color: color-mix(in srgb, var(--surface-panel-muted-border) 82%, transparent);
     box-shadow: var(--surface-panel-subtle-shadow);
     color: var(--accent);
-    font-size: 17px;
+    font-size: var(--type-title-section-size);
     font-weight: 700;
     line-height: 1;
     transform: rotate(90deg);
@@ -502,18 +533,20 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 .insights-content {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: var(--space-4);
     overflow: hidden;
     max-height: 420px;
     opacity: 1;
-    margin-top: 14px;
-    transition: max-height 0.26s ease, opacity 0.24s ease, margin-top 0.24s ease;
+    margin-top: var(--space-4);
+    transform: translateY(0);
+    transition: max-height var(--expand-reveal-size-duration) var(--expand-reveal-easing), opacity var(--expand-reveal-fade-duration) var(--expand-reveal-easing), transform var(--expand-reveal-fade-duration) var(--expand-reveal-easing), margin-top var(--expand-reveal-fade-duration) var(--expand-reveal-easing);
 }
 
 .insights-panel.is-collapsed .insights-content {
     max-height: 0;
     opacity: 0;
     margin-top: 0;
+    transform: translateY(var(--expand-reveal-offset));
 }
 
 .insights-panel:not(.is-collapsed) .panel-toggle-icon {
@@ -526,9 +559,9 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 
 .period-switcher {
     display: inline-flex;
-    gap: 6px;
-    padding: 5px;
-    border-radius: 20px;
+    gap: var(--space-2);
+    padding: var(--space-1);
+    border-radius: var(--surface-block-radius-md);
     background: var(--surface-panel-muted);
     border: 1px solid var(--surface-panel-muted-border);
     box-shadow: none;
@@ -539,10 +572,10 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
     border: none;
     background: transparent;
     color: var(--text-secondary);
-    border-radius: 14px;
-    padding: 10px 12px;
-    font-size: 12px;
-    font-weight: 700;
+    border-radius: var(--button-compact-radius);
+    padding: var(--button-compact-padding-block) var(--button-compact-padding-inline);
+    font-size: var(--type-label-sm-size);
+    font-weight: var(--button-font-weight);
     cursor: pointer;
     transition: var(--control-transition);
     text-align: center;
@@ -561,12 +594,12 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 .period-stats-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 12px;
+    gap: var(--space-3);
 }
 
 .period-stat-card {
-    padding: 16px;
-    border-radius: 20px;
+    padding: var(--surface-block-padding-md);
+    border-radius: var(--surface-block-radius-md);
     background: var(--surface-panel-subtle);
     border: 1px solid var(--surface-panel-muted-border);
     box-shadow: var(--surface-panel-subtle-shadow);
@@ -579,18 +612,19 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 }
 
 .period-stat-label {
-    font-size: 12px;
+    font-size: var(--type-label-sm-size);
     color: var(--text-secondary);
-    letter-spacing: 0.02em;
+    line-height: var(--type-label-sm-line);
+    letter-spacing: var(--type-label-sm-track);
 }
 
 .period-stat-value {
     font-family: var(--font-family-numeric);
-    margin-top: 8px;
-    font-size: 26px;
+    margin-top: var(--space-2);
+    font-size: var(--type-number-lg-size);
     font-weight: 800;
-    line-height: 1;
-    letter-spacing: -0.05em;
+    line-height: var(--type-number-lg-line);
+    letter-spacing: var(--type-number-lg-track);
     color: var(--text-primary);
     font-variant-numeric: tabular-nums;
 }
@@ -598,9 +632,9 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 .theme-mode-switcher {
     display: inline-flex;
     width: 100%;
-    gap: 6px;
-    padding: 5px;
-    border-radius: 20px;
+    gap: var(--space-2);
+    padding: var(--space-1);
+    border-radius: var(--surface-block-radius-md);
     background: var(--surface-panel-muted);
     border: 1px solid var(--surface-panel-muted-border);
     box-shadow: none;
@@ -611,9 +645,9 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
     border: none;
     background: transparent;
     color: var(--text-secondary);
-    border-radius: 14px;
-    padding: 11px 12px;
-    font-size: 12px;
+    border-radius: var(--button-compact-radius);
+    padding: var(--button-compact-padding-block) var(--button-compact-padding-inline);
+    font-size: var(--type-label-sm-size);
     font-weight: 800;
     cursor: pointer;
     transition: var(--control-transition);
@@ -630,15 +664,15 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
 }
 
 h1 {
-    font-size: 30px;
+    font-size: var(--type-display-page-size);
     font-weight: 800;
-    letter-spacing: -0.06em;
+    letter-spacing: var(--type-display-page-track);
     margin-bottom: 2px;
-    line-height: 0.96;
+    line-height: var(--type-display-page-line);
 }
 
 .subtitle {
-    font-size: 14px;
+    font-size: var(--type-body-md-size);
     color: var(--text-secondary);
     font-weight: 500;
 }
@@ -647,16 +681,16 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 14px;
-    padding-top: 4px;
+    gap: var(--space-4);
+    padding-top: var(--space-1);
 }
 
 .month-switcher {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px;
-    border-radius: 22px;
+    gap: var(--space-2);
+    padding: var(--space-2);
+    border-radius: var(--surface-block-radius-lg);
     font-weight: 600;
     color: var(--accent);
     box-shadow: none;
@@ -666,19 +700,20 @@ h1 {
 .period-switcher {
     background: var(--surface-panel-muted);
     border: 1px solid var(--surface-panel-muted-border);
-    border-radius: 22px;
+    border-radius: var(--surface-block-radius-lg);
 }
 
 .month-title {
     font-family: var(--font-family-numeric);
-    padding: 0 18px;
+    padding: 0 var(--space-5);
     text-align: center;
     min-width: 140px;
     font-variant-numeric: tabular-nums;
     text-transform: capitalize;
-    font-size: 15px;
+    font-size: var(--type-number-xs-size);
     font-weight: 800;
-    letter-spacing: -0.03em;
+    line-height: var(--type-number-xs-line);
+    letter-spacing: var(--type-number-xs-track);
 }
 
 .btn-icon,
@@ -695,9 +730,9 @@ h1 {
 .btn-icon,
 .settings-btn {
     background: var(--surface-control);
-    width: 42px;
-    height: 42px;
-    border-radius: 15px;
+    width: var(--icon-button-size);
+    height: var(--icon-button-size);
+    border-radius: var(--icon-button-radius);
     color: var(--accent);
     font-size: 18px;
     box-shadow: var(--surface-panel-elevated-shadow);
@@ -812,14 +847,14 @@ h1 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 48px;
+    min-height: var(--button-min-height);
     background: var(--surface-control);
     border: 1px solid var(--card-border-strong);
     color: var(--text-primary);
-    font-weight: 600;
-    font-size: 14px;
-    padding: 12px 22px;
-    border-radius: 18px;
+    font-weight: var(--button-font-weight);
+    font-size: var(--button-font-size);
+    padding: var(--button-padding-block) var(--button-padding-inline);
+    border-radius: var(--surface-block-radius-sm);
     box-shadow: none;
     white-space: nowrap;
     text-align: center;
@@ -830,8 +865,7 @@ h1 {
 }
 
 .today-btn {
-    font-weight: 700;
-    letter-spacing: 0.01em;
+    letter-spacing: var(--button-letter-spacing);
 }
 
 .today-btn:hover {
@@ -847,7 +881,7 @@ h1 {
 }
 
 .calendar-section {
-    padding: 18px 22px 24px;
+    padding: var(--space-5) var(--space-6) var(--space-6);
     z-index: 5;
 }
 
@@ -855,12 +889,12 @@ h1 {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     text-align: center;
-    font-size: 12px;
+    font-size: var(--type-label-sm-size);
     font-weight: 700;
     color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    margin-bottom: 18px;
+    letter-spacing: var(--type-label-xs-track);
+    margin-bottom: var(--space-5);
     opacity: 1;
 }
 

@@ -6,6 +6,19 @@
         themeMode: 'themeMode'
     };
     const APP_STORAGE_PREFIXES = ['appUpdate:'];
+    const STYLE_PRESET_DEFINITIONS = Object.freeze([
+        Object.freeze({ id: 'current', label: 'Current' })
+    ]);
+    const THEME_MODE_DEFINITIONS = Object.freeze([
+        Object.freeze({ id: 'auto', label: 'Auto' }),
+        Object.freeze({ id: 'light', label: 'Light' }),
+        Object.freeze({ id: 'dark', label: 'Dark' })
+    ]);
+    const DEFAULT_STYLE_PRESET = 'current';
+    const DEFAULT_THEME_MODE = 'auto';
+    const LEGACY_STYLE_PRESET_ALIASES = Object.freeze({
+        default: DEFAULT_STYLE_PRESET
+    });
 
     // Schedule keys are owned by schedule.js — read at call time to avoid duplication
     const getScheduleStorageKeys = () =>
@@ -15,14 +28,17 @@
 
     const settingsState = {
         customSettings: null,
-        savedStylePreset: 'current',
-        savedThemeMode: 'auto',
+        savedStylePreset: DEFAULT_STYLE_PRESET,
+        savedThemeMode: DEFAULT_THEME_MODE,
         isDark: false,
         hydrated: false
     };
 
     let visualSwitchTimeoutId = null;
-    const FALLBACK_STYLE_PRESET = 'current';
+    const FALLBACK_STYLE_PRESET = DEFAULT_STYLE_PRESET;
+
+    const STYLE_PRESET_IDS = new Set(STYLE_PRESET_DEFINITIONS.map((item) => item.id));
+    const THEME_MODE_IDS = new Set(THEME_MODE_DEFINITIONS.map((item) => item.id));
 
     const normalizeHexColor = (value, fallback = '#34C759') => {
         if (typeof value !== 'string') return fallback;
@@ -124,7 +140,26 @@
         offColor: normalizeHexColor(computedStyles.getPropertyValue('--off-bg'), '#1F9D73')
     });
 
-    const withTemporaryThemeContext = ({ stylePreset = 'current', themeName = 'light', ignoreCustomColors = true } = {}, callback) => {
+    const normalizePublicStylePreset = (stylePreset) => {
+        if (typeof stylePreset !== 'string') {
+            return FALLBACK_STYLE_PRESET;
+        }
+
+        const normalizedStylePreset = stylePreset.trim().toLowerCase();
+        const resolvedStylePreset = LEGACY_STYLE_PRESET_ALIASES[normalizedStylePreset] || normalizedStylePreset;
+        return STYLE_PRESET_IDS.has(resolvedStylePreset) ? resolvedStylePreset : FALLBACK_STYLE_PRESET;
+    };
+
+    const normalizeThemeMode = (themeMode) => {
+        if (typeof themeMode !== 'string') {
+            return DEFAULT_THEME_MODE;
+        }
+
+        const normalizedThemeMode = themeMode.trim().toLowerCase();
+        return THEME_MODE_IDS.has(normalizedThemeMode) ? normalizedThemeMode : DEFAULT_THEME_MODE;
+    };
+
+    const withTemporaryThemeContext = ({ stylePreset = DEFAULT_STYLE_PRESET, themeName = 'light', ignoreCustomColors = true } = {}, callback) => {
         const body = document.body;
         if (!body || typeof callback !== 'function') {
             return { workColor: '#DBE7F3', offColor: '#1F9D73' };
@@ -159,16 +194,12 @@
         }
     };
 
-    const getDefaultDayColors = (stylePreset = 'current', themeName = 'light') => {
+    const getDefaultDayColors = (stylePreset = DEFAULT_STYLE_PRESET, themeName = 'light') => {
         return withTemporaryThemeContext(
             { stylePreset, themeName, ignoreCustomColors: true },
             readDayColorsFromComputedStyles
         );
     };
-
-    const normalizePublicStylePreset = (stylePreset) => (
-        stylePreset === FALLBACK_STYLE_PRESET ? stylePreset : FALLBACK_STYLE_PRESET
-    );
 
     const matchesBuiltInPalette = (workColor, offColor) => {
         const normalizedWork = normalizeHexColor(workColor, '#E5E5EA');
@@ -257,10 +288,7 @@
 
         const savedThemeMode = safeStorageGet(STORAGE_KEYS.themeMode);
         const legacyTheme = safeStorageGet(STORAGE_KEYS.theme);
-        settingsState.savedThemeMode =
-            savedThemeMode === 'auto' || savedThemeMode === 'light' || savedThemeMode === 'dark'
-                ? savedThemeMode
-                : (legacyTheme === 'light' || legacyTheme === 'dark' ? legacyTheme : 'auto');
+        settingsState.savedThemeMode = normalizeThemeMode(savedThemeMode || legacyTheme || DEFAULT_THEME_MODE);
 
         const savedSettingsRaw = safeStorageGet(STORAGE_KEYS.settings);
         if (savedSettingsRaw) {
@@ -354,7 +382,8 @@
     const hardResetAllData = () => {
         const allKeysToRemove = [
             ...Object.values(STORAGE_KEYS),
-            ...getScheduleStorageKeys()
+            ...getScheduleStorageKeys(),
+            'colleagueProfiles'
         ];
         try {
             allKeysToRemove.forEach((key) => localStorage.removeItem(key));
@@ -401,12 +430,13 @@
     };
 
     const persistThemeMode = (themeMode) => {
-        settingsState.savedThemeMode = themeMode;
-        safeStorageSet(STORAGE_KEYS.themeMode, themeMode);
-        if (themeMode === 'auto') {
+        const normalizedThemeMode = normalizeThemeMode(themeMode);
+        settingsState.savedThemeMode = normalizedThemeMode;
+        safeStorageSet(STORAGE_KEYS.themeMode, normalizedThemeMode);
+        if (normalizedThemeMode === 'auto') {
             safeStorageRemove(STORAGE_KEYS.theme);
         } else {
-            safeStorageSet(STORAGE_KEYS.theme, themeMode);
+            safeStorageSet(STORAGE_KEYS.theme, normalizedThemeMode);
         }
     };
 
@@ -503,6 +533,10 @@
         hardResetAllData,
         getSavedStylePreset,
         getSavedThemeMode,
+        getAvailableStylePresets: () => STYLE_PRESET_DEFINITIONS.map((item) => ({ ...item })),
+        getAvailableThemeModes: () => THEME_MODE_DEFINITIONS.map((item) => ({ ...item })),
+        normalizeStylePreset: normalizePublicStylePreset,
+        normalizeThemeMode,
         setStylePreset,
         persistStylePreset,
         withVisualSwitchGuard,

@@ -1,0 +1,129 @@
+// --- Профілі колег (оверлей на календарі) ---
+const PROFILES_STORAGE_KEY = 'colleagueProfiles';
+
+const DEFAULT_PROFILE_COLORS = [
+    '#FF9800', '#4CAF50', '#9C27B0', '#00BCD4',
+    '#E91E63', '#2196F3', '#FF5722', '#607D8B',
+    '#3F51B5', '#009688', '#FFC107', '#795548'
+];
+
+const profilesState = {
+    profiles: null
+};
+
+function generateProfileId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+function ensureProfilesState() {
+    if (!profilesState.profiles) {
+        profilesState.profiles = safeReadJson(PROFILES_STORAGE_KEY, []);
+    }
+    return profilesState.profiles;
+}
+
+function persistProfiles() {
+    try {
+        const profiles = ensureProfilesState();
+        if (profiles.length === 0) {
+            localStorage.removeItem(PROFILES_STORAGE_KEY);
+            return;
+        }
+        localStorage.setItem(PROFILES_STORAGE_KEY, JSON.stringify(profiles));
+    } catch (e) {
+        console.warn('Не вдалось зберегти профілі', e);
+    }
+}
+
+function getProfiles() {
+    return ensureProfilesState().map(p => ({ ...p, schedule: { ...p.schedule } }));
+}
+
+function getVisibleProfiles() {
+    return ensureProfilesState().filter(p => p.visible !== false);
+}
+
+function getNextProfileColor() {
+    const profiles = ensureProfilesState();
+    const usedColors = new Set(profiles.map(p => p.color));
+    return DEFAULT_PROFILE_COLORS.find(c => !usedColors.has(c)) || DEFAULT_PROFILE_COLORS[profiles.length % DEFAULT_PROFILE_COLORS.length];
+}
+
+function addProfile(name, scheduleConfig) {
+    const profiles = ensureProfilesState();
+    const profile = {
+        id: generateProfileId(),
+        name: name.trim(),
+        color: getNextProfileColor(),
+        schedule: getNormalizedScheduleConfig(scheduleConfig),
+        visible: true
+    };
+    profiles.push(profile);
+    persistProfiles();
+    return profile;
+}
+
+function updateProfile(id, updates) {
+    const profiles = ensureProfilesState();
+    const idx = profiles.findIndex(p => p.id === id);
+    if (idx === -1) return null;
+
+    if (updates.name !== undefined) {
+        profiles[idx].name = updates.name.trim();
+    }
+    if (updates.color !== undefined) {
+        profiles[idx].color = updates.color;
+    }
+    if (updates.schedule !== undefined) {
+        profiles[idx].schedule = getNormalizedScheduleConfig(updates.schedule);
+    }
+    if (updates.visible !== undefined) {
+        profiles[idx].visible = updates.visible;
+    }
+
+    persistProfiles();
+    return { ...profiles[idx] };
+}
+
+function removeProfile(id) {
+    const profiles = ensureProfilesState();
+    const idx = profiles.findIndex(p => p.id === id);
+    if (idx === -1) return false;
+    profiles.splice(idx, 1);
+    persistProfiles();
+    return true;
+}
+
+function toggleProfileVisibility(id) {
+    const profiles = ensureProfilesState();
+    const profile = profiles.find(p => p.id === id);
+    if (!profile) return;
+    profile.visible = profile.visible === false ? true : false;
+    persistProfiles();
+}
+
+function getProfileDayStatus(profile, year, month, day) {
+    const schedule = profile.schedule;
+    const cycleDays = schedule.workDays + schedule.offDays;
+    if (cycleDays <= 0) return 'off';
+
+    const targetDateUtc = Date.UTC(year, month, day);
+    const startDateUtc = new Date(schedule.startDate).getTime();
+    const diffDays = Math.floor((targetDateUtc - startDateUtc) / (1000 * 60 * 60 * 24));
+    const cycleDay = ((diffDays % cycleDays) + cycleDays) % cycleDays;
+    return cycleDay < schedule.workDays ? 'work' : 'off';
+}
+
+function getVisibleProfilesForDay(year, month, day) {
+    return getVisibleProfiles().map(p => ({
+        id: p.id,
+        name: p.name,
+        color: p.color,
+        status: getProfileDayStatus(p, year, month, day)
+    }));
+}
+
+function clearAllProfiles() {
+    profilesState.profiles = [];
+    persistProfiles();
+}
