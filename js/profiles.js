@@ -2,9 +2,9 @@
 const PROFILES_STORAGE_KEY = 'colleagueProfiles';
 
 const DEFAULT_PROFILE_COLORS = [
-    '#C97B63', '#D39A52', '#9E9A63', '#739B74',
-    '#5FA59B', '#6EA9C7', '#7E90CC', '#8D7BC3',
-    '#B779A2', '#C97886', '#8C96A3', '#B78D73'
+    '#c97b63', '#d39a52', '#a7a05f', '#739b74',
+    '#5fa59b', '#6ea9c7', '#7e90cc', '#8d7bc3',
+    '#b779a2', '#c97886', '#8c96a3', '#b78d73'
 ];
 
 const profilesState = {
@@ -43,10 +43,17 @@ function getVisibleProfiles() {
     return ensureProfilesState().filter(p => p.visible !== false);
 }
 
+function normalizeProfileColor(color) {
+    if (typeof color !== 'string' || !color.trim()) {
+        return DEFAULT_PROFILE_COLORS[0];
+    }
+    return color.trim().toLowerCase();
+}
+
 function getNextProfileColor() {
     const profiles = ensureProfilesState();
-    const usedColors = new Set(profiles.map(p => p.color));
-    return DEFAULT_PROFILE_COLORS.find(c => !usedColors.has(c)) || DEFAULT_PROFILE_COLORS[profiles.length % DEFAULT_PROFILE_COLORS.length];
+    const usedColors = new Set(profiles.map(p => normalizeProfileColor(p.color)));
+    return DEFAULT_PROFILE_COLORS.find(c => !usedColors.has(normalizeProfileColor(c))) || DEFAULT_PROFILE_COLORS[profiles.length % DEFAULT_PROFILE_COLORS.length];
 }
 
 function getProfilePaletteColors() {
@@ -58,7 +65,7 @@ function addProfile(name, scheduleConfig) {
     const profile = {
         id: generateProfileId(),
         name: name.trim(),
-        color: getNextProfileColor(),
+        color: normalizeProfileColor(getNextProfileColor()),
         schedule: getNormalizedScheduleConfig(scheduleConfig),
         visible: true
     };
@@ -76,7 +83,7 @@ function updateProfile(id, updates) {
         profiles[idx].name = updates.name.trim();
     }
     if (updates.color !== undefined) {
-        profiles[idx].color = updates.color;
+        profiles[idx].color = normalizeProfileColor(updates.color);
     }
     if (updates.schedule !== undefined) {
         profiles[idx].schedule = getNormalizedScheduleConfig(updates.schedule);
