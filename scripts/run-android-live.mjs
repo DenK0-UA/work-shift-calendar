@@ -1,5 +1,9 @@
 import os from 'node:os';
-import { spawn } from 'node:child_process';
+import path from 'node:path';
+import { execFileSync, spawn } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+
+const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 const port = process.env.CAP_LIVE_PORT || '4173';
 const host = process.env.CAP_LIVE_HOST || detectLanIp();
@@ -16,12 +20,19 @@ console.log('Make sure the phone and this computer are on the same Wi-Fi network
 console.log('Start `npm run dev:web` in another terminal before running this command.');
 
 const npxCommand = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+const nodeCommand = process.platform === 'win32' ? 'node.exe' : 'node';
+
+console.log('Syncing Android project and reapplying local Gradle patches before launch...');
+runBlockingCommand(npxCommand, ['cap', 'sync', 'android']);
+runBlockingCommand(nodeCommand, [path.join('scripts', 'patch-capacitor-android.mjs')]);
+
 const child = spawn(
   npxCommand,
-  ['cap', 'run', 'android', '--live-reload', '--host', host, '--port', port],
+  ['cap', 'run', 'android', '--no-sync', '--live-reload', '--host', host, '--port', port],
   {
     stdio: 'inherit',
     shell: false,
+    cwd: rootDir,
   },
 );
 
@@ -62,4 +73,11 @@ function isPrivateIpv4(ip) {
     ip.startsWith('192.168.') ||
     /^172\.(1[6-9]|2\d|3[0-1])\./.test(ip)
   );
+}
+
+function runBlockingCommand(command, args) {
+  execFileSync(command, args, {
+    stdio: 'inherit',
+    cwd: rootDir,
+  });
 }
