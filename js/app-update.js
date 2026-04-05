@@ -11,7 +11,7 @@ const APP_UPDATE_STORAGE_KEYS = {
 };
 
 const APP_UPDATE_DISMISS_MS = 24 * 60 * 60 * 1000;
-const APP_UPDATE_BANNER_TRANSITION_MS = 320;
+const getAppUpdateBannerTransitionMs = () => window.AppMotion?.getDurationMs?.('overlayHide', 280) ?? 280;
 
 const betaAccessState = {
     installId: readOrCreateInstallId(),
@@ -54,8 +54,8 @@ function normalizeUpdateChannel(channel) {
 
 function getChannelLabel(channel) {
     return normalizeUpdateChannel(channel) === APP_UPDATE_CHANNELS.beta
-        ? 'Бета'
-        : 'Стабільний';
+    ? 'Тестовий'
+    : 'Основний';
 }
 
 function setAppUpdateDebugState(patch) {
@@ -314,8 +314,11 @@ function buildAppUpdateMessage(manifest) {
     const latestVersion = manifest.version;
     const notes = typeof manifest.notes === 'string' ? manifest.notes.trim() : '';
     const notesSuffix = notes ? ` ${notes}` : '';
-    const channelLabel = manifest.channel === APP_UPDATE_CHANNELS.beta ? 'beta' : 'stable';
-    return `Доступна новіша ${channelLabel}-версія ${latestVersion}. Поточна версія: ${APP_RELEASE_VERSION}.${notesSuffix}`;
+    if (manifest.channel === APP_UPDATE_CHANNELS.beta) {
+        return `Є новіша тестова версія ${latestVersion}. Зараз у вас ${APP_RELEASE_VERSION}.${notesSuffix}`;
+    }
+
+    return `Є новіша версія ${latestVersion}. Зараз у вас ${APP_RELEASE_VERSION}.${notesSuffix}`;
 }
 
 function toExternalDownloadUrl(url) {
@@ -415,7 +418,7 @@ function hideAppUpdateBanner() {
     appUpdateEls.banner._hideTimerId = window.setTimeout(() => {
         appUpdateEls.banner.hidden = true;
         appUpdateEls.banner._hideTimerId = null;
-    }, APP_UPDATE_BANNER_TRANSITION_MS);
+    }, getAppUpdateBannerTransitionMs());
 
     appUpdateEls.downloadBtn?.removeAttribute('data-download-url');
     appUpdateEls.dismissBtn?.removeAttribute('data-version');
@@ -570,7 +573,7 @@ async function fetchAppUpdateManifest(channel) {
         setAppUpdateDebugState({
             channel: normalizeUpdateChannel(channel),
             status: 'manifest-missing',
-            message: 'Маніфест каналу не налаштований.'
+            message: 'Не налаштовано адресу файлу з оновленнями.'
         });
         return null;
     }
@@ -585,7 +588,7 @@ async function fetchAppUpdateManifest(channel) {
         setAppUpdateDebugState({
             channel: normalizeUpdateChannel(channel),
             status: 'manifest-unavailable',
-            message: 'Не вдалося завантажити маніфест оновлення.'
+            message: 'Не вдалося отримати інформацію про оновлення.'
         });
         return null;
     }
@@ -594,7 +597,7 @@ async function fetchAppUpdateManifest(channel) {
         channel: normalizeUpdateChannel(channel),
         manifestVersion: data.version.trim(),
         status: 'manifest-loaded',
-        message: `Знайдено маніфест ${data.version.trim()}.`
+        message: `Знайшли версію ${data.version.trim()}.`
     });
 
     return {
@@ -614,7 +617,7 @@ async function resolveAvailableAppUpdateManifest(options = {}) {
     setAppUpdateDebugState({
         channel: selectedChannel,
         status: 'checking',
-        message: `Перевіряємо канал ${getChannelLabel(selectedChannel)}.`
+        message: `Перевіряємо ${getChannelLabel(selectedChannel).toLowerCase()} канал.`
     });
 
     const channelsToTry =
@@ -637,7 +640,7 @@ async function resolveAvailableAppUpdateManifest(options = {}) {
                 channel,
                 manifestVersion: manifest.version,
                 status: 'up-to-date',
-                message: `Оновлень немає. Поточна версія ${APP_RELEASE_VERSION}.`
+                message: `У вас уже найновіша версія ${APP_RELEASE_VERSION}.`
             });
             continue;
         }
@@ -650,7 +653,7 @@ async function resolveAvailableAppUpdateManifest(options = {}) {
                 availableVersion: manifest.version,
                 dismissedUntil: dismissedEntry.until,
                 status: 'dismissed',
-                message: 'Оновлення тимчасово приховано на 24 години.'
+                message: 'Це оновлення сховано на 24 години.'
             });
             continue;
         }
@@ -661,7 +664,7 @@ async function resolveAvailableAppUpdateManifest(options = {}) {
             availableVersion: manifest.version,
             downloadUrl: manifest.apkUrl,
             status: 'update-available',
-            message: `Доступне оновлення ${manifest.version}.`
+            message: `Знайшли нову версію ${manifest.version}.`
         });
         return manifest;
     }
@@ -671,13 +674,13 @@ async function resolveAvailableAppUpdateManifest(options = {}) {
             channel: selectedChannel,
             manifestVersion: APP_RELEASE_VERSION,
             status: 'up-to-date',
-            message: `Оновлень немає. Поточна версія ${APP_RELEASE_VERSION}.`
+            message: `У вас уже найновіша версія ${APP_RELEASE_VERSION}.`
         });
     } else if (appUpdateDebugState.status === 'checking') {
         setAppUpdateDebugState({
             channel: selectedChannel,
             status: 'no-update',
-            message: 'Оновлення не знайдено.'
+            message: 'Новішої версії поки немає.'
         });
     }
 
@@ -690,7 +693,7 @@ async function checkForAppUpdate(options = {}) {
         setAppUpdateDebugState({
             status: 'disabled',
             message: !APP_UPDATE_CHECK_ENABLED
-                ? 'Перевірку оновлень вимкнено в конфігу.'
+                ? 'Перевірку оновлень зараз вимкнено.'
                 : ''
         });
         hideAppUpdateBanner();
@@ -740,7 +743,7 @@ if (appUpdateEls.dismissBtn) {
                 availableVersion: version,
                 dismissedUntil,
                 status: 'dismissed',
-                message: 'Оновлення тимчасово приховано на 24 години.'
+                message: 'Це оновлення сховано на 24 години.'
             });
         }
         hideAppUpdateBanner();

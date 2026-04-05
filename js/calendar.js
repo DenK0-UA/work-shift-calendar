@@ -48,9 +48,9 @@ let activeFilter = null;
 let calendarAnimationFrameId = null;
 const renderedDayEls = [];
 const supportsInteractiveHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-const UI_REVEAL_DURATION_MS = 260;
-const UI_TILT_RESET_DURATION_MS = 320;
-const MODAL_SECTION_REVEAL_DURATION_MS = UI_REVEAL_DURATION_MS;
+const getCalendarMotionDurationMs = (key, fallbackMs) => window.AppMotion?.getDurationMs?.(key, fallbackMs) ?? fallbackMs;
+const getModalSectionRevealDurationMs = () => getCalendarMotionDurationMs('revealHide', 220);
+const getTiltResetDurationMs = () => getCalendarMotionDurationMs('tiltReset', 280);
 
 function setModalSectionOpen(sectionEl, isOpen) {
     if (!sectionEl) return;
@@ -73,7 +73,7 @@ function setModalSectionOpen(sectionEl, isOpen) {
     sectionEl._hideTimerId = window.setTimeout(() => {
         sectionEl.hidden = true;
         sectionEl._hideTimerId = null;
-    }, MODAL_SECTION_REVEAL_DURATION_MS);
+    }, getModalSectionRevealDurationMs());
 }
 
 function getDayStatusLabel(status) {
@@ -86,10 +86,10 @@ function getDayStatusChangeLabel(status) {
 
 function getStatusActionCaption(scheduledStatus, customStatus) {
     if (customStatus) {
-        return `Вручну змінено. За графіком тут ${getDayStatusChangeLabel(scheduledStatus)}.`;
+        return `Ви змінили цей день вручну. За графіком тут ${getDayStatusChangeLabel(scheduledStatus)}.`;
     }
 
-    return `Статус визначено Вашим графіком: ${getDayStatusChangeLabel(scheduledStatus)}.`;
+    return `За графіком тут ${getDayStatusChangeLabel(scheduledStatus)}.`;
 }
 
 function updateModalStatusBadge(status) {
@@ -159,10 +159,10 @@ function applyDayStatusChange(nextStatus) {
 
     const changedTo = getDayStatus(year, month, day);
     const undoLabel = normalizedNextStatus === null
-        ? 'За графіком'
+        ? 'Як у графіку'
         : changedTo === 'work'
-            ? 'Робочий день'
-            : 'Вихідний день';
+            ? 'Робочий'
+            : 'Вихідний';
 
     showUndoToast(undoLabel, { year, month, day, previousCustomStatus });
 }
@@ -411,7 +411,7 @@ function setup3DTilt(el) {
         resetTransitionTimer = window.setTimeout(() => {
             el.style.transition = 'box-shadow var(--motion-duration-base) var(--motion-ease-exit)';
             resetTransitionTimer = null;
-        }, UI_TILT_RESET_DURATION_MS);
+        }, getTiltResetDurationMs());
     });
 }
 
@@ -507,7 +507,7 @@ function renderModalProfiles(year, month, day) {
 
     const heading = document.createElement('div');
     heading.className = 'modal-profiles-heading';
-    heading.textContent = 'Графіки';
+    heading.textContent = 'Інші графіки';
     inner.appendChild(heading);
 
     profileStatuses.forEach(p => {
@@ -526,7 +526,7 @@ function renderModalProfiles(year, month, day) {
         const badge = document.createElement('span');
         badge.className = 'modal-profile-badge';
         badge.dataset.status = p.status;
-        badge.textContent = p.status === 'work' ? 'Робочий' : 'Вихідний';
+        badge.textContent = p.status === 'work' ? 'На зміні' : 'Вихідний';
 
         row.appendChild(dot);
         row.appendChild(nameEl);
@@ -679,10 +679,38 @@ const changeMonth = (delta) => {
     renderCalendar(currentState.year, currentState.month);
 };
 
-calendarEls.prevBtn.addEventListener('click', () => changeMonth(-1));
-calendarEls.nextBtn.addEventListener('click', () => changeMonth(1));
-calendarEls.todayBtn.addEventListener('click', () => {
+const isViewingTodayMonth = () =>
+    currentState.year === DEMO_TODAY.getFullYear()
+    && currentState.month === DEMO_TODAY.getMonth();
+
+const clearActiveCalendarFilter = () => {
+    if (!activeFilter) {
+        return false;
+    }
+
+    clearFilters();
+    return true;
+};
+
+const navigateCalendarToToday = () => {
+    if (isViewingTodayMonth()) {
+        return false;
+    }
+
+    clearFilters();
     currentState.year = DEMO_TODAY.getFullYear();
     currentState.month = DEMO_TODAY.getMonth();
     renderCalendar(currentState.year, currentState.month);
+    return true;
+};
+
+calendarEls.prevBtn.addEventListener('click', () => changeMonth(-1));
+calendarEls.nextBtn.addEventListener('click', () => changeMonth(1));
+calendarEls.todayBtn.addEventListener('click', () => {
+    navigateCalendarToToday();
 });
+
+window.clearCalendarFilter = () => clearActiveCalendarFilter();
+window.isCalendarFilterActive = () => Boolean(activeFilter);
+window.navigateCalendarToToday = () => navigateCalendarToToday();
+window.isViewingTodayMonth = () => isViewingTodayMonth();

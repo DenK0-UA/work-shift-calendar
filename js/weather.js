@@ -155,7 +155,7 @@ function getWeatherForDate(year, month, day) {
     return weatherForecastCache[getWeatherDateKey(year, month, day)] || null;
 }
 
-const MODAL_REVEAL_DURATION_MS = 260;
+const getModalRevealDurationMs = () => window.AppMotion?.getDurationMs?.('revealHide', 220) ?? 220;
 
 function setModalRevealState(sectionEl, isOpen) {
     if (!sectionEl) {
@@ -180,7 +180,7 @@ function setModalRevealState(sectionEl, isOpen) {
     sectionEl._hideTimerId = window.setTimeout(() => {
         sectionEl.hidden = true;
         sectionEl._hideTimerId = null;
-    }, MODAL_REVEAL_DURATION_MS);
+    }, getModalRevealDurationMs());
 }
 
 function setModalWeather({ icon, summary, meta, hidden = false }) {
@@ -250,8 +250,8 @@ function updateModalWeather(year, month, day) {
     if (weatherView.type === 'loading') {
         setModalWeather({
             icon: buildWeatherIcon('<path d="M12 6v6l4 2"></path><circle cx="12" cy="12" r="8"></circle>'),
-            summary: 'Завантажуємо прогноз',
-            meta: 'Бориспіль · отримуємо дані для обраної дати'
+            summary: 'Завантажуємо погоду...',
+            meta: 'Бориспіль · шукаємо прогноз на цей день'
         });
         return;
     }

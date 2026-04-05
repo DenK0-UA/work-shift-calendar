@@ -300,7 +300,7 @@ body.app-setup-pending .main-container {
     -webkit-backdrop-filter: none;
     max-width: 440px;
     max-height: min(92vh, 760px);
-    padding: calc(var(--space-7) + 4px) var(--space-7) var(--space-7);
+    padding: calc(var(--space-7) + var(--space-1)) var(--space-7) var(--space-7);
 }
 
 .schedule-overlay.setup-mode .schedule-title {
@@ -333,25 +333,25 @@ body[data-theme="dark"] .schedule-info {
 }
 
 .schedule-overlay.setup-mode .schedule-title {
-    animation-delay: 0.03s;
+    animation-delay: var(--motion-stagger-delay-1);
 }
 
 .schedule-overlay.setup-mode .schedule-onboarding {
-    animation-delay: 0.08s;
+    animation-delay: var(--motion-stagger-delay-2);
 }
 
 .schedule-overlay.setup-mode .schedule-info {
-    animation-delay: 0.12s;
+    animation-delay: var(--motion-stagger-delay-3);
 }
 
 .schedule-overlay.setup-mode .schedule-templates {
-    animation-delay: 0.16s;
+    animation-delay: var(--motion-stagger-delay-4);
 }
 
 .schedule-overlay.setup-mode .custom-input-group,
 .schedule-overlay.setup-mode .schedule-buttons,
 .schedule-overlay.setup-mode .schedule-custom {
-    animation-delay: 0.2s;
+    animation-delay: var(--motion-stagger-delay-5);
 }
 
 @keyframes scheduleSetupFadeIn {

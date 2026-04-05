@@ -102,7 +102,7 @@ if (!scheduleOverlayController) {
 
 scheduleEls.applyBtn.addEventListener('click', () => {
     if (!selectedSchedule) {
-        alert('Спочатку оберіть свій графік.');
+        alert('Спочатку виберіть графік.');
         return;
     }
 
@@ -117,7 +117,7 @@ scheduleEls.applyBtn.addEventListener('click', () => {
         if (offDays < 0) offDays = 0;
 
         if (workDays + offDays <= 0) {
-            alert('Невірний цикл: кількість робочих і вихідних днів повинна бути більше 0. Використано 5/5 за замовчуванням.');
+            alert('Так не вийде: у циклі має бути хоча б один день. Поставили 5/5.');
             workDays = 5;
             offDays = 5;
             selectedSchedule = '5/5';
@@ -139,7 +139,7 @@ scheduleEls.applyBtn.addEventListener('click', () => {
         const startDate = parseDateInputValueAsUtcIso(startDateValue);
 
         if (workDays + offDays <= 0) {
-            alert('Невірний цикл графіку. Використано 5/5 за замовчуванням.');
+            alert('Щось не так із цим циклом. Повернули 5/5.');
             workDays = 5;
             offDays = 5;
             selectedSchedule = '5/5';

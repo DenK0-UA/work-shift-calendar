@@ -22,9 +22,9 @@ const profilesEls = {
 let selectedProfileSchedule = null;
 let editingProfileId = null;
 let isAddFormOpen = false;
-const PROFILES_UI_REVEAL_DURATION_MS = 260;
-const PROFILES_UI_OVERLAY_FADE_DURATION_MS = 320;
-const EXPANDABLE_SECTION_DURATION_MS = PROFILES_UI_REVEAL_DURATION_MS;
+const getProfilesMotionDurationMs = (key, fallbackMs) => window.AppMotion?.getDurationMs?.(key, fallbackMs) ?? fallbackMs;
+const getExpandableSectionDurationMs = () => getProfilesMotionDurationMs('revealHide', 220);
+const getOverlayFadeDurationMs = () => getProfilesMotionDurationMs('overlayHide', 280);
 const profileColorPickerState = {
     overlayEl: null,
     paletteGridEl: null,
@@ -75,7 +75,7 @@ function setExpandableSectionOpen(sectionEl, isOpen) {
     sectionEl._hideTimerId = window.setTimeout(() => {
         sectionEl.hidden = true;
         sectionEl._hideTimerId = null;
-    }, EXPANDABLE_SECTION_DURATION_MS);
+    }, getExpandableSectionDurationMs());
 }
 
 function setProfilesAddFormOpen(isOpen) {
@@ -144,7 +144,7 @@ function closeProfileColorPicker() {
         if (profileColorPickerState.overlayEl && !profileColorPickerState.overlayEl.classList.contains('active')) {
             profileColorPickerState.overlayEl.hidden = true;
         }
-    }, PROFILES_UI_OVERLAY_FADE_DURATION_MS);
+    }, getOverlayFadeDurationMs());
 }
 
 function applyProfileColorPickerSelection() {
@@ -250,7 +250,7 @@ function getScheduleCaptionLabel(scheduleKey) {
         case '5/2': return '5 роб. / 2 вих.';
         case '3/3': return '3 роб. / 3 вих.';
         case '2/2': return '2 роб. / 2 вих.';
-        default: return 'Свій';
+        default: return 'Свій варіант';
     }
 }
 
@@ -328,8 +328,8 @@ function renderProfilesList() {
         const visBtn = document.createElement('button');
         visBtn.className = 'profile-action-btn';
         visBtn.type = 'button';
-        visBtn.title = profile.visible === false ? 'Показати' : 'Сховати';
-        visBtn.setAttribute('aria-label', profile.visible === false ? 'Показати профіль' : 'Сховати профіль');
+        visBtn.title = profile.visible === false ? 'Показати в календарі' : 'Сховати з календаря';
+        visBtn.setAttribute('aria-label', profile.visible === false ? 'Показати графік у календарі' : 'Сховати графік з календаря');
         visBtn.setAttribute('aria-pressed', String(profile.visible !== false));
         visBtn.innerHTML = profile.visible === false ? getIconMarkup('eye-off') : getIconMarkup('eye');
         visBtn.addEventListener('click', () => {
@@ -351,11 +351,11 @@ function renderProfilesList() {
         const delBtn = document.createElement('button');
         delBtn.className = 'profile-action-btn danger';
         delBtn.type = 'button';
-        delBtn.title = 'Видалити';
-        delBtn.setAttribute('aria-label', 'Видалити профіль');
+        delBtn.title = 'Прибрати';
+        delBtn.setAttribute('aria-label', 'Прибрати графік');
         delBtn.innerHTML = getIconMarkup('trash');
         delBtn.addEventListener('click', () => {
-            if (confirm(`Видалити профіль "${profile.name}"?`)) {
+            if (confirm(`Прибрати графік "${profile.name}"?`)) {
                 removeProfile(profile.id);
                 renderProfilesList();
                 renderCalendar(currentState.year, currentState.month);
@@ -379,13 +379,13 @@ function buildScheduleFromForm(isEdit) {
     const name = nameInput.value.trim();
 
     if (!name) {
-        alert('Введіть назву.');
+        alert('Напишіть назву.');
         return null;
     }
 
     const selSchedule = isEdit ? editSelectedSchedule : selectedProfileSchedule;
     if (!selSchedule) {
-        alert('Оберіть графік.');
+        alert('Спочатку виберіть графік.');
         return null;
     }
 
@@ -548,7 +548,7 @@ function openEditProfile(profile) {
     editOverlayEl.innerHTML = `
         <div class="profile-edit-card">
             <div class="modal-shell-header profile-edit-header">
-                <h2 class="profile-edit-title">Редагувати: ${escapeHtml(profile.name)}</h2>
+                <h2 class="profile-edit-title">Змінити: ${escapeHtml(profile.name)}</h2>
                 <button class="schedule-close profile-edit-close" id="edit-profile-close" type="button" aria-label="Закрити">${getIconMarkup('close')}</button>
             </div>
             <div class="custom-input-group">
@@ -666,7 +666,7 @@ function closeEditProfile() {
         editOverlayEl = null;
         window.setTimeout(() => {
             overlayToClose.remove();
-        }, PROFILES_UI_OVERLAY_FADE_DURATION_MS);
+        }, getOverlayFadeDurationMs());
     }
     editingProfileId = null;
 }

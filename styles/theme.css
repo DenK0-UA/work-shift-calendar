@@ -70,8 +70,9 @@
     --radius-button: 20px;
     --radius-button-compact: 16px;
     --radius-pill: 999px;
-    --space-inline-control: 16px;
-    --space-block-control: 14px;
+    /* Layout spacing stays on the token scale; raw px is reserved for 1px separators and tiny decorative gaps. */
+    --space-inline-control: var(--space-4);
+    --space-block-control: var(--space-3-5);
     --space-inline-button: var(--space-5);
     --space-block-button: var(--space-4);
     --space-inline-button-compact: var(--space-4);
@@ -148,7 +149,7 @@
     --surface-block-radius-lg: var(--radius-surface-lg);
     --surface-block-radius-md: var(--radius-surface-md);
     --surface-block-radius-sm: var(--radius-surface-sm);
-    --panel-padding: 24px;
+    --panel-padding: var(--space-6);
     --surface-block-padding-lg: var(--space-5);
     --surface-block-padding-md: var(--space-4);
     --surface-block-padding-sm: var(--space-3);
@@ -177,7 +178,7 @@
     --marker-cube-gap: 3px;
     --marker-cube-font-size: 7px;
     --marker-cube-ring: 0 0 0 1px transparent;
-    --section-gap: 16px;
+    --section-gap: var(--space-4);
     --space-1: 4px;
     --space-2: 8px;
     --space-3: 12px;
@@ -185,6 +186,9 @@
     --space-5: 20px;
     --space-6: 24px;
     --space-7: 28px;
+    --space-1-5: calc((var(--space-1) + var(--space-2)) / 2);
+    --space-2-5: calc((var(--space-2) + var(--space-3)) / 2);
+    --space-3-5: calc((var(--space-3) + var(--space-4)) / 2);
     --kicker-bg: #eef3fb;
     --kicker-border: rgba(25, 103, 210, 0.14);
     --base-font-size: 16px;
@@ -263,6 +267,16 @@
     --expand-reveal-fade-duration: var(--motion-duration-fast);
     --expand-reveal-easing: var(--motion-ease-standard);
     --overlay-fade-duration: var(--motion-duration-slow);
+    --motion-reveal-hide-duration: var(--expand-reveal-size-duration);
+    --motion-overlay-hide-duration: var(--overlay-fade-duration);
+    --motion-tilt-reset-duration: var(--motion-duration-slow);
+    --motion-visual-switch-guard-duration: var(--motion-duration-slow);
+    --motion-duration-progress: 0.08s;
+    --motion-stagger-delay-1: 0.04s;
+    --motion-stagger-delay-2: 0.08s;
+    --motion-stagger-delay-3: 0.12s;
+    --motion-stagger-delay-4: 0.16s;
+    --motion-stagger-delay-5: 0.2s;
     --overlay-fade-transition: opacity var(--overlay-fade-duration) var(--motion-ease-exit), backdrop-filter var(--overlay-fade-duration) var(--motion-ease-standard);
     --modal-card-initial-transform: translateY(14px) scale(0.985);
     --modal-card-active-transform: translateY(0) scale(1);
@@ -339,7 +353,7 @@
     --surface-button-accent-border: #5d98ff;
     --surface-button-accent-shadow: 0 2px 6px rgba(79, 141, 247, 0.34), 0 10px 22px rgba(0, 0, 0, 0.24);
     --field-radius: 18px;
-    --field-padding: 14px 16px;
+    --field-padding: var(--space-block-control) var(--space-inline-control);
     --helper-text-size: 13px;
     --helper-line-height: 1.55;
     --focus-ring-soft: 0 0 0 3px rgba(168, 199, 250, 0.18);
@@ -399,7 +413,7 @@ body {
     display: flex;
     justify-content: center;
     min-height: 100vh;
-    padding: calc(env(safe-area-inset-top, 0px) + 20px) calc(env(safe-area-inset-right, 0px) + 16px) calc(env(safe-area-inset-bottom, 0px) + 24px) calc(env(safe-area-inset-left, 0px) + 16px);
+    padding: calc(env(safe-area-inset-top, 0px) + var(--space-5)) calc(env(safe-area-inset-right, 0px) + var(--space-4)) calc(env(safe-area-inset-bottom, 0px) + var(--space-6)) calc(env(safe-area-inset-left, 0px) + var(--space-4));
     font-size: var(--base-font-size);
     line-height: 1.5;
     overflow-x: hidden;
@@ -508,5 +522,15 @@ body::after {
         --swipe-transition: none;
         --swipe-out-left-animation: none;
         --swipe-out-right-animation: none;
+        --motion-reveal-hide-duration: 0s;
+        --motion-overlay-hide-duration: 0s;
+        --motion-tilt-reset-duration: 0s;
+        --motion-visual-switch-guard-duration: 0s;
+        --motion-duration-progress: 0s;
+        --motion-stagger-delay-1: 0s;
+        --motion-stagger-delay-2: 0s;
+        --motion-stagger-delay-3: 0s;
+        --motion-stagger-delay-4: 0s;
+        --motion-stagger-delay-5: 0s;
     }
 }

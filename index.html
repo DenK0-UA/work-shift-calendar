@@ -25,7 +25,7 @@
                     <p class="subtitle">Графік 5/5. Старт: сьогодні</p>
                 </div>
                 <div class="header-actions">
-                    <button class="settings-btn" id="profiles-btn" type="button" aria-label="Графіки">
+                    <button class="settings-btn" id="profiles-btn" type="button" aria-label="Інші графіки">
                         <svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true">
                             <circle cx="9" cy="9" r="3.25"></circle>
                             <path d="M4.5 18a4.5 4.5 0 0 1 9 0"></path>
@@ -33,7 +33,7 @@
                             <path d="M14.5 18a3.8 3.8 0 0 1 5.5-3.4"></path>
                         </svg>
                     </button>
-                    <button class="settings-btn" id="schedule-btn" type="button" aria-label="Відкрити графік">
+                    <button class="settings-btn" id="schedule-btn" type="button" aria-label="Змінити графік">
                         <svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true">
                             <rect x="3.5" y="5" width="17" height="15" rx="3"></rect>
                             <path d="M7.5 3.5v4"></path>
@@ -114,7 +114,7 @@
             <button class="panel-heading panel-heading-toggle" id="period-stats-toggle" type="button" aria-expanded="false" aria-controls="insights-content">
                 <div>
                     <h2 class="panel-title">Статистика періоду</h2>
-                    <p class="panel-subtitle" id="period-stats-caption">Огляд поточного місяця</p>
+                    <p class="panel-subtitle" id="period-stats-caption">Коротко за цей період</p>
                 </div>
                 <span class="panel-toggle-icon" id="period-stats-toggle-icon" aria-hidden="true">
                     <svg class="icon-glyph" viewBox="0 0 24 24">
@@ -146,7 +146,7 @@
                     <div class="period-stat-value" id="period-stat-off-streak">0</div>
                 </article>
                 <article class="period-stat-card">
-                    <div class="period-stat-label">Ручні зміни</div>
+                    <div class="period-stat-label">Змінювали вручну</div>
                     <div class="period-stat-value" id="period-stat-custom">0</div>
                 </article>
                 </div>
@@ -158,12 +158,12 @@
     <div class="app-update-overlay" id="app-update-banner" hidden aria-live="polite" aria-modal="true" role="dialog">
         <div class="app-update-card">
             <div class="app-update-banner-copy">
-                <div class="app-update-banner-title">Доступне оновлення застосунку</div>
-                <p class="app-update-banner-text" id="app-update-banner-text">Знайдено новішу версію APK.</p>
+                <div class="app-update-banner-title">Є нова версія</div>
+                <p class="app-update-banner-text" id="app-update-banner-text">Можна встановити свіжішу версію застосунку.</p>
             </div>
             <div class="app-update-banner-actions">
                 <button class="schedule-btn-action secondary" id="app-update-dismiss" type="button">Пізніше</button>
-                <button class="schedule-btn-action primary" id="app-update-download" type="button">Завантажити APK</button>
+                <button class="schedule-btn-action primary" id="app-update-download" type="button">Завантажити</button>
             </div>
         </div>
     </div>
@@ -184,7 +184,7 @@
                 <button class="modal-status-action" id="m-set-off" type="button">Вихідний</button>
                 <button class="modal-status-action modal-status-reset" id="m-reset-status" type="button">За графіком</button>
             </div>
-            <div class="modal-status-caption helper-text" id="m-status-caption">Статус визначено вашим графіком</div>
+            <div class="modal-status-caption helper-text" id="m-status-caption">Так цей день стоїть у вашому графіку</div>
 
             <div class="modal-weather modal-reveal-section" id="m-weather" hidden>
                 <div class="modal-weather-inner">
@@ -195,8 +195,8 @@
                         </svg>
                     </div>
                     <div class="modal-weather-content">
-                        <div class="modal-weather-summary" id="m-weather-summary">Завантажуємо прогноз...</div>
-                        <div class="modal-weather-meta helper-text" id="m-weather-meta">Бориспіль · прогноз для обраного дня</div>
+                        <div class="modal-weather-summary" id="m-weather-summary">Завантажуємо погоду...</div>
+                        <div class="modal-weather-meta helper-text" id="m-weather-meta">Бориспіль · дивимось прогноз на цей день</div>
                     </div>
                     <button class="weather-refresh modal-weather-refresh" id="modal-weather-refresh" type="button" aria-label="Оновити погоду">
                         <svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true">
@@ -211,7 +211,7 @@
                 <textarea
                     class="modal-note-input modal-note-textarea control-input"
                     id="m-note-input"
-                    placeholder="Нотатка на день"
+                    placeholder="Напишіть нотатку на день"
                     maxlength="280"
                     rows="3"
                 ></textarea>
@@ -235,7 +235,7 @@
     <div class="settings-overlay" id="settings-overlay">
         <div class="settings-card">
             <div class="modal-shell-header">
-                <h2 class="settings-title">Вигляд</h2>
+                <h2 class="settings-title">Налаштування</h2>
                 <button class="settings-close" id="settings-overlay-close" aria-label="Закрити">
                     <svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M6 6l12 12"></path>
@@ -245,7 +245,7 @@
             </div>
 
             <div class="settings-group">
-                <label class="settings-label">Режим теми</label>
+                <label class="settings-label">Тема</label>
                 <div class="theme-mode-switcher" id="theme-mode-switcher">
                     <button class="theme-mode-btn active" type="button" data-theme-mode="auto">Авто</button>
                     <button class="theme-mode-btn" type="button" data-theme-mode="light">Світла</button>
@@ -273,43 +273,36 @@
                 <button class="settings-btn-action btn-reset" id="reset-settings">Скинути тему</button>
             </div>
 
-            <div class="settings-group">
-                <label class="settings-label">Інформація</label>
-                <p class="settings-help-text helper-text">
-                    Відкрийте день календаря, щоб змінити його статус вручну або повернути значення за графіком.
-                </p>
-            </div>
-
             <div class="settings-group settings-group-app">
-                <label class="settings-label">Застосунок</label>
+                <label class="settings-label">Оновлення</label>
                 <div class="settings-meta-card" id="app-version-trigger">
                     <span class="settings-meta-title">Версія <span id="app-version-value">1.0.0</span></span>
-                    <span class="settings-meta-caption helper-text" id="app-update-channel-summary">Отримуєте стабільні оновлення</span>
+                    <span class="settings-meta-caption helper-text" id="app-update-channel-summary">У вас основний канал оновлень</span>
                 </div>
                 <div class="settings-channel-block" id="update-channel-group" hidden>
                     <div class="settings-channel-block-inner">
                         <div class="settings-channel-head">
-                            <span class="settings-channel-label">Канал оновлень</span>
+                            <span class="settings-channel-label">Які оновлення отримувати</span>
                             <p class="settings-channel-help helper-text" id="update-channel-help"></p>
                         </div>
                         <div class="theme-mode-switcher" id="update-channel-switcher">
-                            <button class="theme-mode-btn" type="button" data-update-channel="stable">Стабільний</button>
-                            <button class="theme-mode-btn" type="button" data-update-channel="beta">Бета</button>
+                            <button class="theme-mode-btn" type="button" data-update-channel="stable">Основний</button>
+                            <button class="theme-mode-btn" type="button" data-update-channel="beta">Тестовий</button>
                         </div>
                     </div>
                 </div>
                 <p class="settings-help-text helper-text settings-reveal" id="app-version-hint" hidden></p>
-                <button class="settings-check-update-btn" id="app-update-check-now" type="button">Перевірити оновлення</button>
+                <button class="settings-check-update-btn" id="app-update-check-now" type="button">Перевірити зараз</button>
                 <p class="settings-update-summary helper-text settings-reveal" id="app-update-summary" hidden></p>
                 <button class="settings-check-update-btn settings-update-download-btn settings-reveal" id="app-update-download-inline" type="button" hidden>Завантажити оновлення</button>
                 <p class="settings-update-debug helper-text settings-reveal" id="app-update-debug-status" hidden>
-                    Статус перевірки оновлення: ще не запускалась.
+                    Ще не перевіряли, чи є нова версія.
                 </p>
             </div>
 
             <div class="settings-danger-zone">
-                <p class="settings-danger-text">Повне очищення видалить графік, ручні зміни, нотатки й усі візуальні налаштування. Свята залишаться.</p>
-                <button class="settings-danger-btn" id="hard-reset-btn" type="button">Утримуй для повного очищення</button>
+                <p class="settings-danger-text">Повне очищення видалить ваш графік, дні, які ви змінювали вручну, нотатки, додані графіки й налаштування. Свята залишаться.</p>
+                <button class="settings-danger-btn" id="hard-reset-btn" type="button">Утримуйте, щоб стерти все</button>
             </div>
         </div>
     </div>
@@ -318,7 +311,7 @@
         <div class="schedule-card">
             <div class="schedule-intro">
                 <div class="modal-shell-header">
-                    <h2 class="schedule-title"><span>Ваш графік</span></h2>
+                    <h2 class="schedule-title"><span>Оберіть свій графік</span></h2>
                     <button class="schedule-close" id="schedule-overlay-close" aria-label="Закрити">
                         <svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true">
                             <path d="M6 6l12 12"></path>
@@ -328,12 +321,12 @@
                 </div>
 
                 <div class="schedule-onboarding" id="schedule-onboarding">
-                    <span class="schedule-onboarding-kicker">Перший крок</span>
-                    <p class="schedule-onboarding-text">Виберіть графік роботи для свого календаря.</p>
+                    <span class="schedule-onboarding-kicker">Почнемо</span>
+                    <p class="schedule-onboarding-text">Виберіть графік, і календар одразу підлаштується під нього.</p>
                 </div>
 
                 <div class="schedule-info helper-text helper-text-inline">
-                    Оберіть готовий варіант або свій.
+                    Можна вибрати готовий варіант або задати свій.
                 </div>
             </div>
 
@@ -372,7 +365,7 @@
                             <path d="M19.2 12h2.3"></path>
                         </svg>
                     </strong>
-                    <span class="schedule-btn-label">Свій</span>
+                    <span class="schedule-btn-label">Свій варіант</span>
                 </button>
             </div>
 
@@ -390,13 +383,13 @@
             </div>
 
             <div class="custom-input-group">
-                <label class="custom-input-label">Початок циклу</label>
+                <label class="custom-input-label">З якої дати стартує цикл</label>
                 <input type="date" id="schedule-start-date" class="custom-input control-input" />
             </div>
 
             <div class="schedule-buttons">
                 <button class="schedule-btn-action primary" id="apply-schedule">Застосувати</button>
-                <button class="schedule-btn-action secondary" id="schedule-overlay-close2">Назад</button>
+                <button class="schedule-btn-action secondary" id="schedule-overlay-close2">Закрити</button>
             </div>
         </div>
     </div>
@@ -413,14 +406,14 @@
                         </svg>
                     </button>
                 </div>
-                <p class="schedule-info helper-text helper-text-inline">Додайте графіки для перегляду.</p>
+                <p class="schedule-info helper-text helper-text-inline">Додайте графіки колег або інші зміни, щоб бачити їх у календарі.</p>
             </div>
 
             <div class="profiles-list" id="profiles-list"></div>
 
             <div class="profiles-add-form" id="profiles-add-form">
                 <button class="profiles-add-toggle" id="profiles-add-toggle" type="button" aria-expanded="false" aria-controls="profiles-add-collapse">
-                    <span class="profiles-add-heading">Додати графік</span>
+                    <span class="profiles-add-heading">Додати ще один графік</span>
                     <span class="profiles-add-toggle-icon" id="profiles-add-toggle-icon" aria-hidden="true">
                         <svg class="icon-glyph" viewBox="0 0 24 24">
                             <path d="m9.5 5 7 7-7 7"></path>
@@ -431,7 +424,7 @@
                 <div class="profiles-add-collapse" id="profiles-add-collapse">
                     <div class="custom-input-group">
                         <label class="custom-input-label">Назва</label>
-                        <input type="text" id="profile-name" class="custom-input control-input" maxlength="30" placeholder="Наприклад: Графік 2/2">
+                        <input type="text" id="profile-name" class="custom-input control-input" maxlength="30" placeholder="Наприклад: Сергій 2/2">
                     </div>
                     <div class="profiles-schedule-row">
                         <div class="profiles-schedule-templates" id="profile-schedule-templates">
@@ -440,7 +433,7 @@
                             <button class="schedule-btn schedule-btn-sm" data-profile-schedule="5/2" type="button"><strong>5/2</strong><span class="schedule-btn-label profile-schedule-caption">5 роб. / 2 вих.</span></button>
                             <button class="schedule-btn schedule-btn-sm" data-profile-schedule="3/3" type="button"><strong>3/3</strong><span class="schedule-btn-label profile-schedule-caption">3 роб. / 3 вих.</span></button>
                             <button class="schedule-btn schedule-btn-sm" data-profile-schedule="2/2" type="button"><strong>2/2</strong><span class="schedule-btn-label profile-schedule-caption">2 роб. / 2 вих.</span></button>
-                            <button class="schedule-btn schedule-btn-sm" data-profile-schedule="custom" type="button"><strong class="schedule-btn-icon" aria-hidden="true"><svg class="icon-glyph" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.25"></circle><path d="M19.3 15.2 20.5 16.9 18.9 18.5 17.2 17.3"></path><path d="M4.7 15.2 3.5 16.9 5.1 18.5 6.8 17.3"></path><path d="M8.8 4.7 7.1 3.5 5.5 5.1 6.7 6.8"></path><path d="M15.2 4.7 16.9 3.5 18.5 5.1 17.3 6.8"></path><path d="M12 2.5v2.3"></path><path d="M12 19.2v2.3"></path><path d="M2.5 12h2.3"></path><path d="M19.2 12h2.3"></path></svg></strong><span class="schedule-btn-label profile-schedule-caption">Свій</span></button>
+                            <button class="schedule-btn schedule-btn-sm" data-profile-schedule="custom" type="button"><strong class="schedule-btn-icon" aria-hidden="true"><svg class="icon-glyph" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.25"></circle><path d="M19.3 15.2 20.5 16.9 18.9 18.5 17.2 17.3"></path><path d="M4.7 15.2 3.5 16.9 5.1 18.5 6.8 17.3"></path><path d="M8.8 4.7 7.1 3.5 5.5 5.1 6.7 6.8"></path><path d="M15.2 4.7 16.9 3.5 18.5 5.1 17.3 6.8"></path><path d="M12 2.5v2.3"></path><path d="M12 19.2v2.3"></path><path d="M2.5 12h2.3"></path><path d="M19.2 12h2.3"></path></svg></strong><span class="schedule-btn-label profile-schedule-caption">Свій варіант</span></button>
                         </div>
                     </div>
                     <div class="profiles-custom-fields" id="profile-custom-fields" hidden>
@@ -455,7 +448,7 @@
                     </div>
                     <div class="profiles-meta-row">
                         <div class="custom-input-group">
-                            <label class="custom-input-label">Початок зміни</label>
+                            <label class="custom-input-label">З якої дати стартує цикл</label>
                             <input type="date" id="profile-start-date" class="custom-input control-input">
                         </div>
                         <div class="custom-input-group profile-color-group">
@@ -479,6 +472,7 @@
     </div>
 
     <script src="data/config.js"></script>
+    <script src="js/motion.js"></script>
     <script src="js/weather.js"></script>
     <script src="js/schedule.js"></script>
     <script src="js/profiles.js"></script>

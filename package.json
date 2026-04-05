@@ -1,6 +1,6 @@
 {
   "name": "work-shift-calendar",
-  "version": "1.0.44",
+  "version": "1.0.45",
   "private": true,
   "description": "Static work shift calendar wrapped for Android with Capacitor.",
   "scripts": {
@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@capacitor/android": "^6.2.1",
+    "@capacitor/app": "^6.0.2",
     "@capacitor/app-launcher": "^6.0.4",
     "@capacitor/browser": "^6.0.6",
     "@capacitor/core": "^6.2.1"

@@ -35,7 +35,7 @@
     };
 
     let visualSwitchTimeoutId = null;
-    const VISUAL_SWITCH_GUARD_MS = 320;
+    const getVisualSwitchGuardMs = () => window.AppMotion?.getDurationMs?.('visualSwitchGuard', 280) ?? 280;
     const FALLBACK_STYLE_PRESET = DEFAULT_STYLE_PRESET;
 
     const STYLE_PRESET_IDS = new Set(STYLE_PRESET_DEFINITIONS.map((item) => item.id));
@@ -477,7 +477,7 @@
         visualSwitchTimeoutId = window.setTimeout(() => {
             document.body.classList.remove('is-visual-switching');
             visualSwitchTimeoutId = null;
-        }, VISUAL_SWITCH_GUARD_MS);
+        }, getVisualSwitchGuardMs());
     };
 
     const setStylePreset = (stylePreset, stylePresetBtns) => {

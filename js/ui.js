@@ -40,8 +40,8 @@ const settingsEls = {
 };
 
 if (settingsEls.resetBtn) {
-    settingsEls.resetBtn.textContent = '\u0421\u043a\u0438\u043d\u0443\u0442\u0438 \u0442\u0435\u043c\u0443';
-    settingsEls.resetBtn.title = '\u0421\u043a\u0438\u043d\u0443\u0442\u0438 \u0442\u0435\u043c\u0443, \u043a\u043e\u043b\u044c\u043e\u0440\u0438 \u0442\u0430 \u043e\u0444\u043e\u0440\u043c\u043b\u0435\u043d\u043d\u044f';
+    settingsEls.resetBtn.textContent = 'Скинути тему й кольори';
+    settingsEls.resetBtn.title = 'Повернути стандартну тему та кольори';
 }
 
 const HARD_RESET_HOLD_MS = 1500;
@@ -51,7 +51,7 @@ let hardResetHoldStartedAt = 0;
 let applySelectedThemeMode = null;
 let installIdHintResetTimer = null;
 let appVersionTapCount = 0;
-const SETTINGS_REVEAL_DURATION_MS = 260;
+const getSettingsRevealDurationMs = () => window.AppMotion?.getDurationMs?.('revealHide', 220) ?? 220;
 const isDevUiMode = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const APP_VERSION_TAP_TO_ENABLE_BETA_THRESHOLD = 20;
 
@@ -78,7 +78,7 @@ const setRevealSectionOpen = (sectionEl, isOpen) => {
     sectionEl._hideTimerId = window.setTimeout(() => {
         sectionEl.hidden = true;
         sectionEl._hideTimerId = null;
-    }, SETTINGS_REVEAL_DURATION_MS);
+    }, getSettingsRevealDurationMs());
 };
 
 const setSettingsRevealState = (sectionEl, isOpen) => {
@@ -197,30 +197,30 @@ const refreshAppUpdateSettingsUI = async () => {
 
     if (settingsEls.appUpdateChannelSummary) {
         settingsEls.appUpdateChannelSummary.textContent = effectiveChannel === 'beta'
-            ? 'Отримуєте бета-оновлення'
-            : 'Отримуєте стабільні оновлення';
+            ? 'У вас тестовий канал оновлень'
+            : 'У вас основний канал оновлень';
     }
 
     if (settingsEls.appUpdateSummary) {
         let summaryText = '';
 
         if (!debugMatchesCurrentChannel) {
-            summaryText = `Канал змінено на ${channelLabel}. Перевірте оновлення для цього каналу.`;
+            summaryText = `Перемкнули на ${channelLabel.toLowerCase()} канал. Можна перевірити, чи є там нова версія.`;
         } else if (debugState?.status === 'update-available' && debugState.availableVersion) {
             summaryText = effectiveChannel === 'beta'
-                ? `Доступна новіша бета-версія ${debugState.availableVersion}.`
-                : `Доступна новіша стабільна версія ${debugState.availableVersion}.`;
+                ? `Є новіша тестова версія ${debugState.availableVersion}.`
+                : `Є новіша версія ${debugState.availableVersion}.`;
         } else if (debugState?.status === 'dismissed' && debugState.availableVersion) {
             const untilText = formatUpdateTime(debugState.dismissedUntil);
             summaryText = untilText
-                ? `Оновлення ${debugState.availableVersion} приховано до ${untilText}.`
-                : `Оновлення ${debugState.availableVersion} тимчасово приховано.`;
+                ? `Версію ${debugState.availableVersion} сховали до ${untilText}.`
+                : `Цю версію тимчасово сховано.`;
         } else if (debugState?.status === 'up-to-date') {
-            summaryText = `У вас актуальна версія ${appVersion}.`;
+            summaryText = `У вас уже найновіша версія ${appVersion}.`;
         } else if (debugState?.status === 'checking') {
-            summaryText = 'Перевіряємо наявність новішої версії...';
+            summaryText = 'Шукаємо нову версію...';
         } else if (debugState?.status === 'manifest-unavailable') {
-            summaryText = 'Не вдалося перевірити оновлення. Спробуйте ще раз трохи пізніше.';
+            summaryText = 'Зараз не вдалося перевірити оновлення. Спробуйте трохи пізніше.';
         }
 
         settingsEls.appUpdateSummary.textContent = summaryText;
@@ -234,7 +234,7 @@ const refreshAppUpdateSettingsUI = async () => {
 
         settingsEls.appUpdateDownloadInline.disabled = !canDownload;
         settingsEls.appUpdateDownloadInline.textContent = availableVersion
-            ? `Завантажити ${availableVersion}`
+            ? `Завантажити версію ${availableVersion}`
             : 'Завантажити оновлення';
         settingsEls.appUpdateDownloadInline.dataset.downloadUrl = canDownload ? downloadUrl : '';
         setSettingsRevealState(settingsEls.appUpdateDownloadInline, canDownload);
@@ -243,10 +243,10 @@ const refreshAppUpdateSettingsUI = async () => {
     if (settingsEls.appUpdateCheckNow) {
         settingsEls.appUpdateCheckNow.hidden = false;
         settingsEls.appUpdateCheckNow.disabled = false;
-        settingsEls.appUpdateCheckNow.textContent = 'Перевірити оновлення';
+        settingsEls.appUpdateCheckNow.textContent = 'Перевірити зараз';
         settingsEls.appUpdateCheckNow.title = isNativeAndroidApp
-            ? 'Перевірити наявність новішої версії'
-            : 'Кнопка працює тільки в Android-додатку';
+            ? 'Перевірити, чи є нова версія'
+            : 'Працює тільки в Android-застосунку';
     }
 
     if (settingsEls.appUpdateDebugStatus) {
@@ -264,7 +264,7 @@ const refreshAppUpdateSettingsUI = async () => {
         }
 
         if (debugState?.manifestVersion) {
-            debugParts.push(`Маніфест: ${debugState.manifestVersion}`);
+            debugParts.push(`Файл оновлення: ${debugState.manifestVersion}`);
         }
 
         if (checkedAt) {
@@ -311,7 +311,7 @@ if (settingsEls.hardResetBtn) {
     settingsEls.hardResetBtn.innerHTML = `
         <span class="settings-danger-btn-fill" aria-hidden="true"></span>
         <span class="settings-danger-btn-content">
-            <span class="settings-danger-btn-title">Повне очищення</span>
+            <span class="settings-danger-btn-title">Очистити все</span>
         </span>
     `;
 }
@@ -376,7 +376,7 @@ const clearHardResetHold = () => {
 
     if (settingsEls.hardResetBtn) {
         settingsEls.hardResetBtn.classList.remove('is-holding');
-        setHardResetButtonState('Повне очищення', 0);
+        setHardResetButtonState('Очистити все', 0);
     }
 };
 
@@ -390,7 +390,7 @@ const updateHardResetProgress = () => {
     const remainingMs = Math.max(HARD_RESET_HOLD_MS - elapsed, 0);
     const remainingSeconds = (remainingMs / 1000).toFixed(1);
 
-    setHardResetButtonState(`${remainingSeconds}\u0441 \u0434\u043e \u0441\u043a\u0438\u0434\u0430\u043d\u043d\u044f`, progress * 100);
+    setHardResetButtonState(`${remainingSeconds}с до очищення`, progress * 100);
 
     if (progress < 1) {
         hardResetAnimationFrameId = requestAnimationFrame(updateHardResetProgress);
@@ -412,9 +412,9 @@ const startHardResetHold = () => {
         hardResetHoldTimer = null;
         hardResetHoldStartedAt = 0;
         settingsEls.hardResetBtn.classList.remove('is-holding');
-        setHardResetButtonState('\u041f\u0456\u0434\u0442\u0432\u0435\u0440\u0434\u0436\u0435\u043d\u043d\u044f...', 100);
+        setHardResetButtonState('Підтверджуємо...', 100);
 
-        if (!confirm('Це повністю очистить графік, ручні зміни, нотатки, графіки і всі локальні налаштування. Свята залишяться. Продовжити?')) {
+        if (!confirm('Це видалить ваш графік, дні, які ви змінювали вручну, нотатки, додані графіки й налаштування. Свята залишаться. Продовжити?')) {
             clearHardResetHold();
             return;
         }
@@ -505,7 +505,7 @@ if (settingsEls.appVersionTrigger) {
         appVersionTapCount = 0;
 
         if (!window.AppUpdate) {
-            showAppVersionHint('Beta зараз недоступна');
+            showAppVersionHint('Тестові оновлення зараз недоступні');
             return;
         }
 
@@ -514,13 +514,13 @@ if (settingsEls.appVersionTrigger) {
                 window.AppUpdate.setSelectedChannel?.('beta');
                 await window.AppUpdate.checkForAppUpdate?.({ manualCheck: true });
                 await refreshAppUpdateSettingsUI();
-                showAppVersionHint('Beta-доступ уже увімкнено');
+                showAppVersionHint('Тестові оновлення вже ввімкнені');
                 return;
             }
 
             const betaEnabled = window.AppUpdate.enableLocalBetaAccess?.() === true;
             if (!betaEnabled) {
-                showAppVersionHint('Не вдалося увімкнути Beta');
+                showAppVersionHint('Не вдалося ввімкнути тестові оновлення');
                 return;
             }
 
@@ -528,10 +528,10 @@ if (settingsEls.appVersionTrigger) {
             window.AppUpdate.setSelectedChannel?.('beta');
             await window.AppUpdate.checkForAppUpdate?.({ manualCheck: true });
             await refreshAppUpdateSettingsUI();
-            showAppVersionHint('Beta-доступ увімкнено');
+            showAppVersionHint('Тестові оновлення ввімкнено');
         } catch (error) {
             console.error('[AppUpdate] Failed to enable local beta access', error);
-            showAppVersionHint('Не вдалося увімкнути Beta');
+            showAppVersionHint('Не вдалося ввімкнути тестові оновлення');
         }
     });
 }
@@ -557,21 +557,21 @@ if (settingsEls.appUpdateCheckNow) {
 
         if (window.AppUpdate.isNativeAndroidApp?.() !== true) {
             if (settingsEls.appUpdateSummary) {
-                settingsEls.appUpdateSummary.textContent = 'Перевірка оновлень працює тільки в Android-додатку.';
+                settingsEls.appUpdateSummary.textContent = 'Перевірити оновлення можна тільки в Android-застосунку.';
                 setSettingsRevealState(settingsEls.appUpdateSummary, true);
             }
             return;
         }
 
         settingsEls.appUpdateCheckNow.disabled = true;
-        settingsEls.appUpdateCheckNow.textContent = 'Перевіряємо...';
+        settingsEls.appUpdateCheckNow.textContent = 'Шукаємо...';
 
         try {
             await window.AppUpdate.checkForAppUpdate?.({ manualCheck: true });
             await refreshAppUpdateSettingsUI();
         } finally {
             settingsEls.appUpdateCheckNow.disabled = false;
-            settingsEls.appUpdateCheckNow.textContent = 'Перевірити оновлення';
+            settingsEls.appUpdateCheckNow.textContent = 'Перевірити зараз';
         }
     });
 }
@@ -592,7 +592,7 @@ if (settingsEls.resetBtn) {
         event.preventDefault();
         event.stopImmediatePropagation();
 
-        if (confirm('\u0421\u043a\u0438\u043d\u0443\u0442\u0438 \u043b\u0438\u0448\u0435 \u0442\u0435\u043c\u0443, \u043a\u043e\u043b\u044c\u043e\u0440\u0438 \u0442\u0430 \u043e\u0444\u043e\u0440\u043c\u043b\u0435\u043d\u043d\u044f?')) {
+        if (confirm('Скинути лише тему й кольори?')) {
             resetSettings();
         }
     }, { capture: true });

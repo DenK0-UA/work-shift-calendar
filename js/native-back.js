@@ -24,6 +24,10 @@
         return true;
     };
 
+    const clearCalendarFilterIfNeeded = () => window.clearCalendarFilter?.() === true;
+
+    const returnToCurrentMonthIfNeeded = () => window.navigateCalendarToToday?.() === true;
+
     const handleBackNavigation = () => {
         if (window.isProfileColorPaletteOpen?.()) {
             window.closeProfileColorPalette?.();
@@ -55,24 +59,29 @@
             return true;
         }
 
+        if (clearCalendarFilterIfNeeded()) {
+            return true;
+        }
+
+        if (returnToCurrentMonthIfNeeded()) {
+            return true;
+        }
+
         return false;
     };
 
+    const resolveAppPlugin = () => window.Capacitor?.Plugins?.App || window.Capacitor?.App || null;
+
     const registerNativeBackHandler = () => {
-        const appPlugin = window.Capacitor?.Plugins?.App;
+        const appPlugin = resolveAppPlugin();
         const isAndroid = window.Capacitor?.getPlatform?.() === 'android';
 
         if (!isAndroid || !appPlugin?.addListener) {
             return;
         }
 
-        appPlugin.addListener('backButton', ({ canGoBack }) => {
+        appPlugin.addListener('backButton', () => {
             if (handleBackNavigation()) {
-                return;
-            }
-
-            if (canGoBack && window.history.length > 1) {
-                window.history.back();
                 return;
             }
 
