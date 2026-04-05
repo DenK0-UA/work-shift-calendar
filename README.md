@@ -86,6 +86,23 @@ npm run android:live
 
 Якщо для вашого каналу виходить нова збірка, застосунок може запропонувати її встановити прямо всередині себе.
 
+## Разовий stable реліз за датою і часом
+
+Для разового автопереведення beta в stable додано конфіг [`.github/one-time-stable-release.json`](.github/one-time-stable-release.json) і workflow [`.github/workflows/schedule-stable-once.yml`](.github/workflows/schedule-stable-once.yml).
+
+- `enabled` вмикає або вимикає розклад
+- `version` це версія beta, яка вже має бути опублікована в `beta/version.json`
+- `releaseAtUtc` задається тільки в UTC у форматі `YYYY-MM-DDTHH:MM:SSZ`
+- `notes` потрапляє в `stable/version.json`
+
+Workflow перевіряє конфіг кожні 5 хвилин, а коли час настає, він:
+
+- запускає існуючий `promote-stable.yml` через `workflow_dispatch`
+- чекає, поки `stable/version.json` оновиться в `main`
+- окремо запускає `deploy-pages.yml`, щоб застосунок побачив новий stable-маніфест без ручного push
+
+GitHub cron не гарантує старт рівно в секунду, тому фактичний запуск може зсунутись на кілька хвилин після заданого UTC-часу.
+
 ## Повне очищення
 
 У `Налаштуваннях` є кнопка `Очистити все`. Вона скидає:
