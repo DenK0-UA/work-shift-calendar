@@ -167,15 +167,15 @@ body.app-setup-pending .main-container {
     border-color: var(--interactive-active-border);
     background: var(--interactive-active-bg);
     color: var(--interactive-active-color);
-    box-shadow: var(--interactive-active-inset);
+    box-shadow: var(--interactive-active-inset), var(--interactive-active-shadow);
 }
 
 .schedule-btn.active::before {
-    opacity: 0.72;
+    opacity: 0.22;
 }
 
 .schedule-btn.active .schedule-btn-label {
-    opacity: 0.88;
+    opacity: 1;
 }
 
 .schedule-btn-label {

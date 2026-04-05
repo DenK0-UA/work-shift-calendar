@@ -760,6 +760,7 @@ window.AppUpdate = {
     getChannelLabel,
     getInstallId: () => betaAccessState.installId,
     getSelectedChannel: readSelectedChannel,
+    hideBanner: hideAppUpdateBanner,
     isBetaAllowedForThisInstall: canAccessBetaChannel,
     isNativeAndroidApp,
     loadBetaAccessState,

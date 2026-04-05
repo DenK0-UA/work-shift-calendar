@@ -17,10 +17,10 @@
     --off-text: #ffffff;
 
     --holiday-color: #C89B3C;
-    --holiday-marker-ring: rgba(251, 253, 255, 0.94);
-    --holiday-marker-shadow: 0 4px 10px rgba(200, 155, 60, 0.24);
-    --holiday-day-ring: rgba(200, 155, 60, 0.42);
-    --holiday-day-glow: 0 0 0 2px rgba(200, 155, 60, 0.22), 0 8px 18px rgba(200, 155, 60, 0.14);
+    --holiday-marker-ring: rgba(252, 253, 255, 0.96);
+    --holiday-marker-shadow: 0 3px 8px rgba(200, 155, 60, 0.18);
+    --holiday-day-ring: rgba(200, 155, 60, 0.52);
+    --holiday-day-glow: 0 0 0 1px rgba(200, 155, 60, 0.34), 0 6px 12px rgba(200, 155, 60, 0.1);
     --glass-bg: transparent;
     --glass-border: transparent;
     --card-border: rgba(24, 33, 45, 0.16);
@@ -293,10 +293,10 @@
     --off-text: #ffffff;
 
     --holiday-color: #E2B85B;
-    --holiday-marker-ring: rgba(18, 26, 40, 0.96);
-    --holiday-marker-shadow: 0 4px 12px rgba(226, 184, 91, 0.28);
-    --holiday-day-ring: rgba(226, 184, 91, 0.48);
-    --holiday-day-glow: 0 0 0 2px rgba(226, 184, 91, 0.24), 0 10px 22px rgba(226, 184, 91, 0.14);
+    --holiday-marker-ring: rgba(18, 26, 40, 0.98);
+    --holiday-marker-shadow: 0 3px 10px rgba(226, 184, 91, 0.22);
+    --holiday-day-ring: rgba(226, 184, 91, 0.62);
+    --holiday-day-glow: 0 0 0 1px rgba(226, 184, 91, 0.4), 0 6px 14px rgba(226, 184, 91, 0.12);
     --glass-bg: transparent;
     --glass-border: transparent;
     --card-border: rgba(227, 232, 242, 0.12);
@@ -346,6 +346,20 @@
     --focus-ring-strong: 0 0 0 3px rgba(168, 199, 250, 0.26);
     --text-on-accent: #f7fbff;
     --text-accent-strong: color-mix(in srgb, var(--accent) 84%, white);
+    --interactive-active-bg: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--accent) 26%, #2a3950) 0%,
+        color-mix(in srgb, var(--accent) 18%, #223046) 100%
+    );
+    --interactive-active-bg-soft: linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--accent) 22%, #29374c) 0%,
+        color-mix(in srgb, var(--accent) 14%, #202c40) 100%
+    );
+    --interactive-active-border: color-mix(in srgb, var(--accent) 72%, white 18%);
+    --interactive-active-color: var(--text-on-accent);
+    --interactive-active-shadow: 0 1px 2px rgba(0, 0, 0, 0.2), 0 6px 14px rgba(6, 12, 20, 0.18);
+    --interactive-active-inset: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     --modal-overlay: rgba(8, 11, 17, 0.64);
     --page-gradient: linear-gradient(180deg, #111318 0%, #171b22 100%);
     --page-side-glow: none;

@@ -615,6 +615,7 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
     background: var(--interactive-active-bg);
     border-color: var(--interactive-active-border);
     color: var(--interactive-active-color);
+    font-weight: 800;
     box-shadow: var(--interactive-active-inset), var(--interactive-active-shadow);
 }
 
@@ -692,6 +693,7 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
     background: var(--interactive-active-bg);
     border-color: var(--interactive-active-border);
     color: var(--interactive-active-color);
+    font-weight: 800;
     box-shadow: var(--interactive-active-inset), var(--interactive-active-shadow);
 }
 

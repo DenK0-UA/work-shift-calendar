@@ -525,6 +525,10 @@ document.addEventListener('keydown', (e) => {
 
 window.openProfilesOverlay = () => openProfilesOverlay();
 window.closeProfilesOverlay = () => closeProfilesOverlay();
+window.closeProfileEditOverlay = () => closeEditProfile();
+window.isProfileEditOverlayOpen = () => Boolean(editOverlayEl?.classList.contains('active'));
+window.closeProfileColorPalette = () => closeProfileColorPicker();
+window.isProfileColorPaletteOpen = () => Boolean(profileColorPickerState.overlayEl?.classList.contains('active'));
 
 // --- Edit profile (inline overlay) ---
 let editSelectedSchedule = null;

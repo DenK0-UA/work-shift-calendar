@@ -97,15 +97,15 @@
 
 .day[data-holiday] {
     border-color: var(--holiday-day-ring);
-    box-shadow: var(--holiday-day-glow), var(--day-work-shadow);
+    box-shadow: inset 0 0 0 1px var(--holiday-day-ring), var(--holiday-day-glow), var(--day-work-shadow);
 }
 
 .day[data-holiday][data-status="off"] {
-    box-shadow: var(--holiday-day-glow), var(--day-off-shadow);
+    box-shadow: inset 0 0 0 1px var(--holiday-day-ring), var(--holiday-day-glow), var(--day-off-shadow);
 }
 
 .day.today[data-holiday] {
-    box-shadow: var(--holiday-day-glow), var(--calendar-today-shadow) !important;
+    box-shadow: inset 0 0 0 1px var(--holiday-day-ring), var(--holiday-day-glow), var(--calendar-today-shadow) !important;
 }
 
 .holiday-marker {

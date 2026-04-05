@@ -574,6 +574,9 @@ const closeModal = () => {
     syncSelectedDayCell();
 };
 
+window.closeDayModal = closeModal;
+window.isDayModalOpen = () => calendarEls.modal?.classList.contains('active') === true;
+
 calendarEls.grid.addEventListener('click', (event) => {
     const dayEl = event.target.closest('.day');
     if (!dayEl || dayEl.classList.contains('empty')) {
