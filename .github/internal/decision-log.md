@@ -1,0 +1,11 @@
+# Decision Log
+
+- `2026-04-06`: `README.md` is product-facing only and should not be used as a developer handbook
+- `2026-04-06`: Internal AI-facing notes live under `.github/internal/` and should carry the real development thread between chats
+- `2026-04-06`: The internal docs are project memory, but time-sensitive state must still be verified from current source-of-truth files before acting
+- `2026-04-06`: Releases are performed only on direct user command; do not self-initiate beta or stable publishing
+- `2026-04-06`: GitHub Pages must be treated as a separate visibility step for app updates, not as an automatic side effect of metadata commits
+- `2026-04-06`: A user request to release beta/stable means end-to-end app-visible release completion, not just tag creation or a GitHub release page
+- `2026-04-06`: If a release adds user-visible value, review `README.md` and add only the product-facing benefits worth selling
+- `2026-04-06`: Internal AI docs should be kept continuously updated after meaningful work so context is not lost across sessions
+- `2026-04-06`: Do not scatter the same volatile fact across many internal files when one authoritative location is enough
