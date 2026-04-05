@@ -408,12 +408,14 @@ body {
     text-rendering: optimizeLegibility;
 }
 
+body.has-managed-overlay,
 body:has(.modal-overlay.active),
 body:has(.settings-overlay.active),
 body:has(.schedule-overlay.active),
 body:has(.profiles-overlay.active),
 body:has(.profile-edit-overlay.active),
-body:has(.profile-color-modal.active) {
+body:has(.profile-color-modal.active),
+body:has(.app-update-overlay.active) {
     overflow: hidden;
 }
 

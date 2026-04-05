@@ -387,18 +387,21 @@
     padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
     background: var(--modal-overlay);
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
     transition: opacity var(--overlay-fade-duration) var(--motion-ease-exit);
 }
 
 .profile-color-modal.active {
     opacity: 1;
+    visibility: visible;
     pointer-events: auto;
 }
 
 .profile-color-modal-card {
     width: 100%;
     max-width: 360px;
+    margin-block: auto;
     padding: var(--space-5);
     border-radius: var(--shell-radius);
     background: var(--main-container-bg);
@@ -409,12 +412,14 @@
     gap: var(--space-3);
     transform: var(--modal-card-initial-transform);
     opacity: 0;
+    pointer-events: none;
     transition: var(--modal-card-transition);
 }
 
 .profile-color-modal.active .profile-color-modal-card {
     transform: var(--modal-card-active-transform);
     opacity: 1;
+    pointer-events: auto;
 }
 
 .profile-color-modal-header {
@@ -586,12 +591,14 @@
     padding: var(--space-5);
     padding-bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
     opacity: 0;
+    visibility: hidden;
     pointer-events: none;
     transition: opacity var(--overlay-fade-duration) var(--motion-ease-exit);
 }
 
 .profile-edit-overlay.active {
     opacity: 1;
+    visibility: visible;
     pointer-events: auto;
 }
 
@@ -601,6 +608,7 @@
     padding: var(--space-6);
     width: 100%;
     max-width: 360px;
+    margin-block: auto;
     border: 1px solid var(--card-border);
     box-shadow: var(--card-shadow);
     display: flex;
@@ -608,12 +616,14 @@
     gap: var(--space-3);
     transform: var(--modal-card-initial-transform);
     opacity: 0;
+    pointer-events: none;
     transition: var(--modal-card-transition);
 }
 
 .profile-edit-overlay.active .profile-edit-card {
     transform: var(--modal-card-active-transform);
     opacity: 1;
+    pointer-events: auto;
 }
 
 .profile-edit-card .custom-input-group {

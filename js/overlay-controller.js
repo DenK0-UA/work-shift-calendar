@@ -1,7 +1,6 @@
 (() => {
     const overlayRegistry = new Map();
     let activeOverlayId = null;
-    let lockedScrollY = 0;
 
     const toArray = (value) => {
         if (Array.isArray(value)) return value;
@@ -33,19 +32,29 @@
         return entry.overlayEl.classList.contains('active');
     };
 
+    const syncOverlayInteractivity = (entry) => {
+        if (!entry?.overlayEl) {
+            return;
+        }
+
+        const isOpen = readOpenState(entry);
+        entry.overlayEl.setAttribute('aria-hidden', String(!isOpen));
+
+        if (isOpen) {
+            entry.overlayEl.removeAttribute('inert');
+            return;
+        }
+
+        entry.overlayEl.setAttribute('inert', '');
+    };
+
     const applyBodyScrollLock = () => {
         const body = document.body;
         if (!body || body.dataset.overlayScrollLock === 'true') {
             return;
         }
 
-        lockedScrollY = window.scrollY || window.pageYOffset || 0;
         body.dataset.overlayScrollLock = 'true';
-        body.style.position = 'fixed';
-        body.style.top = `-${lockedScrollY}px`;
-        body.style.left = '0';
-        body.style.right = '0';
-        body.style.width = '100%';
     };
 
     const releaseBodyScrollLock = () => {
@@ -54,15 +63,7 @@
             return;
         }
 
-        const restoreY = Math.abs(Number.parseInt(body.style.top || `${-lockedScrollY}`, 10)) || lockedScrollY || 0;
         body.dataset.overlayScrollLock = 'false';
-        body.style.position = '';
-        body.style.top = '';
-        body.style.left = '';
-        body.style.right = '';
-        body.style.width = '';
-        window.scrollTo(0, restoreY);
-        lockedScrollY = 0;
     };
 
     const syncActiveOverlayId = () => {
@@ -77,6 +78,10 @@
             const openEntry = Array.from(overlayRegistry.values()).find((entry) => readOpenState(entry));
             activeOverlayId = openEntry?.id || null;
         }
+
+        overlayRegistry.forEach((entry) => {
+            syncOverlayInteractivity(entry);
+        });
 
         document.body.classList.toggle('has-managed-overlay', Boolean(activeOverlayId));
 
@@ -155,6 +160,7 @@
         };
 
         overlayRegistry.set(id, entry);
+        syncOverlayInteractivity(entry);
 
         const openEls = resolveElements(openButtons);
         const closeEls = resolveElements(closeButtons);

@@ -109,6 +109,9 @@ function setProfilesOverlayOpen(isOpen) {
             setProfilesAddFormOpen(true);
         }
     } else {
+        closeProfileColorPicker();
+        closeEditProfile();
+        setProfilesAddFormOpen(false);
         profilesEls.overlay.classList.remove('active');
     }
 }
