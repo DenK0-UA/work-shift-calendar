@@ -13,7 +13,9 @@ const calendarEls = {
     magneticBtns: document.querySelectorAll('[data-magnetic]'),
     prevBtn: document.getElementById('prev-btn'),
     nextBtn: document.getElementById('next-btn'),
-    todayBtn: document.getElementById('today-btn')
+    todayBtn: document.getElementById('today-btn'),
+    modalPrevDay: document.getElementById('m-prev-day'),
+    modalNextDay: document.getElementById('m-next-day')
 };
 
 const modalStatusEls = {
@@ -30,7 +32,9 @@ const modalNoteEls = {
     input: document.getElementById('m-note-input'),
     actions: document.getElementById('m-note-actions'),
     save: document.getElementById('m-note-save'),
-    clear: document.getElementById('m-note-clear')
+    clear: document.getElementById('m-note-clear'),
+    status: document.getElementById('m-note-status'),
+    counter: document.getElementById('m-note-counter')
 };
 
 const undoEls = {
@@ -51,6 +55,7 @@ const supportsInteractiveHover = window.matchMedia('(hover: hover) and (pointer:
 const getCalendarMotionDurationMs = (key, fallbackMs) => window.AppMotion?.getDurationMs?.(key, fallbackMs) ?? fallbackMs;
 const getModalSectionRevealDurationMs = () => getCalendarMotionDurationMs('revealHide', 220);
 const getTiltResetDurationMs = () => getCalendarMotionDurationMs('tiltReset', 280);
+const modalNoteMaxLength = Number(modalNoteEls.input?.getAttribute('maxlength')) || 280;
 
 function setModalSectionOpen(sectionEl, isOpen) {
     if (!sectionEl) return;
@@ -116,6 +121,39 @@ function syncModalStatusMeta(year, month, day) {
 
     updateModalStatusBadge(activeModalStatusMeta.currentStatus);
     updateModalStatusActions();
+}
+
+function formatModalNavAriaLabel(date, prefix) {
+    const dayOfWeek = localeData.days[date.getUTCDay()].toLowerCase();
+    const monthLabel = localeData.months[date.getUTCMonth()].toLowerCase();
+    return `${prefix}: ${dayOfWeek}, ${date.getUTCDate()} ${monthLabel}`;
+}
+
+function updateModalDayNavigation(year, month, day) {
+    if (!calendarEls.modalPrevDay || !calendarEls.modalNextDay) {
+        return;
+    }
+
+    const previousDate = new Date(Date.UTC(year, month, day));
+    previousDate.setUTCDate(previousDate.getUTCDate() - 1);
+
+    const nextDate = new Date(Date.UTC(year, month, day));
+    nextDate.setUTCDate(nextDate.getUTCDate() + 1);
+
+    calendarEls.modalPrevDay.setAttribute('aria-label', formatModalNavAriaLabel(previousDate, 'Попередній день'));
+    calendarEls.modalNextDay.setAttribute('aria-label', formatModalNavAriaLabel(nextDate, 'Наступний день'));
+}
+
+function getModalNoteRawValue() {
+    return modalNoteEls.input.value;
+}
+
+function getModalNoteDraftValue() {
+    return getModalNoteRawValue().trim();
+}
+
+function hasModalNoteChanges() {
+    return getModalNoteDraftValue() !== activeModalSavedNote;
 }
 
 function hideUndoToast() {
@@ -468,6 +506,7 @@ function openModal(year, month, day, holidayName) {
     }
 
     syncModalStatusMeta(year, month, day);
+    updateModalDayNavigation(year, month, day);
     updateModalWeather(year, month, day);
     activeModalSavedNote = getDayNote(year, month, day);
     modalNoteEls.input.value = activeModalSavedNote;
@@ -538,32 +577,89 @@ function renderModalProfiles(year, month, day) {
 }
 
 function updateModalNoteActions() {
-    const currentValue = modalNoteEls.input.value.trim();
+    const rawValue = getModalNoteRawValue();
+    const currentValue = rawValue.trim();
     const hasText = currentValue.length > 0;
     const isChanged = currentValue !== activeModalSavedNote;
 
+    if (modalNoteEls.counter) {
+        modalNoteEls.counter.textContent = `${rawValue.length}/${modalNoteMaxLength}`;
+    }
+
+    if (modalNoteEls.status) {
+        let statusText = 'Нотатки немає';
+        let statusState = 'empty';
+
+        if (isChanged) {
+            statusText = 'Є незбережені зміни';
+            statusState = 'dirty';
+        } else if (hasText) {
+            statusText = 'Нотатку збережено';
+            statusState = 'saved';
+        }
+
+        modalNoteEls.status.textContent = statusText;
+        modalNoteEls.status.dataset.state = statusState;
+    }
+
     modalNoteEls.actions.classList.toggle('active', hasText || isChanged);
+    modalNoteEls.save.disabled = !isChanged;
+    modalNoteEls.clear.disabled = !hasText && !activeModalSavedNote;
 }
 
 function saveModalNote() {
     if (!activeModalDate) return;
 
-    const note = modalNoteEls.input.value.trim();
+    const note = getModalNoteDraftValue();
     setDayNote(activeModalDate.year, activeModalDate.month, activeModalDate.day, note);
     activeModalSavedNote = note;
     modalNoteEls.input.value = note;
     updateModalNoteActions();
+
+    if (typeof updatePeriodStatsPanel === 'function') {
+        updatePeriodStatsPanel();
+    }
 }
 
 function clearModalNote() {
     modalNoteEls.input.value = '';
     saveModalNote();
-    closeModal();
 }
 
 function resetModalNote() {
     modalNoteEls.input.value = activeModalSavedNote;
     updateModalNoteActions();
+}
+
+function openModalForDate(year, month, day) {
+    if (currentState.year !== year || currentState.month !== month) {
+        currentState.year = year;
+        currentState.month = month;
+        renderCalendar(year, month);
+    }
+
+    openModal(year, month, day, getHolidayName(year, month, day) || '');
+}
+
+function navigateModalDay(delta) {
+    if (!activeModalDate || !Number.isInteger(delta) || delta === 0) {
+        return false;
+    }
+
+    if (hasModalNoteChanges()) {
+        saveModalNote();
+    }
+
+    const targetDate = new Date(Date.UTC(activeModalDate.year, activeModalDate.month, activeModalDate.day));
+    targetDate.setUTCDate(targetDate.getUTCDate() + delta);
+
+    openModalForDate(
+        targetDate.getUTCFullYear(),
+        targetDate.getUTCMonth(),
+        targetDate.getUTCDate()
+    );
+
+    return true;
 }
 
 const closeModal = () => {
@@ -603,22 +699,45 @@ document.addEventListener('keydown', (e) => {
 modalNoteEls.input.addEventListener('input', updateModalNoteActions);
 modalNoteEls.save.addEventListener('click', () => {
     saveModalNote();
-    closeModal();
 });
 modalNoteEls.clear.addEventListener('click', clearModalNote);
 modalStatusEls.setWork.addEventListener('click', () => applyDayStatusChange('work'));
 modalStatusEls.setOff.addEventListener('click', () => applyDayStatusChange('off'));
 modalStatusEls.reset.addEventListener('click', () => applyDayStatusChange(null));
 undoEls.button.addEventListener('click', undoLastDayStatusChange);
+calendarEls.modalPrevDay?.addEventListener('click', () => navigateModalDay(-1));
+calendarEls.modalNextDay?.addEventListener('click', () => navigateModalDay(1));
 modalNoteEls.input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
         saveModalNote();
-        closeModal();
         e.preventDefault();
+        e.stopPropagation();
     }
 
     if (e.key === 'Escape') {
         resetModalNote();
+        e.preventDefault();
+        e.stopPropagation();
+    }
+});
+
+document.addEventListener('keydown', (e) => {
+    if (!calendarEls.modal.classList.contains('active')) {
+        return;
+    }
+
+    if (e.target === modalNoteEls.input) {
+        return;
+    }
+
+    if (e.key === 'ArrowLeft') {
+        navigateModalDay(-1);
+        e.preventDefault();
+        return;
+    }
+
+    if (e.key === 'ArrowRight') {
+        navigateModalDay(1);
         e.preventDefault();
     }
 });

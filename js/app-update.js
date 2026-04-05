@@ -7,7 +7,9 @@ const APP_UPDATE_STORAGE_KEYS = {
     installId: 'appInstallId',
     localBetaAccess: 'appUpdate:localBetaAccess',
     selectedChannel: 'appUpdate:channel',
-    dismissedEntryPrefix: 'appUpdate:dismissed:'
+    dismissedEntryPrefix: 'appUpdate:dismissed:',
+    installedVersion: 'appUpdate:installedVersion',
+    seenReleaseNotesVersion: 'appUpdate:seenReleaseNotesVersion'
 };
 
 const APP_UPDATE_DISMISS_MS = 24 * 60 * 60 * 1000;
@@ -29,6 +31,14 @@ const appUpdateEls = {
     text: document.getElementById('app-update-banner-text'),
     downloadBtn: document.getElementById('app-update-download'),
     dismissBtn: document.getElementById('app-update-dismiss')
+};
+
+const appReleaseNotesEls = {
+    overlay: document.getElementById('app-whats-new-overlay'),
+    title: document.getElementById('app-whats-new-title'),
+    summary: document.getElementById('app-whats-new-summary'),
+    list: document.getElementById('app-whats-new-list'),
+    closeBtn: document.getElementById('app-whats-new-close')
 };
 
 const appUpdateDebugState = {
@@ -75,6 +85,115 @@ function setAppUpdateDebugState(patch) {
 
 function getAppUpdateDebugSnapshot() {
     return { ...appUpdateDebugState };
+}
+
+let pendingAppUpdateBannerManifest = null;
+
+function normalizeStoredVersion(value) {
+    if (typeof value !== 'string') {
+        return '';
+    }
+
+    const normalizedValue = value.trim();
+    return /^\d+\.\d+\.\d+$/.test(normalizedValue) ? normalizedValue : '';
+}
+
+function readStoredVersion(key) {
+    try {
+        return normalizeStoredVersion(localStorage.getItem(key));
+    } catch (error) {
+        return '';
+    }
+}
+
+function writeStoredVersion(key, version) {
+    const normalizedVersion = normalizeStoredVersion(version);
+    if (!normalizedVersion) {
+        return;
+    }
+
+    try {
+        localStorage.setItem(key, normalizedVersion);
+    } catch (error) {}
+}
+
+function readInstalledAppVersion() {
+    return readStoredVersion(APP_UPDATE_STORAGE_KEYS.installedVersion);
+}
+
+function writeInstalledAppVersion(version) {
+    writeStoredVersion(APP_UPDATE_STORAGE_KEYS.installedVersion, version);
+}
+
+function readSeenReleaseNotesVersion() {
+    return readStoredVersion(APP_UPDATE_STORAGE_KEYS.seenReleaseNotesVersion);
+}
+
+function writeSeenReleaseNotesVersion(version) {
+    writeStoredVersion(APP_UPDATE_STORAGE_KEYS.seenReleaseNotesVersion, version);
+}
+
+function hasPersistedAppUsage() {
+    try {
+        const scheduleKeys = window.SCHEDULE_STORAGE_KEYS
+            ? Object.values(window.SCHEDULE_STORAGE_KEYS)
+            : ['scheduleConfig', 'customDayStatuses', 'dayNotes'];
+        const candidateKeys = [
+            ...scheduleKeys,
+            'workCalendarSettings',
+            APP_UPDATE_STORAGE_KEYS.selectedChannel,
+            APP_UPDATE_STORAGE_KEYS.localBetaAccess
+        ];
+
+        return candidateKeys.some((key) => Boolean(localStorage.getItem(key)));
+    } catch (error) {
+        return false;
+    }
+}
+
+function getCurrentReleaseNotes() {
+    const releaseNotesMap = typeof APP_RELEASE_NOTES === 'object' && APP_RELEASE_NOTES
+        ? APP_RELEASE_NOTES
+        : null;
+    const entry = releaseNotesMap?.[APP_RELEASE_VERSION];
+
+    if (!entry || !Array.isArray(entry.items)) {
+        return null;
+    }
+
+    const items = entry.items
+        .map((item) => {
+            if (typeof item === 'string') {
+                const normalizedItem = item.trim();
+                return normalizedItem ? { title: normalizedItem, text: '' } : null;
+            }
+
+            const title = typeof item?.title === 'string' ? item.title.trim() : '';
+            const text = typeof item?.text === 'string' ? item.text.trim() : '';
+
+            if (!title && !text) {
+                return null;
+            }
+
+            return {
+                title: title || text,
+                text: title ? text : ''
+            };
+        })
+        .filter(Boolean);
+
+    if (items.length === 0) {
+        return null;
+    }
+
+    return {
+        version: APP_RELEASE_VERSION,
+        title: typeof entry.title === 'string' && entry.title.trim()
+            ? entry.title.trim()
+            : `Що нового у ${APP_RELEASE_VERSION}`,
+        summary: typeof entry.summary === 'string' ? entry.summary.trim() : '',
+        items
+    };
 }
 
 function normalizeInstallId(value) {
@@ -350,6 +469,192 @@ function buildAppUpdateMessage(manifest) {
     return messageParts.join(' ');
 }
 
+function renderCurrentReleaseNotes(releaseNotes) {
+    if (!appReleaseNotesEls.overlay || !appReleaseNotesEls.title || !appReleaseNotesEls.summary || !appReleaseNotesEls.list) {
+        return;
+    }
+
+    appReleaseNotesEls.title.textContent = releaseNotes.title;
+    appReleaseNotesEls.summary.textContent = releaseNotes.summary;
+    appReleaseNotesEls.summary.hidden = !releaseNotes.summary;
+    appReleaseNotesEls.list.replaceChildren();
+
+    releaseNotes.items.forEach((item) => {
+        const cardEl = document.createElement('article');
+        cardEl.className = 'app-whats-new-item';
+
+        const titleEl = document.createElement('div');
+        titleEl.className = 'app-whats-new-item-title';
+        titleEl.textContent = item.title;
+        cardEl.appendChild(titleEl);
+
+        if (item.text) {
+            const textEl = document.createElement('p');
+            textEl.className = 'app-whats-new-item-text';
+            textEl.textContent = item.text;
+            cardEl.appendChild(textEl);
+        }
+
+        appReleaseNotesEls.list.appendChild(cardEl);
+    });
+}
+
+function setReleaseNotesOverlayOpen(isOpen) {
+    if (!appReleaseNotesEls.overlay) {
+        return false;
+    }
+
+    if (appReleaseNotesEls.overlay._hideTimerId) {
+        clearTimeout(appReleaseNotesEls.overlay._hideTimerId);
+        appReleaseNotesEls.overlay._hideTimerId = null;
+    }
+
+    if (isOpen) {
+        appReleaseNotesEls.overlay.hidden = false;
+        // Force layout so the active class transition can run immediately.
+        void appReleaseNotesEls.overlay.offsetWidth;
+        appReleaseNotesEls.overlay.classList.add('active');
+        return true;
+    }
+
+    appReleaseNotesEls.overlay.classList.remove('active');
+    appReleaseNotesEls.overlay._hideTimerId = window.setTimeout(() => {
+        appReleaseNotesEls.overlay.hidden = true;
+        appReleaseNotesEls.overlay._hideTimerId = null;
+    }, getAppUpdateBannerTransitionMs());
+    return true;
+}
+
+function isReleaseNotesOverlayOpen() {
+    return Boolean(
+        appReleaseNotesEls.overlay
+        && !appReleaseNotesEls.overlay.hidden
+        && appReleaseNotesEls.overlay.classList.contains('active')
+    );
+}
+
+function closeReleaseNotesOverlay() {
+    writeSeenReleaseNotesVersion(APP_RELEASE_VERSION);
+
+    if (window.AppShellOverlays?.isOpen?.('whats-new')) {
+        return window.AppShellOverlays.close('whats-new', { reason: 'dismiss' });
+    }
+
+    if (pendingAppUpdateBannerManifest) {
+        window.setTimeout(() => {
+            flushPendingAppUpdateBanner();
+        }, getAppUpdateBannerTransitionMs());
+    }
+
+    return setReleaseNotesOverlayOpen(false);
+}
+
+function flushPendingAppUpdateBanner() {
+    if (!pendingAppUpdateBannerManifest) {
+        return;
+    }
+
+    const manifest = pendingAppUpdateBannerManifest;
+    pendingAppUpdateBannerManifest = null;
+    showAppUpdateBanner(manifest);
+}
+
+function openReleaseNotesOverlay(options = {}) {
+    const releaseNotes = options.releaseNotes || getCurrentReleaseNotes();
+    if (!releaseNotes || !appReleaseNotesEls.overlay) {
+        return false;
+    }
+
+    if (window.AppShellOverlays?.open) {
+        return window.AppShellOverlays.open('whats-new', {
+            reason: options.reason || 'manual',
+            releaseNotes
+        });
+    }
+
+    renderCurrentReleaseNotes(releaseNotes);
+    return setReleaseNotesOverlayOpen(true);
+}
+
+const releaseNotesOverlayController = window.AppShellOverlays?.registerOverlay({
+    id: 'whats-new',
+    overlay: appReleaseNotesEls.overlay,
+    closeButtons: appReleaseNotesEls.closeBtn,
+    onOpen: ({ releaseNotes } = {}) => {
+        const notes = releaseNotes || getCurrentReleaseNotes();
+        if (!notes) {
+            return false;
+        }
+
+        renderCurrentReleaseNotes(notes);
+        return setReleaseNotesOverlayOpen(true);
+    },
+    onClose: () => {
+        writeSeenReleaseNotesVersion(APP_RELEASE_VERSION);
+        const closed = setReleaseNotesOverlayOpen(false);
+
+        if (closed && pendingAppUpdateBannerManifest) {
+            window.setTimeout(() => {
+                flushPendingAppUpdateBanner();
+            }, getAppUpdateBannerTransitionMs());
+        }
+
+        return closed;
+    }
+});
+
+if (!releaseNotesOverlayController && appReleaseNotesEls.overlay && appReleaseNotesEls.closeBtn) {
+    appReleaseNotesEls.closeBtn.addEventListener('click', closeReleaseNotesOverlay);
+    appReleaseNotesEls.overlay.addEventListener('click', (event) => {
+        if (event.target === appReleaseNotesEls.overlay) {
+            closeReleaseNotesOverlay();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && isReleaseNotesOverlayOpen()) {
+            closeReleaseNotesOverlay();
+        }
+    });
+}
+
+function maybeShowCurrentReleaseNotes() {
+    const releaseNotes = getCurrentReleaseNotes();
+    const installedVersion = readInstalledAppVersion();
+    const seenReleaseNotesVersion = readSeenReleaseNotesVersion();
+
+    if (!installedVersion) {
+        writeInstalledAppVersion(APP_RELEASE_VERSION);
+
+        if (!hasPersistedAppUsage()) {
+            writeSeenReleaseNotesVersion(APP_RELEASE_VERSION);
+            return false;
+        }
+
+        if (!releaseNotes || seenReleaseNotesVersion === APP_RELEASE_VERSION) {
+            return false;
+        }
+
+        return openReleaseNotesOverlay({ reason: 'existing-install', releaseNotes });
+    }
+
+    if (installedVersion !== APP_RELEASE_VERSION) {
+        writeInstalledAppVersion(APP_RELEASE_VERSION);
+
+        if (!releaseNotes || seenReleaseNotesVersion === APP_RELEASE_VERSION) {
+            return false;
+        }
+
+        return openReleaseNotesOverlay({ reason: 'updated', releaseNotes });
+    }
+
+    if (!releaseNotes || seenReleaseNotesVersion === APP_RELEASE_VERSION) {
+        return false;
+    }
+
+    return openReleaseNotesOverlay({ reason: 'unseen-current-version', releaseNotes });
+}
+
 function toExternalDownloadUrl(url) {
     if (typeof url !== 'string') {
         return '';
@@ -438,6 +743,8 @@ function hideAppUpdateBanner() {
         return;
     }
 
+    pendingAppUpdateBannerManifest = null;
+
     appUpdateEls.banner.classList.remove('active');
 
     if (appUpdateEls.banner._hideTimerId) {
@@ -456,6 +763,11 @@ function hideAppUpdateBanner() {
 
 function showAppUpdateBanner(manifest) {
     if (!appUpdateEls.banner || !appUpdateEls.text || !appUpdateEls.downloadBtn || !appUpdateEls.dismissBtn) {
+        return;
+    }
+
+    if (isReleaseNotesOverlayOpen() || window.AppShellOverlays?.isOpen?.('whats-new')) {
+        pendingAppUpdateBannerManifest = manifest;
         return;
     }
 
@@ -784,18 +1096,27 @@ bindAutomaticAppUpdateChecks();
 
 window.AppUpdate = {
     checkForAppUpdate,
+    closeWhatsNew: closeReleaseNotesOverlay,
     compareAppVersions,
     enableLocalBetaAccess,
     getDebugState: getAppUpdateDebugSnapshot,
     getAppVersion: () => APP_RELEASE_VERSION,
     getBetaAccessSnapshot,
     getChannelLabel,
+    getCurrentReleaseNotes,
     getInstallId: () => betaAccessState.installId,
     getSelectedChannel: readSelectedChannel,
+    hasCurrentReleaseNotes: () => Boolean(getCurrentReleaseNotes()),
     hideBanner: hideAppUpdateBanner,
     isBetaAllowedForThisInstall: canAccessBetaChannel,
     isNativeAndroidApp,
+    isWhatsNewOpen: isReleaseNotesOverlayOpen,
     loadBetaAccessState,
+    openWhatsNew: openReleaseNotesOverlay,
     openDownload: openApkDownload,
     setSelectedChannel: writeSelectedChannel
 };
+
+window.requestAnimationFrame(() => {
+    maybeShowCurrentReleaseNotes();
+});

@@ -319,6 +319,38 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
     justify-content: flex-end;
 }
 
+.app-whats-new-card {
+    max-width: 460px;
+}
+
+.app-whats-new-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.app-whats-new-item {
+    padding: var(--surface-block-padding-md);
+    border-radius: var(--surface-block-radius-md);
+    background: color-mix(in srgb, var(--surface-panel-subtle) 72%, var(--surface-panel-accent));
+    border: 1px solid var(--surface-panel-accent-border);
+    box-shadow: var(--surface-panel-subtle-shadow);
+}
+
+.app-whats-new-item-title {
+    font-size: var(--type-title-card-size);
+    font-weight: 700;
+    line-height: var(--type-title-card-line);
+    color: var(--text-primary);
+}
+
+.app-whats-new-item-text {
+    margin-top: var(--space-2);
+    color: var(--text-secondary);
+    font-size: var(--type-body-ui-size);
+    line-height: var(--type-body-ui-line);
+}
+
 .weather-refresh {
     width: var(--icon-button-size);
     height: var(--icon-button-size);
@@ -570,7 +602,7 @@ input[type="date"].control-input::-webkit-calendar-picker-indicator {
     flex-direction: column;
     gap: var(--space-4);
     overflow: hidden;
-    max-height: 420px;
+    max-height: 560px;
     opacity: 1;
     margin-top: var(--space-4);
     transform: translateY(0);

@@ -323,6 +323,7 @@ function getPeriodRange(period, year = currentState.year, month = currentState.m
 function calculatePeriodStats(period, year = currentState.year, month = currentState.month) {
     const range = getPeriodRange(period, year, month);
     const customStatuses = ensureCustomStatusesState();
+    const dayNotes = ensureDayNotesState();
     let work = 0;
     let off = 0;
     let currentWorkStreak = 0;
@@ -330,6 +331,8 @@ function calculatePeriodStats(period, year = currentState.year, month = currentS
     let maxWorkStreak = 0;
     let maxOffStreak = 0;
     let customCount = 0;
+    let notesCount = 0;
+    let holidayCount = 0;
 
     for (let date = new Date(range.start); date <= range.end; date.setUTCDate(date.getUTCDate() + 1)) {
         const yearValue = date.getUTCFullYear();
@@ -340,6 +343,14 @@ function calculatePeriodStats(period, year = currentState.year, month = currentS
 
         if (customStatuses[key]) {
             customCount++;
+        }
+
+        if (dayNotes[key]) {
+            notesCount++;
+        }
+
+        if (getHolidayName(yearValue, monthValue, dayValue)) {
+            holidayCount++;
         }
 
         if (status === 'work') {
@@ -355,13 +366,18 @@ function calculatePeriodStats(period, year = currentState.year, month = currentS
         }
     }
 
+    const totalDays = work + off;
+
     return {
         label: range.label,
         work,
         off,
         customCount,
+        notesCount,
+        holidayCount,
         longestWorkStreak: maxWorkStreak,
         longestOffStreak: maxOffStreak,
-        totalDays: work + off
+        workShare: totalDays > 0 ? Math.round((work / totalDays) * 100) : 0,
+        totalDays
     };
 }

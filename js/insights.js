@@ -7,7 +7,10 @@ const insightsEls = {
     off: document.getElementById('period-stat-off'),
     workStreak: document.getElementById('period-stat-work-streak'),
     offStreak: document.getElementById('period-stat-off-streak'),
-    custom: document.getElementById('period-stat-custom')
+    custom: document.getElementById('period-stat-custom'),
+    notes: document.getElementById('period-stat-notes'),
+    holidays: document.getElementById('period-stat-holidays'),
+    workShare: document.getElementById('period-stat-work-share')
 };
 
 let activeStatsPeriod = 'month';
@@ -25,6 +28,9 @@ function updatePeriodStatsPanel(period = activeStatsPeriod) {
     insightsEls.workStreak.textContent = `${stats.longestWorkStreak} д`;
     insightsEls.offStreak.textContent = `${stats.longestOffStreak} д`;
     insightsEls.custom.textContent = stats.customCount;
+    insightsEls.notes.textContent = stats.notesCount;
+    insightsEls.holidays.textContent = stats.holidayCount;
+    insightsEls.workShare.textContent = `${stats.workShare}%`;
 
     if (insightsEls.caption) {
         insightsEls.caption.textContent = `${stats.label} · ${stats.totalDays} днів`;

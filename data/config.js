@@ -1,5 +1,5 @@
 // --- Дані та Налаштування ---
-const APP_RELEASE_VERSION = '1.0.45';
+const APP_RELEASE_VERSION = '1.0.46';
 const APP_UPDATE_CHANNEL_DEFAULT = 'stable';
 const APP_UPDATE_MANIFEST_URLS = {
     stable: 'https://denk0-ua.github.io/work-shift-calendar/stable/version.json',
@@ -8,6 +8,44 @@ const APP_UPDATE_MANIFEST_URLS = {
 const APP_UPDATE_BETA_ACCESS_URL = 'https://denk0-ua.github.io/work-shift-calendar/beta/access.json';
 const APP_UPDATE_CHECK_ENABLED = true;
 const APP_UPDATE_CHECK_TIMEOUT_MS = 5000;
+const APP_RELEASE_NOTES = {
+    '1.0.45': {
+        title: 'Що нового у 1.0.45',
+        summary: 'Коротко про зміни, які стали помітнішими в щоденному користуванні.',
+        items: [
+            {
+                title: 'Стабільніші графіки',
+                text: 'Меню "Графіки" і пов\'язані вікна більше не повинні блокувати натискання після відкриття та закриття.'
+            },
+            {
+                title: 'Краща кнопка Назад на Android',
+                text: 'Спочатку закриваються відкриті вікна, меню й фільтри, а застосунок не згортається завчасно.'
+            },
+            {
+                title: 'Зрозуміліше оновлення',
+                text: 'Апка чіткіше показує, коли доступна нова версія, і простіше відкриває сторінку оновлення.'
+            }
+        ]
+    },
+    '1.0.46': {
+        title: 'Що нового у 1.0.46',
+        summary: 'Три зміни, які стали помітні прямо в щоденному використанні.',
+        items: [
+            {
+                title: 'Блок "Що нового" після оновлення',
+                text: 'Після встановлення нової версії застосунок коротко показує, що саме змінилось.'
+            },
+            {
+                title: 'Швидша модалка дня',
+                text: 'У вікні дня можна переходити на попередній або наступний день, а нотатка показує стан і лічильник символів.'
+            },
+            {
+                title: 'Розширена статистика',
+                text: 'У статистиці періоду тепер видно дні з нотатками, святкові дні та відсоток навантаження.'
+            }
+        ]
+    }
+};
 
 const DEMO_TODAY = new Date();
 const DEFAULT_SHIFT_START_DATE = new Date(Date.UTC(

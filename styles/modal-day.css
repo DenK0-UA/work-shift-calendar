@@ -8,6 +8,47 @@
     text-align: center;
 }
 
+.modal-day-header-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: var(--space-3);
+    align-items: center;
+    margin-bottom: var(--space-3);
+}
+
+.modal-day-header {
+    min-width: 0;
+}
+
+.modal-day-nav {
+    width: var(--icon-button-size);
+    height: var(--icon-button-size);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--icon-button-radius);
+    border: 1px solid var(--surface-panel-muted-border);
+    background: var(--surface-control);
+    color: var(--text-primary);
+    box-shadow: var(--surface-panel-subtle-shadow);
+    transition: var(--control-transition);
+}
+
+.modal-day-nav:hover {
+    transform: var(--icon-hover-transform);
+    background: var(--surface-control-hover);
+    box-shadow: var(--surface-panel-elevated-shadow-hover);
+}
+
+.modal-day-nav:active {
+    transform: scale(0.98);
+}
+
+.modal-day-nav:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring-soft);
+}
+
 .modal-date {
     font-family: var(--font-family-numeric);
     font-size: var(--type-number-hero-size);
@@ -252,6 +293,27 @@
     padding: var(--field-padding);
 }
 
+.modal-note-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+}
+
+.modal-note-status[data-state="dirty"] {
+    color: var(--accent);
+}
+
+.modal-note-status[data-state="saved"] {
+    color: var(--text-primary);
+}
+
+.modal-note-counter {
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
 .modal-note-textarea {
     min-height: 92px;
     resize: vertical;
@@ -282,6 +344,18 @@
 .modal-note-btn {
     font-weight: 800;
     padding: var(--space-3);
+}
+
+.modal-note-btn:disabled {
+    opacity: 0.56;
+    cursor: default;
+    transform: none;
+    box-shadow: none;
+}
+
+.modal-note-btn:disabled:hover {
+    transform: none;
+    box-shadow: none;
 }
 
 .modal-note-clear {

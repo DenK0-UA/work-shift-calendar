@@ -149,6 +149,18 @@
                     <div class="period-stat-label">Змінювали вручну</div>
                     <div class="period-stat-value" id="period-stat-custom">0</div>
                 </article>
+                <article class="period-stat-card">
+                    <div class="period-stat-label">З нотатками</div>
+                    <div class="period-stat-value" id="period-stat-notes">0</div>
+                </article>
+                <article class="period-stat-card">
+                    <div class="period-stat-label">Святкові</div>
+                    <div class="period-stat-value" id="period-stat-holidays">0</div>
+                </article>
+                <article class="period-stat-card">
+                    <div class="period-stat-label">Навантаження</div>
+                    <div class="period-stat-value" id="period-stat-work-share">0%</div>
+                </article>
                 </div>
             </div>
         </section>
@@ -168,10 +180,37 @@
         </div>
     </div>
 
+    <div class="app-update-overlay app-whats-new-overlay" id="app-whats-new-overlay" hidden aria-live="polite" aria-modal="true" role="dialog">
+        <div class="app-update-card app-whats-new-card">
+            <div class="app-update-banner-copy">
+                <div class="app-update-banner-title" id="app-whats-new-title">Що нового</div>
+                <p class="app-update-banner-text" id="app-whats-new-summary">Коротко про зміни в цій версії.</p>
+            </div>
+            <div class="app-whats-new-list" id="app-whats-new-list"></div>
+            <div class="app-update-banner-actions">
+                <button class="schedule-btn-action primary" id="app-whats-new-close" type="button">Зрозуміло</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="modal">
         <div class="modal-card">
-            <div class="modal-date" id="m-date">27</div>
-            <div class="modal-day-week" id="m-day-week">П'ятниця, Березень 2026</div>
+            <div class="modal-day-header-row">
+                <button class="modal-day-nav" id="m-prev-day" type="button" aria-label="Попередній день">
+                    <svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m14.5 5-7 7 7 7"></path>
+                    </svg>
+                </button>
+                <div class="modal-day-header">
+                    <div class="modal-date" id="m-date">27</div>
+                    <div class="modal-day-week" id="m-day-week">П'ятниця, Березень 2026</div>
+                </div>
+                <button class="modal-day-nav" id="m-next-day" type="button" aria-label="Наступний день">
+                    <svg class="icon-glyph" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="m9.5 5 7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
 
             <div class="modal-holiday" id="m-holiday"></div>
 
@@ -215,6 +254,10 @@
                     maxlength="280"
                     rows="3"
                 ></textarea>
+                <div class="modal-note-meta">
+                    <span class="modal-note-status helper-text" id="m-note-status">Нотатки немає</span>
+                    <span class="modal-note-counter helper-text" id="m-note-counter">0/280</span>
+                </div>
                 <div class="modal-note-actions" id="m-note-actions">
                     <button class="modal-note-btn modal-note-clear" id="m-note-clear" type="button">Очистити</button>
                     <button class="modal-note-btn modal-note-save" id="m-note-save" type="button">Зберегти</button>
