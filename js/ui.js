@@ -208,8 +208,8 @@ const refreshAppUpdateSettingsUI = async () => {
             summaryText = `Перемкнули на ${channelLabel.toLowerCase()} канал. Можна перевірити, чи є там нова версія.`;
         } else if (debugState?.status === 'update-available' && debugState.availableVersion) {
             summaryText = effectiveChannel === 'beta'
-                ? `Є новіша тестова версія ${debugState.availableVersion}.`
-                : `Є новіша версія ${debugState.availableVersion}.`;
+                ? `Доступна тестова версія ${debugState.availableVersion}.`
+                : `Доступна версія ${debugState.availableVersion}.`;
         } else if (debugState?.status === 'dismissed' && debugState.availableVersion) {
             const untilText = formatUpdateTime(debugState.dismissedUntil);
             summaryText = untilText
@@ -220,7 +220,7 @@ const refreshAppUpdateSettingsUI = async () => {
         } else if (debugState?.status === 'checking') {
             summaryText = 'Шукаємо нову версію...';
         } else if (debugState?.status === 'manifest-unavailable') {
-            summaryText = 'Зараз не вдалося перевірити оновлення. Спробуйте трохи пізніше.';
+            summaryText = 'Зараз не вдалося перевірити оновлення.';
         }
 
         settingsEls.appUpdateSummary.textContent = summaryText;
@@ -229,13 +229,10 @@ const refreshAppUpdateSettingsUI = async () => {
 
     if (settingsEls.appUpdateDownloadInline) {
         const downloadUrl = debugState?.downloadUrl || '';
-        const availableVersion = debugState?.availableVersion || '';
         const canDownload = debugMatchesCurrentChannel && debugState?.status === 'update-available' && Boolean(downloadUrl);
 
         settingsEls.appUpdateDownloadInline.disabled = !canDownload;
-        settingsEls.appUpdateDownloadInline.textContent = availableVersion
-            ? `Завантажити версію ${availableVersion}`
-            : 'Завантажити оновлення';
+        settingsEls.appUpdateDownloadInline.textContent = 'Відкрити оновлення';
         settingsEls.appUpdateDownloadInline.dataset.downloadUrl = canDownload ? downloadUrl : '';
         setSettingsRevealState(settingsEls.appUpdateDownloadInline, canDownload);
     }

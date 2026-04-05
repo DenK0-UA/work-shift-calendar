@@ -310,15 +310,44 @@ function resolveManifestAssetUrl(manifestUrl, assetUrl) {
     }
 }
 
-function buildAppUpdateMessage(manifest) {
-    const latestVersion = manifest.version;
-    const notes = typeof manifest.notes === 'string' ? manifest.notes.trim() : '';
-    const notesSuffix = notes ? ` ${notes}` : '';
-    if (manifest.channel === APP_UPDATE_CHANNELS.beta) {
-        return `Є новіша тестова версія ${latestVersion}. Зараз у вас ${APP_RELEASE_VERSION}.${notesSuffix}`;
+function getVisibleAppUpdateNotes(manifest) {
+    const notes = typeof manifest?.notes === 'string' ? manifest.notes.trim() : '';
+    if (!notes) {
+        return '';
     }
 
-    return `Є новіша версія ${latestVersion}. Зараз у вас ${APP_RELEASE_VERSION}.${notesSuffix}`;
+    const normalizedNotes = notes.toLowerCase();
+    const hiddenDefaultNotes = new Set([
+        'stable release channel.',
+        'beta release channel.',
+        'основний канал оновлень.',
+        'тестовий канал оновлень.'
+    ]);
+
+    return hiddenDefaultNotes.has(normalizedNotes) ? '' : notes;
+}
+
+function buildAvailableUpdateLabel(channel, version) {
+    if (normalizeUpdateChannel(channel) === APP_UPDATE_CHANNELS.beta) {
+        return `Доступна тестова версія ${version}.`;
+    }
+
+    return `Доступна версія ${version}.`;
+}
+
+function buildAppUpdateMessage(manifest) {
+    const latestVersion = manifest.version;
+    const notes = getVisibleAppUpdateNotes(manifest);
+    const messageParts = [
+        buildAvailableUpdateLabel(manifest.channel, latestVersion),
+        `Зараз у вас ${APP_RELEASE_VERSION}.`
+    ];
+
+    if (notes) {
+        messageParts.push(notes);
+    }
+
+    return messageParts.join(' ');
 }
 
 function toExternalDownloadUrl(url) {
@@ -664,7 +693,7 @@ async function resolveAvailableAppUpdateManifest(options = {}) {
             availableVersion: manifest.version,
             downloadUrl: manifest.apkUrl,
             status: 'update-available',
-            message: `Знайшли нову версію ${manifest.version}.`
+            message: buildAvailableUpdateLabel(channel, manifest.version)
         });
         return manifest;
     }
