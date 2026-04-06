@@ -53,6 +53,9 @@ Update routing after work:
 - new break/fix case with understood root cause: `troubleshooting-notes.md`
 - new repo-wide rule or decision that should persist: `decision-log.md`
 - new deferred idea, follow-up, or optional improvement: `ideas-backlog.md`
+
+## Behavioral rules
+
 - Never create, schedule, promote, or trigger beta/stable releases unless the user explicitly asks for that release action.
 - When the user explicitly asks to release a beta or stable version, treat that as an end-to-end app-visible release task, not just tag creation or a GitHub release object.
 - When changing UI source files in the repo root (`index.html`, `js/`, `styles/`, `data/`), rebuild `www/` before assuming the app is broken.

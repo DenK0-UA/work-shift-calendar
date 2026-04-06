@@ -63,8 +63,8 @@ Purpose:
 - Date of this snapshot: `2026-04-06`
 - App version in source files: `1.0.46`
 - Beta manifest version: `1.0.46`
-- Stable manifest version at snapshot time: `1.0.45`
-- One-time stable promotion is armed in `.github/one-time-stable-release.json` for `2026-04-06T10:00:00Z` which is `13:00 Europe/Kyiv`
+- Stable manifest version: `1.0.46`
+- One-time stable promotion for `1.0.46` has completed; `.github/one-time-stable-release.json` still shows `enabled: true` — consider disarming it
 
 ## Recent user-visible work
 
