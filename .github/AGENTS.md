@@ -2,6 +2,13 @@
 
 Before making substantial changes, read `.github/internal/project-context.md`.
 
+First-turn protocol (mandatory in every new chat):
+
+- On the first turn, before running git/build/release/code-edit commands, read `.github/AGENTS.md` and `.github/internal/project-context.md`.
+- After that, read only the most relevant file under `.github/internal/` for the current task type.
+- In the first user update, explicitly confirm which internal files were read.
+- If these files were skipped by mistake, pause and run the preflight immediately before continuing substantial work.
+
 Treat `.github/internal/` as the project memory, but use it correctly:
 
 - verify time-sensitive facts from source-of-truth files before acting on them

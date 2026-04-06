@@ -9,3 +9,4 @@
 - `2026-04-06`: If a release adds user-visible value, review `README.md` and add only the product-facing benefits worth selling
 - `2026-04-06`: Internal AI docs should be kept continuously updated after meaningful work so context is not lost across sessions
 - `2026-04-06`: Do not scatter the same volatile fact across many internal files when one authoritative location is enough
+- `2026-04-06`: Every new chat must run a first-turn AI preflight (`.github/AGENTS.md` + `.github/internal/project-context.md` + one task-relevant internal file) before substantial work
