@@ -15,7 +15,9 @@ const calendarEls = {
     nextBtn: document.getElementById('next-btn'),
     todayBtn: document.getElementById('today-btn'),
     modalPrevDay: document.getElementById('m-prev-day'),
-    modalNextDay: document.getElementById('m-next-day')
+    modalNextDay: document.getElementById('m-next-day'),
+    modalCard: document.querySelector('#modal .modal-card'),
+    modalSwipeHint: document.getElementById('m-day-swipe-hint')
 };
 
 const modalStatusEls = {
@@ -56,6 +58,173 @@ const getCalendarMotionDurationMs = (key, fallbackMs) => window.AppMotion?.getDu
 const getModalSectionRevealDurationMs = () => getCalendarMotionDurationMs('revealHide', 220);
 const getTiltResetDurationMs = () => getCalendarMotionDurationMs('tiltReset', 280);
 const modalNoteMaxLength = Number(modalNoteEls.input?.getAttribute('maxlength')) || 280;
+const MODAL_DAY_SWIPE_MAX_DURATION_MS = 420;
+const MODAL_DAY_SWIPE_MIN_DISTANCE_PX = 54;
+const MODAL_DAY_SWIPE_MAX_VERTICAL_DRIFT_PX = 42;
+const MODAL_DAY_SWIPE_AXIS_RATIO = 1.35;
+const MODAL_DAY_SWIPE_HINT_STORAGE_KEY = 'modalDaySwipeHintSeenVersion';
+const MODAL_DAY_SWIPE_HINT_SHOW_MS = 2800;
+const modalDaySwipeState = {
+    active: false,
+    startedOnInteractiveElement: false,
+    startX: 0,
+    startY: 0,
+    endX: 0,
+    endY: 0,
+    startedAt: 0
+};
+let modalSwipeHintHideTimerId = null;
+let modalSwipeHintShownInSession = false;
+
+function clearModalSwipeHintTimer() {
+    if (!modalSwipeHintHideTimerId) {
+        return;
+    }
+
+    clearTimeout(modalSwipeHintHideTimerId);
+    modalSwipeHintHideTimerId = null;
+}
+
+function getModalSwipeHintVersionKey() {
+    return typeof APP_RELEASE_VERSION === 'string' && APP_RELEASE_VERSION
+        ? APP_RELEASE_VERSION
+        : 'unknown';
+}
+
+function hasSeenModalSwipeHintForCurrentVersion() {
+    try {
+        return localStorage.getItem(MODAL_DAY_SWIPE_HINT_STORAGE_KEY) === getModalSwipeHintVersionKey();
+    } catch (_) {
+        return false;
+    }
+}
+
+function markModalSwipeHintAsSeen() {
+    try {
+        localStorage.setItem(MODAL_DAY_SWIPE_HINT_STORAGE_KEY, getModalSwipeHintVersionKey());
+    } catch (_) {}
+}
+
+function hideModalSwipeHint() {
+    clearModalSwipeHintTimer();
+    calendarEls.modalSwipeHint?.classList.remove('active');
+}
+
+function shouldShowModalSwipeHint() {
+    if (!calendarEls.modalSwipeHint || modalSwipeHintShownInSession) {
+        return false;
+    }
+
+    const hasTouchInput = navigator.maxTouchPoints > 0 || window.matchMedia('(pointer: coarse)').matches;
+    if (!hasTouchInput) {
+        return false;
+    }
+
+    return !hasSeenModalSwipeHintForCurrentVersion();
+}
+
+function showModalSwipeHintIfNeeded() {
+    if (!shouldShowModalSwipeHint()) {
+        return;
+    }
+
+    modalSwipeHintShownInSession = true;
+    markModalSwipeHintAsSeen();
+    calendarEls.modalSwipeHint.classList.add('active');
+
+    clearModalSwipeHintTimer();
+    modalSwipeHintHideTimerId = window.setTimeout(() => {
+        hideModalSwipeHint();
+    }, MODAL_DAY_SWIPE_HINT_SHOW_MS);
+}
+
+function isModalDaySwipeInteractiveTarget(target) {
+    if (!(target instanceof Element)) {
+        return false;
+    }
+
+    return Boolean(target.closest(
+        'button, input, textarea, select, a, [role="button"], .modal-note, .modal-status-actions'
+    ));
+}
+
+function playModalDaySwipeFeedback(direction) {
+    const cardEl = calendarEls.modalCard;
+    if (!cardEl || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+    }
+
+    const className = direction > 0 ? 'modal-day-swipe-next' : 'modal-day-swipe-prev';
+    cardEl.classList.remove('modal-day-swipe-next', 'modal-day-swipe-prev');
+    cardEl.classList.add(className);
+    cardEl.addEventListener('animationend', () => {
+        cardEl.classList.remove(className);
+    }, { once: true });
+}
+
+function handleModalDaySwipeStart(event) {
+    hideModalSwipeHint();
+    const touch = event.changedTouches?.[0];
+    if (!touch) {
+        return;
+    }
+
+    modalDaySwipeState.active = calendarEls.modal.classList.contains('active');
+    modalDaySwipeState.startedOnInteractiveElement = isModalDaySwipeInteractiveTarget(event.target);
+    modalDaySwipeState.startX = touch.screenX;
+    modalDaySwipeState.startY = touch.screenY;
+    modalDaySwipeState.endX = touch.screenX;
+    modalDaySwipeState.endY = touch.screenY;
+    modalDaySwipeState.startedAt = Date.now();
+}
+
+function handleModalDaySwipeMove(event) {
+    if (!modalDaySwipeState.active || modalDaySwipeState.startedOnInteractiveElement) {
+        return;
+    }
+
+    const touch = event.changedTouches?.[0];
+    if (!touch) {
+        return;
+    }
+
+    modalDaySwipeState.endX = touch.screenX;
+    modalDaySwipeState.endY = touch.screenY;
+}
+
+function handleModalDaySwipeEnd(event) {
+    if (!modalDaySwipeState.active || modalDaySwipeState.startedOnInteractiveElement) {
+        modalDaySwipeState.active = false;
+        return;
+    }
+
+    const touch = event.changedTouches?.[0];
+    if (!touch) {
+        modalDaySwipeState.active = false;
+        return;
+    }
+
+    modalDaySwipeState.endX = touch.screenX;
+    modalDaySwipeState.endY = touch.screenY;
+
+    const swipeDurationMs = Date.now() - modalDaySwipeState.startedAt;
+    const distanceX = modalDaySwipeState.endX - modalDaySwipeState.startX;
+    const distanceY = modalDaySwipeState.endY - modalDaySwipeState.startY;
+    const horizontalDistance = Math.abs(distanceX);
+    const verticalDistance = Math.abs(distanceY);
+    const isHorizontalEnough = horizontalDistance >= MODAL_DAY_SWIPE_MIN_DISTANCE_PX;
+    const isAxisAligned = horizontalDistance >= verticalDistance * MODAL_DAY_SWIPE_AXIS_RATIO;
+    const isVerticalDriftSafe = verticalDistance <= MODAL_DAY_SWIPE_MAX_VERTICAL_DRIFT_PX;
+    const isDurationSafe = swipeDurationMs <= MODAL_DAY_SWIPE_MAX_DURATION_MS;
+
+    if (isDurationSafe && isHorizontalEnough && isAxisAligned && isVerticalDriftSafe) {
+        const delta = distanceX < 0 ? 1 : -1;
+        playModalDaySwipeFeedback(delta);
+        navigateModalDay(delta);
+    }
+
+    modalDaySwipeState.active = false;
+}
 
 function setModalSectionOpen(sectionEl, isOpen) {
     if (!sectionEl) return;
@@ -514,6 +683,7 @@ function openModal(year, month, day, holidayName) {
     renderModalProfiles(year, month, day);
 
     calendarEls.modal.classList.add('active');
+    showModalSwipeHintIfNeeded();
     syncSelectedDayCell();
 }
 
@@ -663,6 +833,7 @@ function navigateModalDay(delta) {
 }
 
 const closeModal = () => {
+    hideModalSwipeHint();
     resetModalNote();
     activeModalDate = null;
     activeModalStatusMeta = null;
@@ -707,6 +878,9 @@ modalStatusEls.reset.addEventListener('click', () => applyDayStatusChange(null))
 undoEls.button.addEventListener('click', undoLastDayStatusChange);
 calendarEls.modalPrevDay?.addEventListener('click', () => navigateModalDay(-1));
 calendarEls.modalNextDay?.addEventListener('click', () => navigateModalDay(1));
+calendarEls.modalCard?.addEventListener('touchstart', handleModalDaySwipeStart, { passive: true });
+calendarEls.modalCard?.addEventListener('touchmove', handleModalDaySwipeMove, { passive: true });
+calendarEls.modalCard?.addEventListener('touchend', handleModalDaySwipeEnd, { passive: true });
 modalNoteEls.input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
         saveModalNote();

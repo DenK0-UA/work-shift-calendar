@@ -210,6 +210,14 @@ const refreshAppUpdateSettingsUI = async () => {
             summaryText = effectiveChannel === 'beta'
                 ? `Доступна тестова версія ${debugState.availableVersion}.`
                 : `Доступна версія ${debugState.availableVersion}.`;
+        } else if (debugState?.status === 'download-starting') {
+            summaryText = 'Готуємо завантаження APK...';
+        } else if (debugState?.status === 'downloading') {
+            summaryText = 'Завантаження вже стартувало. Дочекайтесь завершення в сповіщеннях Android.';
+        } else if (debugState?.status === 'permission-required') {
+            summaryText = 'Потрібен дозвіл на встановлення з невідомих джерел. Після дозволу натисніть кнопку ще раз.';
+        } else if (debugState?.status === 'open-release-page') {
+            summaryText = 'Пряме завантаження недоступне, тому відкрили сторінку релізу.';
         } else if (debugState?.status === 'dismissed' && debugState.availableVersion) {
             const untilText = formatUpdateTime(debugState.dismissedUntil);
             summaryText = untilText
@@ -229,12 +237,24 @@ const refreshAppUpdateSettingsUI = async () => {
 
     if (settingsEls.appUpdateDownloadInline) {
         const downloadUrl = debugState?.downloadUrl || '';
-        const canDownload = debugMatchesCurrentChannel && debugState?.status === 'update-available' && Boolean(downloadUrl);
+        const isUpdateAvailable = debugState?.status === 'update-available';
+        const isPermissionRequired = debugState?.status === 'permission-required';
+        const isFallbackOpen = debugState?.status === 'open-release-page';
+        const isDownloadStarting = debugState?.status === 'download-starting' || debugState?.status === 'downloading';
+        const canShowDownloadAction = debugMatchesCurrentChannel && Boolean(downloadUrl) && (
+            isUpdateAvailable || isPermissionRequired || isFallbackOpen || isDownloadStarting
+        );
 
-        settingsEls.appUpdateDownloadInline.disabled = !canDownload;
-        settingsEls.appUpdateDownloadInline.textContent = 'Відкрити оновлення';
-        settingsEls.appUpdateDownloadInline.dataset.downloadUrl = canDownload ? downloadUrl : '';
-        setSettingsRevealState(settingsEls.appUpdateDownloadInline, canDownload);
+        settingsEls.appUpdateDownloadInline.disabled = !canShowDownloadAction || isDownloadStarting;
+        settingsEls.appUpdateDownloadInline.textContent = isDownloadStarting
+            ? 'Завантажуємо...'
+            : isPermissionRequired
+                ? 'Надати дозвіл і повторити'
+                : isFallbackOpen
+                    ? 'Відкрити сторінку релізу'
+                    : 'Оновити застосунок';
+        settingsEls.appUpdateDownloadInline.dataset.downloadUrl = canShowDownloadAction ? downloadUrl : '';
+        setSettingsRevealState(settingsEls.appUpdateDownloadInline, canShowDownloadAction);
     }
 
     if (settingsEls.appUpdateCheckNow) {

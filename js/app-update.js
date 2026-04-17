@@ -668,6 +668,77 @@ function toExternalDownloadUrl(url) {
     return normalizedUrl;
 }
 
+function buildApkFileName(url, fallbackVersion) {
+    const safeVersion = typeof fallbackVersion === 'string' && /^\d+\.\d+\.\d+$/.test(fallbackVersion)
+        ? fallbackVersion
+        : APP_RELEASE_VERSION;
+
+    try {
+        const parsedUrl = new URL(url);
+        const tail = parsedUrl.pathname.split('/').pop() || '';
+        const decodedTail = decodeURIComponent(tail);
+        if (/\.apk$/i.test(decodedTail)) {
+            return decodedTail;
+        }
+    } catch (error) {}
+
+    return `work-shift-calendar-${safeVersion}.apk`;
+}
+
+function openReleasePageFallback(downloadUrl, message) {
+    const externalUrl = toReleasePageUrl(downloadUrl);
+    setAppUpdateDebugState({
+        status: 'open-release-page',
+        channel: appUpdateDebugState.channel || getSelectedChannel(),
+        availableVersion: appUpdateDebugState.availableVersion || '',
+        downloadUrl,
+        message: message || 'Не вдалося запустити пряме завантаження. Відкриваємо сторінку релізу.'
+    });
+
+    const openedWindow = window.open(externalUrl, '_blank', 'noopener');
+    if (!openedWindow) {
+        window.location.assign(externalUrl);
+    }
+}
+
+function syncUpdateBannerRuntimeState() {
+    if (!appUpdateEls.banner || !appUpdateEls.downloadBtn || !appUpdateEls.dismissBtn || appUpdateEls.banner.hidden) {
+        return;
+    }
+
+    const status = appUpdateDebugState.status;
+    appUpdateEls.downloadBtn.disabled = false;
+    appUpdateEls.downloadBtn.textContent = 'Відкрити оновлення';
+    appUpdateEls.dismissBtn.textContent = 'Пізніше';
+
+    if (status === 'download-starting' || status === 'downloading') {
+        appUpdateEls.downloadBtn.disabled = true;
+        appUpdateEls.downloadBtn.textContent = status === 'download-starting' ? 'Готуємо...' : 'Завантажуємо...';
+        appUpdateEls.dismissBtn.textContent = 'Згорнути';
+        if (appUpdateEls.text) {
+            appUpdateEls.text.textContent = status === 'download-starting'
+                ? 'Готуємо завантаження APK. Це може зайняти кілька секунд.'
+                : 'Завантаження оновлення вже стартувало. Дочекайтесь завершення в системних сповіщеннях.';
+        }
+        return;
+    }
+
+    if (status === 'permission-required') {
+        appUpdateEls.downloadBtn.textContent = 'Надати дозвіл';
+        if (appUpdateEls.text) {
+            appUpdateEls.text.textContent = 'Щоб встановити APK, дозвольте встановлення з невідомих джерел і натисніть ще раз.';
+        }
+        return;
+    }
+
+    if (status === 'open-release-page') {
+        appUpdateEls.downloadBtn.textContent = 'Відкрити сторінку релізу';
+        if (appUpdateEls.text) {
+            appUpdateEls.text.textContent = 'Відкрили сторінку релізу як резервний варіант, якщо пряме завантаження недоступне.';
+        }
+    }
+}
+
 function toReleasePageUrl(url) {
     const externalUrl = toExternalDownloadUrl(url);
     if (!externalUrl) {
@@ -686,33 +757,63 @@ function toReleasePageUrl(url) {
 }
 
 function openApkDownload(url) {
-    const externalUrl = toReleasePageUrl(url);
-    if (!externalUrl) {
+    const downloadUrl = toExternalDownloadUrl(url);
+    if (!downloadUrl) {
         return;
     }
 
     if (isNativeAndroidApp()) {
-        const browserPlugin = window.Capacitor?.Plugins?.Browser;
-        if (browserPlugin?.open) {
-            browserPlugin.open({
-                url: externalUrl,
-                presentationStyle: 'fullscreen'
-            }).catch(() => {
-                const openedWindow = window.open(externalUrl, '_blank', 'noopener');
-                if (!openedWindow) {
-                    window.location.assign(externalUrl);
+        const apkDownloadPlugin = window.Capacitor?.Plugins?.ApkDownload;
+        if (apkDownloadPlugin?.downloadApk) {
+            setAppUpdateDebugState({
+                status: 'download-starting',
+                channel: appUpdateDebugState.channel || getSelectedChannel(),
+                availableVersion: appUpdateDebugState.availableVersion || '',
+                downloadUrl,
+                message: 'Готуємо завантаження APK...'
+            });
+            apkDownloadPlugin.downloadApk({
+                url: downloadUrl,
+                fileName: buildApkFileName(downloadUrl, appUpdateDebugState.availableVersion)
+            }).then((result) => {
+                if (result?.started) {
+                    setAppUpdateDebugState({
+                        status: 'downloading',
+                        channel: appUpdateDebugState.channel || getSelectedChannel(),
+                        availableVersion: appUpdateDebugState.availableVersion || '',
+                        downloadUrl,
+                        message: 'Завантаження APK розпочато. Після завершення Android запропонує встановлення.'
+                    });
+                    return;
                 }
+
+                if (result?.permissionRequired) {
+                    setAppUpdateDebugState({
+                        status: 'permission-required',
+                        channel: appUpdateDebugState.channel || getSelectedChannel(),
+                        availableVersion: appUpdateDebugState.availableVersion || '',
+                        downloadUrl,
+                        message: 'Потрібен дозвіл на встановлення з невідомих джерел. Після дозволу натисніть "Оновити" ще раз.'
+                    });
+                }
+            }).catch(() => {
+                openReleasePageFallback(downloadUrl);
             });
             return;
         }
 
-        const openedWindow = window.open(externalUrl, '_blank', 'noopener');
-        if (!openedWindow) {
-            window.location.assign(externalUrl);
-        }
+        openReleasePageFallback(downloadUrl, 'Пряме завантаження недоступне у цій збірці. Відкриваємо сторінку релізу.');
         return;
     }
 
+    const externalUrl = toReleasePageUrl(downloadUrl);
+    setAppUpdateDebugState({
+        status: 'open-release-page',
+        channel: appUpdateDebugState.channel || getSelectedChannel(),
+        availableVersion: appUpdateDebugState.availableVersion || '',
+        downloadUrl,
+        message: 'Веб-режим: відкриваємо сторінку релізу для завантаження.'
+    });
     const browserPlugin = window.Capacitor?.Plugins?.Browser;
     if (browserPlugin?.open) {
         browserPlugin.open({
@@ -756,6 +857,14 @@ function hideAppUpdateBanner() {
         appUpdateEls.banner._hideTimerId = null;
     }, getAppUpdateBannerTransitionMs());
 
+    if (appUpdateEls.downloadBtn) {
+        appUpdateEls.downloadBtn.disabled = false;
+        appUpdateEls.downloadBtn.textContent = 'Відкрити оновлення';
+    }
+    if (appUpdateEls.dismissBtn) {
+        appUpdateEls.dismissBtn.textContent = 'Пізніше';
+    }
+
     appUpdateEls.downloadBtn?.removeAttribute('data-download-url');
     appUpdateEls.dismissBtn?.removeAttribute('data-version');
     appUpdateEls.dismissBtn?.removeAttribute('data-channel');
@@ -773,6 +882,9 @@ function showAppUpdateBanner(manifest) {
 
     appUpdateEls.text.textContent = buildAppUpdateMessage(manifest);
     appUpdateEls.downloadBtn.dataset.downloadUrl = manifest.apkUrl;
+    appUpdateEls.downloadBtn.disabled = false;
+    appUpdateEls.downloadBtn.textContent = 'Відкрити оновлення';
+    appUpdateEls.dismissBtn.textContent = 'Пізніше';
     appUpdateEls.dismissBtn.dataset.version = manifest.version;
     appUpdateEls.dismissBtn.dataset.channel = manifest.channel;
 
@@ -786,6 +898,10 @@ function showAppUpdateBanner(manifest) {
         appUpdateEls.banner.classList.add('active');
     });
 }
+
+document.addEventListener('app-update:state-changed', () => {
+    syncUpdateBannerRuntimeState();
+});
 
 function withCacheBust(url) {
     if (typeof url !== 'string' || !url.trim()) {
