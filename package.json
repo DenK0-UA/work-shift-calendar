@@ -1,6 +1,6 @@
 {
   "name": "work-shift-calendar",
-  "version": "1.0.49",
+  "version": "1.0.50",
   "private": true,
   "description": "Static work shift calendar wrapped for Android with Capacitor.",
   "scripts": {
