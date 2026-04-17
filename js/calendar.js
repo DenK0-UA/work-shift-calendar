@@ -696,17 +696,11 @@ function renderModalProfiles(year, month, day) {
         return;
     }
 
-    const allProfiles = typeof getProfiles === 'function' ? getProfiles() : [];
-    if (allProfiles.length === 0) {
+    const visibleProfilesForDay = getVisibleProfilesForDay(year, month, day);
+    if (!Array.isArray(visibleProfilesForDay) || visibleProfilesForDay.length === 0) {
         setModalSectionOpen(container, false);
         return;
     }
-
-    const profileStatuses = allProfiles.map(p => ({
-        ...p,
-        status: getProfileDayStatus(p, year, month, day),
-        isVisible: p.visible !== false
-    }));
 
     setModalSectionOpen(container, true);
     container.innerHTML = '';
@@ -719,23 +713,22 @@ function renderModalProfiles(year, month, day) {
     heading.textContent = 'Інші графіки';
     inner.appendChild(heading);
 
-    profileStatuses.forEach(p => {
+    visibleProfilesForDay.forEach((profile) => {
         const row = document.createElement('div');
         row.className = 'modal-profile-row';
-        if (!p.isVisible) row.classList.add('dimmed');
 
         const dot = document.createElement('span');
         dot.className = 'modal-profile-dot';
-        dot.style.background = p.color;
+        dot.style.background = profile.color;
 
         const nameEl = document.createElement('span');
         nameEl.className = 'modal-profile-name';
-        nameEl.textContent = p.name;
+        nameEl.textContent = profile.name;
 
         const badge = document.createElement('span');
         badge.className = 'modal-profile-badge';
-        badge.dataset.status = p.status;
-        badge.textContent = p.status === 'work' ? 'На зміні' : 'Вихідний';
+        badge.dataset.status = profile.status;
+        badge.textContent = profile.status === 'work' ? 'На зміні' : 'Вихідний';
 
         row.appendChild(dot);
         row.appendChild(nameEl);
