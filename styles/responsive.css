@@ -2,12 +2,13 @@
 @media (max-width: 720px) {
     .main-container {
         max-width: 100%;
-        padding: clamp(var(--space-1-5), 1.8vw, var(--space-2-5));
+        padding-block: clamp(var(--space-1-5), 1.8vw, var(--space-2-5));
+        padding-inline: clamp(var(--space-3), 3.6vw, var(--space-4));
         gap: clamp(var(--space-2-5), 2.2vw, var(--space-3-5));
     }
 
     body {
-        padding: clamp(var(--space-2-5), 2.4vw, var(--space-3-5)) clamp(var(--space-2), 2vw, var(--space-3));
+        padding: clamp(var(--space-2-5), 2.4vw, var(--space-3-5)) calc(env(safe-area-inset-right, 0px) + 0px) clamp(var(--space-2-5), 2.8vw, var(--space-4)) calc(env(safe-area-inset-left, 0px) + 0px);
     }
 
     .modal-overlay,
@@ -145,11 +146,12 @@
 
     .main-container {
         gap: var(--space-3);
-        padding: var(--space-2);
+        padding-block: var(--space-2);
+        padding-inline: var(--space-3);
     }
 
     body {
-        padding: var(--space-3) var(--space-2);
+        padding: var(--space-3) calc(env(safe-area-inset-right, 0px) + 0px) var(--space-4) calc(env(safe-area-inset-left, 0px) + 0px);
     }
 
     .depth-panel {
@@ -582,12 +584,13 @@
 
 @media (max-width: 430px) {
     body {
-        padding: var(--space-3) var(--space-2);
+        padding: var(--space-3) calc(env(safe-area-inset-right, 0px) + 0px) var(--space-4) calc(env(safe-area-inset-left, 0px) + 0px);
     }
 
     .main-container {
         gap: var(--space-2);
-        padding: var(--space-2);
+        padding-block: var(--space-2);
+        padding-inline: var(--space-2-5);
     }
 
     .depth-panel {
@@ -702,12 +705,13 @@
 
 @media (max-width: 360px) {
     body {
-        padding: var(--space-3) var(--space-2);
+        padding: var(--space-3) calc(env(safe-area-inset-right, 0px) + 0px) var(--space-4) calc(env(safe-area-inset-left, 0px) + 0px);
     }
 
     .main-container {
         gap: var(--space-2);
-        padding: var(--space-2);
+        padding-block: var(--space-2);
+        padding-inline: var(--space-2);
     }
 
     .depth-panel {
@@ -888,7 +892,7 @@
     }
 
     body {
-        padding: var(--space-4) var(--space-3);
+        padding: var(--space-4) calc(env(safe-area-inset-right, 0px) + 0px) calc(env(safe-area-inset-bottom, 0px) + var(--space-5)) calc(env(safe-area-inset-left, 0px) + 0px);
         min-height: 100vh;
     }
 
