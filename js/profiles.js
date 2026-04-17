@@ -11,6 +11,16 @@ const profilesState = {
     profiles: null
 };
 
+function sanitizeProfilesCollection(rawProfiles) {
+    if (!Array.isArray(rawProfiles)) {
+        return [];
+    }
+
+    return rawProfiles
+        .map((profile, index) => normalizeProfileRecord(profile, index))
+        .filter(Boolean);
+}
+
 function generateProfileId() {
     return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
@@ -49,38 +59,26 @@ function normalizeProfileRecord(profile, index = 0) {
 
 function ensureProfilesState() {
     if (!profilesState.profiles) {
-        const savedProfiles = safeReadJson(PROFILES_STORAGE_KEY, []);
-        const safeProfiles = Array.isArray(savedProfiles)
-            ? savedProfiles.map((profile, index) => normalizeProfileRecord(profile, index)).filter(Boolean)
-            : [];
-
-        profilesState.profiles = safeProfiles;
-
-        try {
-            if (JSON.stringify(savedProfiles) !== JSON.stringify(safeProfiles)) {
-                if (safeProfiles.length === 0) {
-                    localStorage.removeItem(PROFILES_STORAGE_KEY);
-                } else {
-                    localStorage.setItem(PROFILES_STORAGE_KEY, JSON.stringify(safeProfiles));
-                }
-            }
-        } catch (e) {
-            console.warn('Не вдалось нормалізувати профілі', e);
-        }
+        profilesState.profiles = safeReadJson(
+            PROFILES_STORAGE_KEY,
+            [],
+            { sanitize: sanitizeProfilesCollection }
+        );
     }
     return profilesState.profiles;
 }
 
 function persistProfiles() {
-    try {
-        const profiles = ensureProfilesState();
-        if (profiles.length === 0) {
-            localStorage.removeItem(PROFILES_STORAGE_KEY);
-            return;
-        }
-        localStorage.setItem(PROFILES_STORAGE_KEY, JSON.stringify(profiles));
-    } catch (e) {
-        console.warn('Не вдалось зберегти профілі', e);
+    const profiles = sanitizeProfilesCollection(ensureProfilesState());
+    profilesState.profiles = profiles;
+
+    const persisted = safeWriteJson(PROFILES_STORAGE_KEY, profiles, {
+        removeWhenEmpty: true,
+        isEmpty: (items) => !Array.isArray(items) || items.length === 0
+    });
+
+    if (!persisted) {
+        console.warn('Не вдалось зберегти профілі');
     }
 }
 

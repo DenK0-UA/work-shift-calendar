@@ -1,8 +1,13 @@
 const SCHEDULE_STORAGE_KEYS = {
+    schemaVersion: 'scheduleSchemaVersion',
     scheduleConfig: 'scheduleConfig',
     customDayStatuses: 'customDayStatuses',
     dayNotes: 'dayNotes'
 };
+const SCHEDULE_STORAGE_SCHEMA_VERSION = 1;
+const STORAGE_WRITE_DEBOUNCE_MS = 260;
+const STORAGE_KEY_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const storageWriteTimers = new Map();
 
 // Expose so settings-state.js can reference without duplication
 window.SCHEDULE_STORAGE_KEYS = SCHEDULE_STORAGE_KEYS;
@@ -13,19 +18,222 @@ const scheduleStore = {
     dayNotes: null
 };
 
-function safeReadJson(key, fallback) {
+function getStorageBackupKey(key) {
+    return `${key}:lastKnownGood`;
+}
+
+function parseJsonSafely(rawValue) {
+    if (!rawValue) {
+        return null;
+    }
+
     try {
-        const rawValue = localStorage.getItem(key);
-        if (!rawValue) {
-            return fallback;
+        return JSON.parse(rawValue);
+    } catch (error) {
+        return null;
+    }
+}
+
+function normalizeStorageDateKey(key) {
+    if (typeof key !== 'string') {
+        return '';
+    }
+
+    const trimmed = key.trim();
+    return STORAGE_KEY_DATE_PATTERN.test(trimmed) ? trimmed : '';
+}
+
+function sanitizeStorageStatusMap(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        return {};
+    }
+
+    const normalized = {};
+    for (const [rawKey, rawStatus] of Object.entries(value)) {
+        const key = normalizeStorageDateKey(rawKey);
+        if (!key) {
+            continue;
         }
 
-        const parsed = JSON.parse(rawValue);
-        return parsed ?? fallback;
+        if (rawStatus === 'work' || rawStatus === 'off') {
+            normalized[key] = rawStatus;
+        }
+    }
+
+    return normalized;
+}
+
+function sanitizeStorageDayNotesMap(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        return {};
+    }
+
+    const normalized = {};
+    for (const [rawKey, rawNote] of Object.entries(value)) {
+        const key = normalizeStorageDateKey(rawKey);
+        if (!key) {
+            continue;
+        }
+
+        const note = typeof rawNote === 'string' ? rawNote.trim().slice(0, 280) : '';
+        if (note) {
+            normalized[key] = note;
+        }
+    }
+
+    return normalized;
+}
+
+function sanitizeStorageScheduleConfig(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        return getDefaultScheduleConfig();
+    }
+
+    return getNormalizedScheduleConfig(value);
+}
+
+function persistStorageSchemaVersion() {
+    try {
+        localStorage.setItem(
+            SCHEDULE_STORAGE_KEYS.schemaVersion,
+            String(SCHEDULE_STORAGE_SCHEMA_VERSION)
+        );
+    } catch (error) {}
+}
+
+function safeWriteJson(key, value, options = {}) {
+    const {
+        removeWhenEmpty = false,
+        isEmpty = null
+    } = options;
+
+    try {
+        const shouldRemove = removeWhenEmpty && typeof isEmpty === 'function' && isEmpty(value);
+        if (shouldRemove) {
+            localStorage.removeItem(key);
+            localStorage.removeItem(getStorageBackupKey(key));
+            return true;
+        }
+
+        const serialized = JSON.stringify(value);
+        const tempKey = `${key}:writeTmp`;
+        localStorage.setItem(tempKey, serialized);
+        localStorage.setItem(key, serialized);
+        localStorage.setItem(getStorageBackupKey(key), serialized);
+        localStorage.removeItem(tempKey);
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+function safeReadJson(key, fallback, options = {}) {
+    const {
+        sanitize = (parsed) => parsed
+    } = options;
+
+    try {
+        const rawPrimaryValue = localStorage.getItem(key);
+        const parsedPrimaryValue = parseJsonSafely(rawPrimaryValue);
+        const normalizedPrimaryValue = parsedPrimaryValue === null
+            ? null
+            : sanitize(parsedPrimaryValue);
+
+        if (normalizedPrimaryValue !== null && normalizedPrimaryValue !== undefined) {
+            if (rawPrimaryValue !== JSON.stringify(normalizedPrimaryValue)) {
+                safeWriteJson(key, normalizedPrimaryValue);
+            }
+            return normalizedPrimaryValue;
+        }
+
+        const backupKey = getStorageBackupKey(key);
+        const rawBackupValue = localStorage.getItem(backupKey);
+        const parsedBackupValue = parseJsonSafely(rawBackupValue);
+        const normalizedBackupValue = parsedBackupValue === null
+            ? null
+            : sanitize(parsedBackupValue);
+
+        if (normalizedBackupValue !== null && normalizedBackupValue !== undefined) {
+            safeWriteJson(key, normalizedBackupValue);
+            return normalizedBackupValue;
+        }
+
+        return fallback;
     } catch (e) {
         return fallback;
     }
 }
+
+function queueDebouncedStorageWrite(key, writeFn) {
+    const existingTimerId = storageWriteTimers.get(key);
+    if (existingTimerId) {
+        clearTimeout(existingTimerId);
+    }
+
+    const timerId = window.setTimeout(() => {
+        storageWriteTimers.delete(key);
+        writeFn();
+    }, STORAGE_WRITE_DEBOUNCE_MS);
+
+    storageWriteTimers.set(key, timerId);
+}
+
+function flushPendingStorageWrites() {
+    for (const [key, timerId] of storageWriteTimers.entries()) {
+        clearTimeout(timerId);
+        storageWriteTimers.delete(key);
+
+        if (key === SCHEDULE_STORAGE_KEYS.customDayStatuses) {
+            const statuses = sanitizeStorageStatusMap(ensureCustomStatusesState());
+            scheduleStore.customDayStatuses = statuses;
+            safeWriteJson(
+                SCHEDULE_STORAGE_KEYS.customDayStatuses,
+                statuses,
+                {
+                    removeWhenEmpty: true,
+                    isEmpty: (record) => Object.keys(record).length === 0
+                }
+            );
+        } else if (key === SCHEDULE_STORAGE_KEYS.dayNotes) {
+            const notes = sanitizeStorageDayNotesMap(ensureDayNotesState());
+            scheduleStore.dayNotes = notes;
+            safeWriteJson(
+                SCHEDULE_STORAGE_KEYS.dayNotes,
+                notes,
+                {
+                    removeWhenEmpty: true,
+                    isEmpty: (record) => Object.keys(record).length === 0
+                }
+            );
+        }
+    }
+}
+
+function bootstrapScheduleStorage() {
+    const scheduleConfig = safeReadJson(
+        SCHEDULE_STORAGE_KEYS.scheduleConfig,
+        getDefaultScheduleConfig(),
+        { sanitize: sanitizeStorageScheduleConfig }
+    );
+    const customDayStatuses = safeReadJson(
+        SCHEDULE_STORAGE_KEYS.customDayStatuses,
+        {},
+        { sanitize: sanitizeStorageStatusMap }
+    );
+    const dayNotes = safeReadJson(
+        SCHEDULE_STORAGE_KEYS.dayNotes,
+        {},
+        { sanitize: sanitizeStorageDayNotesMap }
+    );
+
+    scheduleStore.scheduleConfig = scheduleConfig;
+    scheduleStore.customDayStatuses = customDayStatuses;
+    scheduleStore.dayNotes = dayNotes;
+
+    persistStorageSchemaVersion();
+}
+
+bootstrapScheduleStorage();
 
 function hasPersistedScheduleConfig() {
     try {
@@ -89,7 +297,11 @@ function getNormalizedScheduleConfig(config) {
 
 function ensureScheduleConfigState() {
     if (!scheduleStore.scheduleConfig) {
-        const savedConfig = safeReadJson(SCHEDULE_STORAGE_KEYS.scheduleConfig, null);
+        const savedConfig = safeReadJson(
+            SCHEDULE_STORAGE_KEYS.scheduleConfig,
+            null,
+            { sanitize: sanitizeStorageScheduleConfig }
+        );
         scheduleStore.scheduleConfig = savedConfig
             ? getNormalizedScheduleConfig(savedConfig)
             : getDefaultScheduleConfig();
@@ -100,7 +312,11 @@ function ensureScheduleConfigState() {
 
 function ensureCustomStatusesState() {
     if (!scheduleStore.customDayStatuses) {
-        scheduleStore.customDayStatuses = safeReadJson(SCHEDULE_STORAGE_KEYS.customDayStatuses, {});
+        scheduleStore.customDayStatuses = safeReadJson(
+            SCHEDULE_STORAGE_KEYS.customDayStatuses,
+            {},
+            { sanitize: sanitizeStorageStatusMap }
+        );
     }
 
     return scheduleStore.customDayStatuses;
@@ -108,53 +324,72 @@ function ensureCustomStatusesState() {
 
 function ensureDayNotesState() {
     if (!scheduleStore.dayNotes) {
-        scheduleStore.dayNotes = safeReadJson(SCHEDULE_STORAGE_KEYS.dayNotes, {});
+        scheduleStore.dayNotes = safeReadJson(
+            SCHEDULE_STORAGE_KEYS.dayNotes,
+            {},
+            { sanitize: sanitizeStorageDayNotesMap }
+        );
     }
 
     return scheduleStore.dayNotes;
 }
 
 function persistScheduleConfig() {
-    try {
-        localStorage.setItem(
-            SCHEDULE_STORAGE_KEYS.scheduleConfig,
-            JSON.stringify(scheduleStore.scheduleConfig)
-        );
-    } catch (e) {
-        console.warn('Не вдалось зберегти графік', e);
+    const persisted = safeWriteJson(
+        SCHEDULE_STORAGE_KEYS.scheduleConfig,
+        sanitizeStorageScheduleConfig(scheduleStore.scheduleConfig)
+    );
+    if (!persisted) {
+        console.warn('Не вдалось зберегти графік');
     }
 }
 
 function persistCustomStatuses() {
-    try {
-        const statuses = ensureCustomStatusesState();
-        if (Object.keys(statuses).length === 0) {
-            localStorage.removeItem(SCHEDULE_STORAGE_KEYS.customDayStatuses);
-            return;
-        }
+    queueDebouncedStorageWrite(SCHEDULE_STORAGE_KEYS.customDayStatuses, () => {
+        const statuses = sanitizeStorageStatusMap(ensureCustomStatusesState());
+        scheduleStore.customDayStatuses = statuses;
 
-        localStorage.setItem(
+        const persisted = safeWriteJson(
             SCHEDULE_STORAGE_KEYS.customDayStatuses,
-            JSON.stringify(statuses)
+            statuses,
+            {
+                removeWhenEmpty: true,
+                isEmpty: (record) => Object.keys(record).length === 0
+            }
         );
-    } catch (e) {
-        console.warn('Не вдалось зберегти статус дня', e);
-    }
+
+        if (!persisted) {
+            console.warn('Не вдалось зберегти статус дня');
+        }
+    });
 }
 
 function persistDayNotes() {
-    try {
-        const notes = ensureDayNotesState();
-        if (Object.keys(notes).length === 0) {
-            localStorage.removeItem(SCHEDULE_STORAGE_KEYS.dayNotes);
-            return;
-        }
+    queueDebouncedStorageWrite(SCHEDULE_STORAGE_KEYS.dayNotes, () => {
+        const notes = sanitizeStorageDayNotesMap(ensureDayNotesState());
+        scheduleStore.dayNotes = notes;
 
-        localStorage.setItem(SCHEDULE_STORAGE_KEYS.dayNotes, JSON.stringify(notes));
-    } catch (e) {
-        console.warn('Не вдалось зберегти нотатку дня', e);
-    }
+        const persisted = safeWriteJson(
+            SCHEDULE_STORAGE_KEYS.dayNotes,
+            notes,
+            {
+                removeWhenEmpty: true,
+                isEmpty: (record) => Object.keys(record).length === 0
+            }
+        );
+
+        if (!persisted) {
+            console.warn('Не вдалось зберегти нотатку дня');
+        }
+    });
 }
+
+window.addEventListener('beforeunload', flushPendingStorageWrites);
+window.StorageGuard = {
+    safeReadJson,
+    safeWriteJson,
+    flushPendingStorageWrites
+};
 
 // --- Логіка Графіка (з динамічною підтримкою) ---
 function getScheduleConfig() {
