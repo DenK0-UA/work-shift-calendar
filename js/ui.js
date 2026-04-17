@@ -217,7 +217,7 @@ const refreshAppUpdateSettingsUI = async () => {
         } else if (debugState?.status === 'permission-required') {
             summaryText = 'Потрібен дозвіл на встановлення з невідомих джерел. Після дозволу натисніть кнопку ще раз.';
         } else if (debugState?.status === 'open-release-page') {
-            summaryText = 'Пряме завантаження недоступне, тому відкрили резервне завантаження APK.';
+            summaryText = 'Відкриваємо сторінку оновлення. У Assets оберіть APK-файл, а Source code пропустіть.';
         } else if (debugState?.status === 'dismissed' && debugState.availableVersion) {
             const untilText = formatUpdateTime(debugState.dismissedUntil);
             summaryText = untilText
@@ -251,7 +251,7 @@ const refreshAppUpdateSettingsUI = async () => {
             : isPermissionRequired
                 ? 'Надати дозвіл і повторити'
                 : isFallbackOpen
-                    ? 'Відкрити завантаження'
+                    ? 'Відкрити сторінку оновлення'
                     : 'Оновити застосунок';
         settingsEls.appUpdateDownloadInline.dataset.downloadUrl = canShowDownloadAction ? downloadUrl : '';
         setSettingsRevealState(settingsEls.appUpdateDownloadInline, canShowDownloadAction);

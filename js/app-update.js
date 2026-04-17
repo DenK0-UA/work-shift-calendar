@@ -750,9 +750,9 @@ function syncUpdateBannerRuntimeState() {
     }
 
     if (status === 'open-release-page') {
-        appUpdateEls.downloadBtn.textContent = 'Відкрити завантаження';
+        appUpdateEls.downloadBtn.textContent = 'Відкрити сторінку оновлення';
         if (appUpdateEls.text) {
-            appUpdateEls.text.textContent = 'Пряме завантаження недоступне. Відкрили резервне завантаження APK.';
+            appUpdateEls.text.textContent = 'Відкрили сторінку оновлення. У блоці Assets натисніть APK-файл. Source code можна ігнорувати.';
         }
     }
 }
@@ -780,75 +780,36 @@ function openApkDownload(url) {
         return;
     }
 
-    if (isNativeAndroidApp()) {
-        const apkDownloadPlugin = window.Capacitor?.Plugins?.ApkDownload;
-        if (apkDownloadPlugin?.downloadApk) {
-            setAppUpdateDebugState({
-                status: 'download-starting',
-                channel: appUpdateDebugState.channel || getSelectedChannel(),
-                availableVersion: appUpdateDebugState.availableVersion || '',
-                downloadUrl,
-                message: 'Готуємо завантаження APK...'
-            });
-            apkDownloadPlugin.downloadApk({
-                url: downloadUrl,
-                fileName: buildApkFileName(downloadUrl, appUpdateDebugState.availableVersion)
-            }).then((result) => {
-                if (result?.started) {
-                    setAppUpdateDebugState({
-                        status: 'downloading',
-                        channel: appUpdateDebugState.channel || getSelectedChannel(),
-                        availableVersion: appUpdateDebugState.availableVersion || '',
-                        downloadUrl,
-                        message: 'Завантаження APK розпочато. Після завершення Android запропонує встановлення.'
-                    });
-                    return;
-                }
-
-                if (result?.permissionRequired) {
-                    setAppUpdateDebugState({
-                        status: 'permission-required',
-                        channel: appUpdateDebugState.channel || getSelectedChannel(),
-                        availableVersion: appUpdateDebugState.availableVersion || '',
-                        downloadUrl,
-                        message: 'Потрібен дозвіл на встановлення з невідомих джерел. Після дозволу натисніть "Оновити" ще раз.'
-                    });
-                }
-            }).catch(() => {
-                openDownloadFallback(downloadUrl);
-            });
-            return;
-        }
-
-        openDownloadFallback(downloadUrl, 'Пряме завантаження недоступне у цій збірці. Відкриваємо резервне завантаження APK.');
+    const releasePageUrl = toReleasePageUrl(downloadUrl);
+    if (!releasePageUrl) {
         return;
     }
 
-    const externalUrl = toExternalDownloadUrl(downloadUrl);
     setAppUpdateDebugState({
         status: 'open-release-page',
         channel: appUpdateDebugState.channel || getSelectedChannel(),
         availableVersion: appUpdateDebugState.availableVersion || '',
-        downloadUrl,
-        message: 'Веб-режим: відкриваємо пряме завантаження APK.'
+        downloadUrl: releasePageUrl,
+        message: 'Відкриваємо сторінку оновлення. У блоці Assets натисніть файл APK, а Source code ігноруйте.'
     });
+
     const browserPlugin = window.Capacitor?.Plugins?.Browser;
     if (browserPlugin?.open) {
         browserPlugin.open({
-            url: externalUrl,
+            url: releasePageUrl,
             presentationStyle: 'fullscreen'
         }).catch(() => {
-            const openedWindow = window.open(externalUrl, '_blank', 'noopener');
+            const openedWindow = window.open(releasePageUrl, '_blank', 'noopener');
             if (!openedWindow) {
-                window.location.assign(externalUrl);
+                window.location.assign(releasePageUrl);
             }
         });
         return;
     }
 
-    const openedWindow = window.open(externalUrl, '_blank', 'noopener');
+    const openedWindow = window.open(releasePageUrl, '_blank', 'noopener');
     if (!openedWindow) {
-        window.location.assign(externalUrl);
+        window.location.assign(releasePageUrl);
     }
 }
 
