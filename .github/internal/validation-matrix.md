@@ -4,9 +4,11 @@
 
 - README or internal-doc changes only: read the final diff and confirm no accidental technical leakage into `README.md`
 - Root UI changes (`index.html`, `js/`, `styles/`, `data/`): read `.github/internal/coding-guardrails.md`, run `get_errors` for touched files, and `npm run build:web`
+- JS or script logic changes: run `npm run lint` to catch syntax/reference errors before release work
 - Update-flow changes: run `get_errors`, `npm run build:web`, and verify manifest/version behavior as needed
 - Android or Capacitor changes: run `npm run cap:android`; if the change is deeper, also run Gradle assembly from `android/`
 - Workflow or release-script changes: validate syntax, run safe local script checks when possible, and verify the expected remote chain conceptually or with public API checks
+- Release metadata changes: run `npm run release:check -- <beta|stable> <version>` and ensure `data/config.js` has a matching `APP_RELEASE_NOTES` entry for that version
 - Release work: verify release existence, manifest on `main`, and manifest on GitHub Pages; do not treat the task as done until the Pages manifest matches the released version
 
 ## Regression-sensitive UI checks

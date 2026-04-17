@@ -28,6 +28,19 @@ const readJson = (relativePath) => {
 };
 
 const readText = (relativePath) => fs.readFileSync(path.join(rootDir, relativePath), 'utf8');
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const hasReleaseNotesForVersion = (source, releaseVersion) => {
+    if (!releaseVersion) {
+        return false;
+    }
+
+    const versionPattern = escapeRegex(releaseVersion);
+    const releaseNotesPattern = new RegExp(
+        `APP_RELEASE_NOTES\\s*=\\s*\\{[\\s\\S]*['"]${versionPattern}['"]\\s*:`,
+        'm'
+    );
+    return releaseNotesPattern.test(source);
+};
 
 const packageJson = readJson('package.json');
 const betaManifest = readJson(path.join('beta', 'version.json'));
@@ -41,6 +54,10 @@ const versionName = gradleSource.match(/versionName "([^"]+)"/)?.[1] || '';
 
 if (packageJson.version !== configVersion || packageJson.version !== versionName) {
     fail('App version is inconsistent across package.json, data/config.js, and android/app/build.gradle.');
+}
+
+if (!hasReleaseNotesForVersion(configSource, configVersion)) {
+    fail(`Missing APP_RELEASE_NOTES entry for version ${configVersion} in data/config.js.`);
 }
 
 if (channel === 'beta' && packageJson.version !== version) {

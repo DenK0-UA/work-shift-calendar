@@ -71,6 +71,9 @@ jobs:
       - name: Update app version
         run: npm run app:version:set -- ${{ steps.release_input.outputs.version }}
 
+      - name: Release preflight
+        run: npm run release:check -- beta ${{ steps.release_input.outputs.version }}
+
       - name: Sync web assets into Android
         run: npm run cap:android
 

@@ -54,6 +54,9 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "notes=$NOTES" >> "$GITHUB_OUTPUT"
 
+      - name: Release preflight
+        run: npm run release:check -- stable ${{ steps.release_input.outputs.version }}
+
       - name: Download beta APK
         env:
           GH_TOKEN: ${{ github.token }}
