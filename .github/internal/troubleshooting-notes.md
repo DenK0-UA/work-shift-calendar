@@ -135,6 +135,23 @@ Use this file when something breaks and the repo already taught us a likely fix 
 - expect cron drift of a few minutes for scheduled releases
 - after scheduled stable promotion, re-check whether the one-time config should be updated or disarmed
 
+## Schedule One-Time Stable Release keeps failing after stable is already live
+
+### Symptoms
+
+- `Schedule One-Time Stable Release` runs for ~20 minutes then fails on timeout
+- logs show repeated `Stable release metadata is still pending` while `main/release/pages` already have a newer stable version
+
+### What usually went wrong
+
+- `.github/one-time-stable-release.json` remained enabled with an older target version (for example `1.0.46`) after later stable releases were already published
+
+### Known fix direction
+
+- set `.github/one-time-stable-release.json` to `enabled: false` unless a one-time stable promotion is being actively scheduled
+- when scheduling again, update `version`, `releaseAtUtc`, and `notes` together
+- keep scheduler script behavior tolerant to stale one-time targets so stale config does not fail the workflow
+
 ## Android patching breaks Gradle unexpectedly
 
 ### Symptoms

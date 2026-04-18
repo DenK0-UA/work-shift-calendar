@@ -10,3 +10,4 @@
 - `2026-04-06`: Internal AI docs should be kept continuously updated after meaningful work so context is not lost across sessions
 - `2026-04-06`: Do not scatter the same volatile fact across many internal files when one authoritative location is enough
 - `2026-04-06`: Every new chat must run a first-turn AI preflight (`.github/AGENTS.md` + `.github/internal/project-context.md` + one task-relevant internal file) before substantial work
+- `2026-04-18`: `.github/one-time-stable-release.json` must stay disarmed (`enabled: false`) unless a user explicitly requests a one-time scheduled stable release window

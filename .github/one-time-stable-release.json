@@ -1,6 +1,6 @@
 {
-  "enabled": true,
-  "version": "1.0.46",
-  "releaseAtUtc": "2026-04-06T10:00:00Z",
-  "notes": "Стабільний реліз 1.0.46."
+  "enabled": false,
+  "version": "1.0.52",
+  "releaseAtUtc": "2026-04-18T00:00:00Z",
+  "notes": "Stable release channel."
 }

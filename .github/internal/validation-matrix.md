@@ -10,6 +10,7 @@
 - Workflow or release-script changes: validate syntax, run safe local script checks when possible, and verify the expected remote chain conceptually or with public API checks
 - Release metadata changes: run `npm run release:check -- <beta|stable> <version>` and ensure `data/config.js` has a matching `APP_RELEASE_NOTES` entry for that version
 - Release work: verify release existence, manifest on `main`, and manifest on GitHub Pages; do not treat the task as done until the Pages manifest matches the released version
+- After stable release work, verify `.github/one-time-stable-release.json` is disabled or explicitly retargeted so the scheduler does not keep evaluating stale versions
 
 ## Regression-sensitive UI checks
 

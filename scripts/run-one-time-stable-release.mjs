@@ -34,6 +34,36 @@ const runNode = (...args) => execFileSync('node', args, {
     stdio: 'inherit'
 });
 
+const normalizeVersion = (value) => {
+    if (typeof value !== 'string') {
+        return '';
+    }
+
+    const trimmed = value.trim();
+    return /^\d+\.\d+\.\d+$/.test(trimmed) ? trimmed : '';
+};
+
+const compareVersions = (left, right) => {
+    const normalizedLeft = normalizeVersion(left);
+    const normalizedRight = normalizeVersion(right);
+
+    if (!normalizedLeft || !normalizedRight) {
+        return 0;
+    }
+
+    const leftParts = normalizedLeft.split('.').map((part) => Number.parseInt(part, 10));
+    const rightParts = normalizedRight.split('.').map((part) => Number.parseInt(part, 10));
+
+    for (let index = 0; index < 3; index++) {
+        const delta = leftParts[index] - rightParts[index];
+        if (delta !== 0) {
+            return delta > 0 ? 1 : -1;
+        }
+    }
+
+    return 0;
+};
+
 const readConfig = () => {
     const rawConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
@@ -169,6 +199,16 @@ try {
     let state = await fetchReleaseState(config.version);
 
     log(`Current state before action: main=${state.mainVersion || 'n/a'}, release=${state.releaseExists}, pages=${state.pagesVersion || 'n/a'}`);
+
+    const mainAheadOfScheduled = compareVersions(state.mainVersion, config.version) > 0;
+    const pagesAheadOfScheduled = compareVersions(state.pagesVersion, config.version) > 0;
+    if (mainAheadOfScheduled || pagesAheadOfScheduled) {
+        log(
+            `Configured one-time version ${config.version} is stale ` +
+            `(main=${state.mainVersion || 'n/a'}, pages=${state.pagesVersion || 'n/a'}). Skipping without failure.`
+        );
+        process.exit(0);
+    }
 
     if (state.pagesVersion === config.version) {
         log(`Stable ${config.version} is already live on GitHub Pages.`);

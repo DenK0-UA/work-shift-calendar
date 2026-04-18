@@ -60,16 +60,22 @@ Purpose:
 
 ## Current state
 
-- Date of this snapshot: `2026-04-06`
-- App version in source files: `1.0.46`
-- Beta manifest version: `1.0.46`
-- Stable manifest version: `1.0.46`
-- One-time stable promotion for `1.0.46` has completed; `.github/one-time-stable-release.json` still shows `enabled: true` — consider disarming it
+- Date of this snapshot: `2026-04-18`
+- App version in source files: `1.0.52`
+- Beta manifest version: `1.0.52`
+- Stable manifest version: `1.0.52`
+- One-time stable scheduler config is now disarmed by default (`enabled: false`) and should only be armed for explicit one-time stable windows
 
 ## Recent user-visible work
 
 - `1.0.45` focused on stability and update UX polish
 - `1.0.46` added the post-update `Що нового` block, faster day-modal navigation, note-state UX, and expanded statistics
+- `1.0.47` polished side gutters and spacing across breakpoints on mobile
+- `1.0.48` improved update UX and day-modal swipe discoverability
+- `1.0.49` hardened local storage reads/writes and data normalization
+- `1.0.50` temporarily switched fallback update behavior to direct APK links
+- `1.0.51` hid disabled extra profiles from the day modal list
+- `1.0.52` moved update UX back to GitHub release-page flow with clearer Assets guidance for non-technical users
 - README was intentionally rewritten to be product-facing instead of developer-facing
 
 ## Product and documentation rules
@@ -128,6 +134,7 @@ Purpose:
 - In this repo, GitHub Actions bot pushes to `main` do not reliably trigger Pages deploy, so explicit Pages dispatch may still be required
 - `.github/workflows/schedule-stable-once.yml` polls every 5 minutes and dispatches `promote-stable.yml`, then dispatches `deploy-pages.yml`
 - GitHub cron is not second-accurate; scheduled releases can drift by a few minutes
+- If `.github/one-time-stable-release.json` is left enabled with an old version, scheduled runs can time out in metadata wait loops unless stale-version guards are present; keep one-time config disarmed when idle
 
 ## Android and Gradle notes
 

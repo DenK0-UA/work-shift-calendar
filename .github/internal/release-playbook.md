@@ -41,7 +41,9 @@
 - Scheduler workflow lives in `.github/workflows/schedule-stable-once.yml`
 - Scheduler dispatches `promote-stable.yml` and then `deploy-pages.yml`
 - Scheduled time is stored in UTC and GitHub cron can drift by a few minutes
-- After a scheduled promotion completes, verify the release and consider disarming or updating the one-time scheduler config
+- Keep `enabled: false` in `.github/one-time-stable-release.json` unless you are explicitly preparing a one-time stable release window
+- After a scheduled promotion completes, verify the release and disarm or retarget the one-time scheduler config immediately
+- If `.github/one-time-stable-release.json` points to an older version than current `stable/version.json`, the scheduler should skip without failing; update or disable the config anyway to avoid confusion
 
 ## Release verification checklist
 
