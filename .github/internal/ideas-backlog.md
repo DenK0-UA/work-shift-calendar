@@ -13,7 +13,14 @@ Use this file for open ideas and follow-up work that is not yet a committed plan
 
 ## Product ideas
 
-- No open product ideas are recorded here yet. Add them when they appear in future chats.
+- `idea`: **Міграція на PWA** — відмовитись від APK/Capacitor на користь PWA. GitHub Pages вже є, сервіс-воркер вже є. Потрібно додати `manifest.json` + іконки (192x192, 512x512). Основна перевага: спрощений release flow без Gradle/keystore/CI для APK.
+
+- `idea`: **Google акаунт + хмарне зберігання** — як частина PWA-міграції або окремо. Варіанти:
+  - **Google Drive API** (простіше): зберігати `shift-calendar-data.json` у прихованій AppData папці Drive юзера. Юзер не бачить файл напряму.
+  - **Firebase Firestore** (правильніше): реалтайм БД, безкоштовний tier 50k reads/день.
+  - Переваги: синхронізація між пристроями, автоматичний бекап, дані не губляться при видаленні апки.
+  - Потрібно: Google OAuth (client ID в Google Console), офлайн-стратегія з вирішенням конфліктів при синхронізації.
+  - **Storage надійність у PWA**: якщо юзер встановив PWA (додав на екран) і є `navigator.storage.persist()` — дані захищені так само як в APK. Без встановлення — є ризик очищення браузером.
 
 ## Technical follow-ups
 
