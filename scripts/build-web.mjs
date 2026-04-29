@@ -12,7 +12,7 @@ await mkdir(webDir, { recursive: true });
 await cp(path.join(rootDir, 'index.html'), path.join(webDir, 'index.html'));
 await cp(path.join(rootDir, 'sw.js'), path.join(webDir, 'sw.js'));
 
-for (const folder of ['js', 'styles', 'data']) {
+for (const folder of ['js', 'styles', 'data', 'stable', 'beta']) {
   await cp(path.join(rootDir, folder), path.join(webDir, folder), {
     recursive: true,
   });

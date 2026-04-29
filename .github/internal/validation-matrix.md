@@ -9,7 +9,8 @@
 - Android or Capacitor changes: run `npm run cap:android`; if the change is deeper, also run Gradle assembly from `android/`
 - Workflow or release-script changes: validate syntax, run safe local script checks when possible, and verify the expected remote chain conceptually or with public API checks
 - Release metadata changes: run `npm run release:check -- <beta|stable> <version>` and ensure `data/config.js` has a matching `APP_RELEASE_NOTES` entry for that version
-- Release work: verify release existence, manifest on `main`, and manifest on GitHub Pages; do not treat the task as done until the Pages manifest matches the released version
+- Cloudflare deploy changes: run `npm run build:web`, syntax-check `cloudflare/src/worker.js`, and validate `wrangler.jsonc` with `npx wrangler deploy --dry-run` when credentials/config permit it
+- Release work: verify release existence, manifest on `main`, manifest on Cloudflare, and during the migration bridge manifest on GitHub Pages; do not treat the task as done until the Cloudflare manifest matches the released version
 - After stable release work, verify `.github/one-time-stable-release.json` is disabled or explicitly retargeted so the scheduler does not keep evaluating stale versions
 
 ## Regression-sensitive UI checks
@@ -21,7 +22,7 @@
 
 ## Quick triage
 
-- App does not see a new update: verify GitHub Pages manifest first, then raw `main`, then release existence
+- App does not see a new update: verify Cloudflare manifest first, then raw `main`, then release existence; during the temporary bridge also verify GitHub Pages
 - Browser and Android differ: rebuild web assets, then run `npm run cap:android`
 - A UI feature works in source but not in app: suspect stale `www/` or stale Android synced assets
 - Something breaks after adding a global script constant: check for duplicated global `const` names across classic scripts
