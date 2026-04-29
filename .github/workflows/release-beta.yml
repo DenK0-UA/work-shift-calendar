@@ -100,6 +100,7 @@ jobs:
         run: >
           npx wrangler r2 object put
           work-shift-calendar-releases/downloads/work-shift-calendar-${{ steps.release_input.outputs.version }}-beta.apk
+          --remote
           --file dist/work-shift-calendar-${{ steps.release_input.outputs.version }}-beta.apk
           --content-type application/vnd.android.package-archive
 
