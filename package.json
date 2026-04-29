@@ -1,6 +1,6 @@
 {
   "name": "work-shift-calendar",
-  "version": "1.0.53",
+  "version": "1.0.54",
   "private": true,
   "license": "UNLICENSED",
   "author": "Denys Yevtushenko",
@@ -23,6 +23,7 @@
     "android:open": "npx cap open android"
   },
   "dependencies": {
+    "@capacitor-firebase/analytics": "^8.2.0",
     "@capacitor/android": "^6.2.1",
     "@capacitor/app": "^6.0.2",
     "@capacitor/app-launcher": "^6.0.4",

@@ -802,6 +802,10 @@ async function openApkDownload(url) {
                     downloadUrl,
                     message: 'Завантаження APK стартувало. Після завершення Android відкриє встановлення.'
                 });
+                AppAnalytics?.logEvent('update_download_started', {
+                    version: availableVersion,
+                    channel: appUpdateDebugState.channel || getSelectedChannel()
+                });
                 syncUpdateBannerRuntimeState();
                 return;
             }
@@ -878,6 +882,11 @@ function showAppUpdateBanner(manifest) {
     appUpdateEls.banner.hidden = false;
     requestAnimationFrame(() => {
         appUpdateEls.banner.classList.add('active');
+    });
+
+    AppAnalytics?.logEvent('update_banner_shown', {
+        version: manifest.version,
+        channel: manifest.channel
     });
 }
 

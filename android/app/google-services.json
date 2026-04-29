@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "686915243489",
+    "project_id": "work-shift-calendar-88",
+    "storage_bucket": "work-shift-calendar-88.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:686915243489:android:f73e06615c34b093f4d6a0",
+        "android_client_info": {
+          "package_name": "com.denk0.workshiftcalendar"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdGcSV2atCsarHhLhiSg7QkbnjCp6GLck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

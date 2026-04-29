@@ -61,9 +61,9 @@ Purpose:
 ## Current state
 
 - Date of this snapshot: `2026-04-29`
-- App version in source files: `1.0.52`
-- Beta manifest version: `1.0.52`
-- Stable manifest version: `1.0.52`
+- App version in source files: `1.0.53`
+- Beta manifest version: `1.0.52` (beta-1.0.53 workflow running as of 2026-04-29)
+- Stable manifest version: `1.0.52` (will be promoted to 1.0.53 after beta workflow completes)
 - One-time stable scheduler config is now disarmed by default (`enabled: false`) and should only be armed for explicit one-time stable windows
 - Repository is currently public as a transition bridge for existing app installs; plan is to keep it public for about 2 weeks after the Cloudflare migration release, then make it private
 - New public hosting target is Cloudflare Workers at `https://work-shift-calendar.denidinamo.workers.dev`
@@ -83,6 +83,7 @@ Purpose:
 - `1.0.50` temporarily switched fallback update behavior to direct APK links
 - `1.0.51` hid disabled extra profiles from the day modal list
 - `1.0.52` moved update UX back to GitHub release-page flow with clearer Assets guidance for non-technical users
+- `1.0.53` transitional release — restores direct APK download via native ApkDownload plugin; APK delivered from Cloudflare R2; manifests served from Cloudflare Workers; this is the version that migrates existing installs away from GitHub infrastructure
 - README was intentionally rewritten to be product-facing instead of developer-facing
 
 ## Product and documentation rules

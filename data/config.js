@@ -1,5 +1,5 @@
 // --- Дані та Налаштування ---
-const APP_RELEASE_VERSION = '1.0.53';
+const APP_RELEASE_VERSION = '1.0.54';
 const APP_UPDATE_CHANNEL_DEFAULT = 'stable';
 const APP_PUBLIC_BASE_URL = 'https://work-shift-calendar.denidinamo.workers.dev';
 const APP_UPDATE_MANIFEST_URLS = {
@@ -165,6 +165,16 @@ const APP_RELEASE_NOTES = {
             {
                 title: 'Не потрібно шукати файл у браузері',
                 text: 'Android сам відкриє встановлення після завантаження.'
+            }
+        ]
+    },
+    '1.0.54': {
+        title: 'Що нового у 1.0.54',
+        summary: 'Технічне оновлення для покращення стабільності застосунку.',
+        items: [
+            {
+                title: 'Внутрішні покращення',
+                text: 'Оптимізації під капотом для стабільнішої роботи.'
             }
         ]
     }
