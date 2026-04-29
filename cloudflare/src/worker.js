@@ -88,7 +88,10 @@ export default {
             return serveDownload(request, env, url);
         }
 
-        const response = await env.ASSETS.fetch(request);
+        const assetRequest = url.pathname === '/'
+            ? new Request(new URL('/index.html', url), request)
+            : request;
+        const response = await env.ASSETS.fetch(assetRequest);
         if (MANIFEST_PATHS.has(url.pathname)) {
             return addManifestHeaders(response);
         }
