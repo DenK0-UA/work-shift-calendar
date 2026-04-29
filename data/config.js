@@ -1,5 +1,5 @@
 // --- Дані та Налаштування ---
-const APP_RELEASE_VERSION = '1.0.52';
+const APP_RELEASE_VERSION = '1.0.53';
 const APP_UPDATE_CHANNEL_DEFAULT = 'stable';
 const APP_PUBLIC_BASE_URL = 'https://work-shift-calendar.denidinamo.workers.dev';
 const APP_UPDATE_MANIFEST_URLS = {
@@ -151,6 +151,20 @@ const APP_RELEASE_NOTES = {
             {
                 title: 'Менше плутанини у fallback-сценарії',
                 text: 'Кнопки та статуси узгоджені з реальним шляхом оновлення, без зайвих неоднозначностей.'
+            }
+        ]
+    },
+    '1.0.53': {
+        title: 'Що нового у 1.0.53',
+        summary: 'Оновлення тепер завантажуються напряму в застосунку — без переходу на сторінку GitHub.',
+        items: [
+            {
+                title: 'Пряме завантаження APK',
+                text: 'Натискаєте кнопку оновлення — APK починає завантажуватися одразу, без додаткових кроків.'
+            },
+            {
+                title: 'Не потрібно шукати файл у браузері',
+                text: 'Android сам відкриє встановлення після завантаження.'
             }
         ]
     }
