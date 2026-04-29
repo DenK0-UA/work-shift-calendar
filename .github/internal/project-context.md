@@ -60,11 +60,15 @@ Purpose:
 
 ## Current state
 
-- Date of this snapshot: `2026-04-18`
+- Date of this snapshot: `2026-04-29`
 - App version in source files: `1.0.52`
 - Beta manifest version: `1.0.52`
 - Stable manifest version: `1.0.52`
 - One-time stable scheduler config is now disarmed by default (`enabled: false`) and should only be armed for explicit one-time stable windows
+- Repository is currently public as a transition bridge for existing app installs; plan is to keep it public for about 2 weeks after the Cloudflare migration release, then make it private
+- New public hosting target is Cloudflare Workers at `https://work-shift-calendar.denidinamo.workers.dev`
+- GitHub Pages remains as a temporary legacy bridge while older app versions still read manifests from `https://denk0-ua.github.io/work-shift-calendar/`
+- Release APK files should be uploaded to Cloudflare R2 bucket `work-shift-calendar-releases` under `downloads/`; manifests should point to Cloudflare `/downloads/*.apk` URLs
 
 ## Recent user-visible work
 
@@ -118,15 +122,17 @@ Purpose:
 
 ## App update and release flow
 
-- App update manifests are served from GitHub Pages, not directly from the raw repo during normal app use
+- App update manifests are served from Cloudflare Workers for new versions; GitHub Pages remains a temporary legacy bridge during the repo-privacy migration
 - `js/app-update.js` uses `cache: 'no-store'` and a cache-busting query param when checking manifests
 - Release notes shown in-app live in `data/config.js` under `APP_RELEASE_NOTES`
+- Android update flow should prefer the native `ApkDownload` plugin and direct APK URLs; fallback opens the APK URL directly, not a GitHub release page
 - Releases are user-directed only: do not create beta tags, stable tags, scheduled promotions, or release dispatches unless the user explicitly tells you to do it
 - In this repo, a user request to "release beta/stable" means finishing the app-visible release path, not stopping at a tag or GitHub release page
 - Beta release flow uses `beta-x.y.z` tags
 - Stable promotion uses `stable-x.y.z` tags or the one-time scheduler flow
 - `promote-stable.yml` promotes the beta APK to stable, updates `stable/version.json`, and commits metadata back to `main`
-- `deploy-pages.yml` publishes the repo to GitHub Pages so the app can see updated manifests
+- `deploy-cloudflare.yml` builds `www/` and deploys the Worker/Assets app to Cloudflare
+- `deploy-pages.yml` now publishes only `www/` to GitHub Pages as a temporary legacy bridge, not the whole repo tree
 
 ## Release workflow gotchas
 

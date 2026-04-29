@@ -10,6 +10,8 @@ const configPath = path.join(rootDir, configRelativePath);
 const repository = process.env.GITHUB_REPOSITORY || 'DenK0-UA/work-shift-calendar';
 const defaultBranch = process.env.DEFAULT_BRANCH || 'main';
 const githubToken = process.env.GITHUB_TOKEN || '';
+const appPublicBaseUrl = (process.env.APP_PUBLIC_BASE_URL || 'https://work-shift-calendar.denidinamo.workers.dev').replace(/\/+$/, '');
+const cloudflareManifestUrl = `${appPublicBaseUrl}/stable/version.json`;
 const pagesManifestUrl = 'https://denk0-ua.github.io/work-shift-calendar/stable/version.json';
 
 const githubHeaders = {
@@ -152,10 +154,12 @@ const fetchReleaseState = async (version) => {
         { allow404: true }
     );
     const pagesManifest = await fetchJson(`${pagesManifestUrl}?${cacheBust}`, { allow404: true });
+    const cloudflareManifest = await fetchJson(`${cloudflareManifestUrl}?${cacheBust}`, { allow404: true });
 
     return {
         releaseExists: stableRelease?.tag_name === `v${version}`,
         mainVersion: typeof mainManifest?.version === 'string' ? mainManifest.version : '',
+        cloudflareVersion: typeof cloudflareManifest?.version === 'string' ? cloudflareManifest.version : '',
         pagesVersion: typeof pagesManifest?.version === 'string' ? pagesManifest.version : ''
     };
 };
@@ -171,7 +175,13 @@ const waitForCondition = async (label, getState, isReady, { timeoutMs, intervalM
             return lastState;
         }
 
-        log(`${label} is still pending. main=${lastState.mainVersion || 'n/a'}, release=${lastState.releaseExists}, pages=${lastState.pagesVersion || 'n/a'}`);
+        log(
+            `${label} is still pending. ` +
+            `main=${lastState.mainVersion || 'n/a'}, ` +
+            `release=${lastState.releaseExists}, ` +
+            `cloudflare=${lastState.cloudflareVersion || 'n/a'}, ` +
+            `pages=${lastState.pagesVersion || 'n/a'}`
+        );
         await sleep(intervalMs);
     }
 
@@ -198,20 +208,27 @@ try {
 
     let state = await fetchReleaseState(config.version);
 
-    log(`Current state before action: main=${state.mainVersion || 'n/a'}, release=${state.releaseExists}, pages=${state.pagesVersion || 'n/a'}`);
+    log(
+        `Current state before action: ` +
+        `main=${state.mainVersion || 'n/a'}, ` +
+        `release=${state.releaseExists}, ` +
+        `cloudflare=${state.cloudflareVersion || 'n/a'}, ` +
+        `pages=${state.pagesVersion || 'n/a'}`
+    );
 
     const mainAheadOfScheduled = compareVersions(state.mainVersion, config.version) > 0;
+    const cloudflareAheadOfScheduled = compareVersions(state.cloudflareVersion, config.version) > 0;
     const pagesAheadOfScheduled = compareVersions(state.pagesVersion, config.version) > 0;
-    if (mainAheadOfScheduled || pagesAheadOfScheduled) {
+    if (mainAheadOfScheduled || cloudflareAheadOfScheduled || pagesAheadOfScheduled) {
         log(
             `Configured one-time version ${config.version} is stale ` +
-            `(main=${state.mainVersion || 'n/a'}, pages=${state.pagesVersion || 'n/a'}). Skipping without failure.`
+            `(main=${state.mainVersion || 'n/a'}, cloudflare=${state.cloudflareVersion || 'n/a'}, pages=${state.pagesVersion || 'n/a'}). Skipping without failure.`
         );
         process.exit(0);
     }
 
-    if (state.pagesVersion === config.version) {
-        log(`Stable ${config.version} is already live on GitHub Pages.`);
+    if (state.cloudflareVersion === config.version && state.pagesVersion === config.version) {
+        log(`Stable ${config.version} is already live on Cloudflare and legacy GitHub Pages.`);
         process.exit(0);
     }
 
@@ -238,12 +255,27 @@ try {
         );
     }
 
+    if (state.cloudflareVersion !== config.version) {
+        log(`Dispatching Cloudflare deployment for stable ${config.version}.`);
+        await dispatchWorkflow('deploy-cloudflare.yml');
+
+        state = await waitForCondition(
+            'Cloudflare deployment',
+            () => fetchReleaseState(config.version),
+            (nextState) => nextState.cloudflareVersion === config.version,
+            {
+                timeoutMs: 15 * 60 * 1000,
+                intervalMs: 15 * 1000
+            }
+        );
+    }
+
     if (state.pagesVersion !== config.version) {
-        log(`Dispatching GitHub Pages deployment for stable ${config.version}.`);
+        log(`Dispatching legacy GitHub Pages deployment for stable ${config.version}.`);
         await dispatchWorkflow('deploy-pages.yml');
 
         state = await waitForCondition(
-            'GitHub Pages deployment',
+            'Legacy GitHub Pages deployment',
             () => fetchReleaseState(config.version),
             (nextState) => nextState.pagesVersion === config.version,
             {

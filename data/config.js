@@ -1,11 +1,12 @@
 // --- Дані та Налаштування ---
 const APP_RELEASE_VERSION = '1.0.52';
 const APP_UPDATE_CHANNEL_DEFAULT = 'stable';
+const APP_PUBLIC_BASE_URL = 'https://work-shift-calendar.denidinamo.workers.dev';
 const APP_UPDATE_MANIFEST_URLS = {
-    stable: 'https://denk0-ua.github.io/work-shift-calendar/stable/version.json',
-    beta: 'https://denk0-ua.github.io/work-shift-calendar/beta/version.json'
+    stable: `${APP_PUBLIC_BASE_URL}/stable/version.json`,
+    beta: `${APP_PUBLIC_BASE_URL}/beta/version.json`
 };
-const APP_UPDATE_BETA_ACCESS_URL = 'https://denk0-ua.github.io/work-shift-calendar/beta/access.json';
+const APP_UPDATE_BETA_ACCESS_URL = `${APP_PUBLIC_BASE_URL}/beta/access.json`;
 const APP_UPDATE_CHECK_ENABLED = true;
 const APP_UPDATE_CHECK_TIMEOUT_MS = 5000;
 const APP_RELEASE_NOTES = {

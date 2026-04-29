@@ -707,7 +707,7 @@ function openDownloadFallback(downloadUrl, message) {
         }).catch(() => {
             const openedWindow = window.open(externalUrl, '_blank', 'noopener');
             if (!openedWindow) {
-                window.location.assign(toReleasePageUrl(externalUrl));
+                window.location.assign(externalUrl);
             }
         });
         return;
@@ -715,7 +715,7 @@ function openDownloadFallback(downloadUrl, message) {
 
     const openedWindow = window.open(externalUrl, '_blank', 'noopener');
     if (!openedWindow) {
-        window.location.assign(toReleasePageUrl(externalUrl));
+        window.location.assign(externalUrl);
     }
 }
 
@@ -750,67 +750,70 @@ function syncUpdateBannerRuntimeState() {
     }
 
     if (status === 'open-release-page') {
-        appUpdateEls.downloadBtn.textContent = 'Відкрити сторінку оновлення';
+        appUpdateEls.downloadBtn.textContent = 'Відкрити завантаження';
         if (appUpdateEls.text) {
-            appUpdateEls.text.textContent = 'Відкрили сторінку оновлення. У блоці Assets натисніть APK-файл. Source code можна ігнорувати.';
+            appUpdateEls.text.textContent = 'Відкрили резервне завантаження APK. Якщо файл не почав завантажуватися, натисніть кнопку ще раз.';
         }
     }
 }
 
-function toReleasePageUrl(url) {
-    const externalUrl = toExternalDownloadUrl(url);
-    if (!externalUrl) {
-        return '';
-    }
-
-    try {
-        const parsedUrl = new URL(externalUrl);
-        const pathMatch = parsedUrl.pathname.match(/^(\/[^/]+\/[^/]+)\/releases\/download\/([^/]+)\/[^/]+$/i);
-        if (pathMatch) {
-            return `${parsedUrl.origin}${pathMatch[1]}/releases/tag/${pathMatch[2]}`;
-        }
-    } catch (error) {}
-
-    return externalUrl;
-}
-
-function openApkDownload(url) {
+async function openApkDownload(url) {
     const downloadUrl = toExternalDownloadUrl(url);
     if (!downloadUrl) {
         return;
     }
 
-    const releasePageUrl = toReleasePageUrl(downloadUrl);
-    if (!releasePageUrl) {
-        return;
-    }
+    const availableVersion = appUpdateDebugState.availableVersion || APP_RELEASE_VERSION;
+    const fileName = buildApkFileName(downloadUrl, availableVersion);
+    const apkDownloadPlugin = window.Capacitor?.Plugins?.ApkDownload;
 
-    setAppUpdateDebugState({
-        status: 'open-release-page',
-        channel: appUpdateDebugState.channel || getSelectedChannel(),
-        availableVersion: appUpdateDebugState.availableVersion || '',
-        downloadUrl: releasePageUrl,
-        message: 'Відкриваємо сторінку оновлення. У блоці Assets натисніть файл APK, а Source code ігноруйте.'
-    });
-
-    const browserPlugin = window.Capacitor?.Plugins?.Browser;
-    if (browserPlugin?.open) {
-        browserPlugin.open({
-            url: releasePageUrl,
-            presentationStyle: 'fullscreen'
-        }).catch(() => {
-            const openedWindow = window.open(releasePageUrl, '_blank', 'noopener');
-            if (!openedWindow) {
-                window.location.assign(releasePageUrl);
-            }
+    if (isNativeAndroidApp() && apkDownloadPlugin?.downloadApk) {
+        setAppUpdateDebugState({
+            status: 'download-starting',
+            channel: appUpdateDebugState.channel || getSelectedChannel(),
+            availableVersion,
+            downloadUrl,
+            message: 'Готуємо пряме завантаження APK.'
         });
+
+        try {
+            const result = await apkDownloadPlugin.downloadApk({
+                url: downloadUrl,
+                fileName
+            });
+
+            if (result?.permissionRequired) {
+                setAppUpdateDebugState({
+                    status: 'permission-required',
+                    channel: appUpdateDebugState.channel || getSelectedChannel(),
+                    availableVersion,
+                    downloadUrl,
+                    message: 'Потрібен дозвіл Android на встановлення APK з цього застосунку.'
+                });
+                syncUpdateBannerRuntimeState();
+                return;
+            }
+
+            if (result?.started) {
+                setAppUpdateDebugState({
+                    status: 'downloading',
+                    channel: appUpdateDebugState.channel || getSelectedChannel(),
+                    availableVersion,
+                    downloadUrl,
+                    message: 'Завантаження APK стартувало. Після завершення Android відкриє встановлення.'
+                });
+                syncUpdateBannerRuntimeState();
+                return;
+            }
+        } catch (error) {
+            console.warn('Не вдалося запустити пряме завантаження APK', error);
+        }
+
+        openDownloadFallback(downloadUrl, 'Не вдалося запустити пряме завантаження. Відкриваємо APK у браузері.');
         return;
     }
 
-    const openedWindow = window.open(releasePageUrl, '_blank', 'noopener');
-    if (!openedWindow) {
-        window.location.assign(releasePageUrl);
-    }
+    openDownloadFallback(downloadUrl, 'Відкриваємо завантаження APK.');
 }
 
 function getDismissedUntil(channel) {

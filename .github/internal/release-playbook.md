@@ -16,6 +16,8 @@
 - Beta manifest: `beta/version.json`
 - Stable manifest: `stable/version.json`
 - Release workflows: `.github/workflows/`
+- Public app base URL: `APP_PUBLIC_BASE_URL` repo variable, defaulting to `https://work-shift-calendar.denidinamo.workers.dev`
+- Release APK storage: Cloudflare R2 bucket `work-shift-calendar-releases`, object prefix `downloads/`
 
 ## Beta release flow
 
@@ -23,8 +25,9 @@
 - Run `node scripts/release-preflight.mjs beta x.y.z`
 - Beta release uses tag `beta-x.y.z`
 - Verify the GitHub beta release exists and `beta/version.json` is updated
-- Verify GitHub Pages serves the updated beta manifest, because that is what the app checks for update visibility
-- If the GitHub release exists but Pages still serves the old beta manifest, do not stop there; finish the Pages publication step and re-check the public manifest
+- Verify the beta APK was uploaded to Cloudflare R2 and `beta/version.json` points to the Cloudflare `/downloads/*.apk` URL
+- Verify Cloudflare serves the updated beta manifest, because that is what new app versions check for update visibility
+- During the temporary public-repo bridge, also verify GitHub Pages serves the updated beta manifest for older app versions
 
 ## Stable promotion flow
 
@@ -32,8 +35,9 @@
 - Run `node scripts/release-preflight.mjs stable x.y.z`
 - Stable promotion uses tag `stable-x.y.z` or the one-time scheduler path
 - Verify the GitHub stable release exists and `stable/version.json` is updated on `main`
-- Verify GitHub Pages serves the updated stable manifest, because the app reads manifests from Pages
-- If the GitHub release exists but Pages still serves the old stable manifest, the task is still incomplete from the app's perspective
+- Verify the stable APK was uploaded to Cloudflare R2 and `stable/version.json` points to the Cloudflare `/downloads/*.apk` URL
+- Verify Cloudflare serves the updated stable manifest, because that is what new app versions check for update visibility
+- During the temporary public-repo bridge, also verify GitHub Pages serves the updated stable manifest for older app versions
 
 ## Scheduled stable promotion
 
@@ -47,16 +51,17 @@
 
 ## Release verification checklist
 
-- Treat the task as incomplete until the app-visible manifest on GitHub Pages serves the expected version
+- Treat the task as incomplete until the app-visible manifest on Cloudflare serves the expected version
 - Release exists on GitHub with the expected tag
 - `beta/version.json` or `stable/version.json` on `main` has the expected version
-- GitHub Pages serves the same expected version
+- Cloudflare serves the same expected version
+- During the temporary migration bridge, GitHub Pages also serves the same expected version
 - `README.md` has been reviewed for any new product-facing benefits worth mentioning
 - Internal AI docs reflect the new version, workflow findings, and any new gotchas
 
 ## Known gotchas
 
 - Tag-triggered workflows run on detached HEAD; metadata commits need a temporary local branch before rebase and push
-- GitHub Actions bot pushes to `main` do not reliably trigger Pages deploy in this repo
-- A release is not fully visible to the app until GitHub Pages serves the updated manifest
+- GitHub Actions bot pushes to `main` do not reliably trigger downstream deploys in this repo, so release workflows explicitly dispatch Cloudflare and legacy Pages deployments after metadata commits
+- A release is not fully visible to the app until Cloudflare serves the updated manifest
 - If a manifest looks stale, re-check with a cache-busting query parameter before assuming the app update flow is broken

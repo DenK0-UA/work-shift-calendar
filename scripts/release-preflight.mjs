@@ -80,9 +80,10 @@ if (!Array.isArray(betaAccess.allowedInstallIds)) {
     fail('beta/access.json must contain an allowedInstallIds array.');
 }
 
-if (!configSource.includes('https://denk0-ua.github.io/work-shift-calendar/stable/version.json')
-    || !configSource.includes('https://denk0-ua.github.io/work-shift-calendar/beta/version.json')) {
-    fail('App update manifest URLs are not pointing to GitHub Pages.');
+if (!configSource.includes('APP_PUBLIC_BASE_URL')
+    || !configSource.includes('/stable/version.json')
+    || !configSource.includes('/beta/version.json')) {
+    fail('App update manifest URLs are not pointing to the configured public app base URL.');
 }
 
 console.log(`Release preflight passed for ${channel} ${version}.`);
