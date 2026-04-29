@@ -69,6 +69,9 @@ Purpose:
 - New public hosting target is Cloudflare Workers at `https://work-shift-calendar.denidinamo.workers.dev`
 - GitHub Pages remains as a temporary legacy bridge while older app versions still read manifests from `https://denk0-ua.github.io/work-shift-calendar/`
 - Release APK files should be uploaded to Cloudflare R2 bucket `work-shift-calendar-releases` under `downloads/`; manifests should point to Cloudflare `/downloads/*.apk` URLs
+- R2 is enabled, bucket `work-shift-calendar-releases` exists, and remote upload/get was verified with Wrangler
+- First Cloudflare Worker deploy from `main` succeeded for commit `d59f20c`; GitHub Actions run: https://github.com/DenK0-UA/work-shift-calendar/actions/runs/25119991999
+- Legacy GitHub Pages bridge deploy also succeeded for commit `d59f20c`; GitHub Actions run: https://github.com/DenK0-UA/work-shift-calendar/actions/runs/25119992017
 
 ## Recent user-visible work
 
