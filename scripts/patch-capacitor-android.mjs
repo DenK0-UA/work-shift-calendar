@@ -78,6 +78,14 @@ const patchJobs = [
       oldValue: 'abortOnError false',
       newValue: 'abortOnError = false',
     },
+    {
+      oldValue: '    flatDir{\n        dirs \'src/main/libs\', \'libs\'\n    }\n',
+      newValue: '',
+    },
+    {
+      oldValue: "    implementation fileTree(dir: 'src/main/libs', include: ['*.jar'])\n",
+      newValue: '',
+    },
   ]),
 ];
 
