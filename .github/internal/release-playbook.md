@@ -25,6 +25,7 @@
 - Run `node scripts/release-preflight.mjs beta x.y.z`
 - Beta release uses tag `beta-x.y.z`
 - Verify the GitHub beta release exists and `beta/version.json` is updated
+- Verify `vX.Y.Z-beta` points to the same commit as `beta-X.Y.Z`; if GitHub created it from stale `main`, retarget the release tag to the beta source commit
 - Verify the beta APK was uploaded to Cloudflare R2 and `beta/version.json` points to the Cloudflare `/downloads/*.apk` URL
 - Verify Cloudflare serves the updated beta manifest, because that is what new app versions check for update visibility
 - During the temporary public-repo bridge, also verify GitHub Pages serves the updated beta manifest for older app versions
@@ -62,6 +63,7 @@
 ## Known gotchas
 
 - Tag-triggered workflows run on detached HEAD; metadata commits need a temporary local branch before rebase and push
+- `softprops/action-gh-release` may create `vX.Y.Z-beta` from the default branch when `tag_name` differs from the triggering `beta-X.Y.Z` tag; verify and retarget that release tag when needed
 - GitHub Actions bot pushes to `main` do not reliably trigger downstream deploys in this repo, so release workflows explicitly dispatch Cloudflare and legacy Pages deployments after metadata commits
 - A release is not fully visible to the app until Cloudflare serves the updated manifest
 - If a manifest looks stale, re-check with a cache-busting query parameter before assuming the app update flow is broken

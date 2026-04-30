@@ -5,6 +5,7 @@
 - README or internal-doc changes only: read the final diff and confirm no accidental technical leakage into `README.md`
 - Root UI changes (`index.html`, `js/`, `styles/`, `data/`): read `.github/internal/coding-guardrails.md`, run `get_errors` for touched files, and `npm run build:web`
 - JS or script logic changes: run `npm run lint` to catch syntax/reference errors before release work
+- Storage snapshot changes: run `npm run lint`, `npm run build:web`, and a focused smoke test for snapshot capture, restore from missing `scheduleConfig`, corrupted JSON recovery, and snapshot clearing
 - Update-flow changes: run `get_errors`, `npm run build:web`, and verify manifest/version behavior as needed
 - Android or Capacitor changes: run `npm run cap:android`; if the change is deeper, also run Gradle assembly from `android/`
 - Workflow or release-script changes: validate syntax, run safe local script checks when possible, and verify the expected remote chain conceptually or with public API checks
@@ -33,6 +34,7 @@
 - `README.md` should describe user value, not developer steps
 - Internal docs should capture development context, decisions, and ideas that may matter in future chats
 - After releases, sync both user-facing and AI-facing docs if the release changed what users see or what developers must remember
+- For beta releases, verify both `beta-X.Y.Z` and `vX.Y.Z-beta` point to the intended source commit when the GitHub release tag is created by workflow
 
 ## Internal doc sync hints
 

@@ -14,3 +14,4 @@
 - `2026-04-29`: New update/hosting direction is Cloudflare Workers for web/manifests plus Cloudflare R2 for APK files; GitHub Pages remains only as a temporary bridge while older installed versions migrate
 - `2026-04-29`: Keep `work-shift-calendar` public for roughly 2 weeks after the Cloudflare migration release, then make the repository private once existing installs have had time to update
 - `2026-04-29`: Android updates should use direct APK downloads through the native `ApkDownload` plugin, with a direct APK URL fallback instead of sending users to GitHub release pages
+- `2026-04-30`: User-data protection should first use automatic local snapshots rather than user-facing JSON import/export, because simple users should not need to manage backup files for normal recovery

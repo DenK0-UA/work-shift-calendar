@@ -60,10 +60,10 @@ Purpose:
 
 ## Current state
 
-- Date of this snapshot: `2026-04-29`
-- App version in source files: `1.0.53`
-- Beta manifest version: `1.0.52` (beta-1.0.53 workflow running as of 2026-04-29)
-- Stable manifest version: `1.0.52` (will be promoted to 1.0.53 after beta workflow completes)
+- Date of this snapshot: `2026-04-30`
+- App version in source files: `1.0.55`
+- Beta manifest version: `1.0.55`
+- Stable manifest version: `1.0.54`
 - One-time stable scheduler config is now disarmed by default (`enabled: false`) and should only be armed for explicit one-time stable windows
 - Repository is currently public as a transition bridge for existing app installs; plan is to keep it public for about 2 weeks after the Cloudflare migration release, then make it private
 - New public hosting target is Cloudflare Workers at `https://work-shift-calendar.denidinamo.workers.dev`
@@ -84,6 +84,8 @@ Purpose:
 - `1.0.51` hid disabled extra profiles from the day modal list
 - `1.0.52` moved update UX back to GitHub release-page flow with clearer Assets guidance for non-technical users
 - `1.0.53` transitional release — restores direct APK download via native ApkDownload plugin; APK delivered from Cloudflare R2; manifests served from Cloudflare Workers; this is the version that migrates existing installs away from GitHub infrastructure
+- `1.0.54` added Firebase Analytics and Android compatibility work for the signed build
+- `1.0.55` added automatic local storage snapshots for schedule data, notes, manual day changes, profiles, theme/color settings, and cautious restore when critical local data is missing or JSON is corrupted
 - README was intentionally rewritten to be product-facing instead of developer-facing
 
 ## Product and documentation rules
@@ -124,6 +126,14 @@ Purpose:
 - Keep DOM listener bindings guarded where stale HTML or partial loads could leave elements missing
 - In UI work, preserve selector names, event wiring, overlay behavior, and close/open flows unless you have traced every dependent path first
 
+## Storage snapshots
+
+- `js/storage-snapshots.js` loads immediately after `data/config.js` and before app state hydration so it can restore damaged user data before `schedule.js` reads from `localStorage`
+- Snapshots are stored under the `appSnapshot:` prefix and keep the latest 5 copies
+- Snapshot data covers `scheduleConfig`, `customDayStatuses`, `dayNotes`, `colleagueProfiles`, `workCalendarSettings`, `stylePreset`, `theme`, and `themeMode`
+- Automatic restore is intentionally conservative: it restores only when JSON user data is corrupted or critical `scheduleConfig` is missing while a restorable snapshot exists
+- Hard reset clears the `appSnapshot:` prefix so intentionally deleted data does not reappear
+
 ## App update and release flow
 
 - App update manifests are served from Cloudflare Workers for new versions; GitHub Pages remains a temporary legacy bridge during the repo-privacy migration
@@ -145,6 +155,7 @@ Purpose:
 - `.github/workflows/schedule-stable-once.yml` polls every 5 minutes and dispatches `promote-stable.yml`, then dispatches `deploy-pages.yml`
 - GitHub cron is not second-accurate; scheduled releases can drift by a few minutes
 - If `.github/one-time-stable-release.json` is left enabled with an old version, scheduled runs can time out in metadata wait loops unless stale-version guards are present; keep one-time config disarmed when idle
+- `release-beta.yml` creates the public GitHub release tag `vX.Y.Z-beta` from a detached checkout before the workflow commits metadata back to `main`; after tag-triggered beta releases, verify `vX.Y.Z-beta` points to the same commit as `beta-X.Y.Z` and retarget it if GitHub created it from stale `main`
 
 ## Android and Gradle notes
 
@@ -154,7 +165,7 @@ Purpose:
 
 ## Reset and recovery notes
 
-- `SettingsState.hardResetAllData()` is expected to clear schedule data, profile data, app update keys, session copies, caches, and service workers
+- `SettingsState.hardResetAllData()` is expected to clear schedule data, profile data, storage snapshots, app update keys, session copies, caches, and service workers
 - If something in graphs/profiles/update UI behaves inconsistently, a full reset path should remain a valid recovery option
 
 ## How to extend this file
