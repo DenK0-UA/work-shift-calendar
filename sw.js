@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v5-2026-04-05';
+const CACHE_VERSION = 'v6-2026-04-30';
 const STATIC_CACHE = `static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `dynamic-${CACHE_VERSION}`;
 
@@ -6,6 +6,7 @@ const STATIC_ASSETS = [
     '/',
     '/index.html',
     '/data/config.js',
+    '/js/storage-snapshots.js',
     '/js/weather.js',
     '/js/schedule.js',
     '/js/profiles.js',

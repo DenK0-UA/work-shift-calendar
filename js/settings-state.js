@@ -5,7 +5,7 @@
         theme: 'theme',
         themeMode: 'themeMode'
     };
-    const APP_STORAGE_PREFIXES = ['appUpdate:'];
+    const APP_STORAGE_PREFIXES = ['appUpdate:', 'appSnapshot:'];
     const STYLE_PRESET_DEFINITIONS = Object.freeze([
         Object.freeze({ id: 'current', label: 'Поточний' })
     ]);
@@ -105,6 +105,7 @@
     const safeStorageSet = (key, value) => {
         try {
             localStorage.setItem(key, value);
+            window.StorageSnapshots?.queueCapture?.(`write:${key}`);
         } catch (e) {
             console.warn('Не вдалось зберегти налаштування', e);
         }
@@ -113,6 +114,7 @@
     const safeStorageRemove = (key) => {
         try {
             localStorage.removeItem(key);
+            window.StorageSnapshots?.queueCapture?.(`remove:${key}`);
         } catch (e) {}
     };
 
@@ -445,6 +447,8 @@
     };
 
     const hardResetAllData = async () => {
+        window.StorageSnapshots?.clearAllSnapshots?.();
+
         const allKeysToRemove = [
             ...Object.values(STORAGE_KEYS),
             ...getScheduleStorageKeys(),

@@ -112,6 +112,7 @@ function safeWriteJson(key, value, options = {}) {
         if (shouldRemove) {
             localStorage.removeItem(key);
             localStorage.removeItem(getStorageBackupKey(key));
+            window.StorageSnapshots?.queueCapture?.(`remove:${key}`);
             return true;
         }
 
@@ -121,6 +122,7 @@ function safeWriteJson(key, value, options = {}) {
         localStorage.setItem(key, serialized);
         localStorage.setItem(getStorageBackupKey(key), serialized);
         localStorage.removeItem(tempKey);
+        window.StorageSnapshots?.queueCapture?.(`write:${key}`);
         return true;
     } catch (error) {
         return false;
