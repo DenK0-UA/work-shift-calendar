@@ -127,12 +127,12 @@ Use this file when something breaks and the repo already taught us a likely fix 
 ### What usually went wrong
 
 - Pages deployment was not the final visible step yet
-- the scheduled workflow hit normal GitHub cron drift
+- the scheduled workflow hit normal GitHub cron drift when cron scheduling was still enabled
 
 ### Known fix direction
 
 - verify the full chain: release tag, manifest on `main`, manifest on Pages
-- expect cron drift of a few minutes for scheduled releases
+- historical note: when cron scheduling was enabled, drift of a few minutes was expected
 - after scheduled stable promotion, re-check whether the one-time config should be updated or disarmed
 
 ## Schedule One-Time Stable Release keeps failing after stable is already live
@@ -148,9 +148,10 @@ Use this file when something breaks and the repo already taught us a likely fix 
 
 ### Known fix direction
 
-- set `.github/one-time-stable-release.json` to `enabled: false` unless a one-time stable promotion is being actively scheduled
+- set `.github/one-time-stable-release.json` to `enabled: false` unless a manual one-time stable promotion is being actively prepared
 - when scheduling again, update `version`, `releaseAtUtc`, and `notes` together
 - keep scheduler script behavior tolerant to stale one-time targets so stale config does not fail the workflow
+- current policy: `.github/workflows/schedule-stable-once.yml` is manual-only and should not run every 5 minutes
 
 ## Android patching breaks Gradle unexpectedly
 

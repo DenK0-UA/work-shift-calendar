@@ -12,7 +12,7 @@
 - Release metadata changes: run `npm run release:check -- <beta|stable> <version>` and ensure `data/config.js` has a matching `APP_RELEASE_NOTES` entry for that version
 - Cloudflare deploy changes: run `npm run build:web`, syntax-check `cloudflare/src/worker.js`, and validate `wrangler.jsonc` with `npx wrangler deploy --dry-run` when credentials/config permit it
 - Release work: verify release existence, manifest on `main`, manifest on Cloudflare, and during the migration bridge manifest on GitHub Pages; do not treat the task as done until the Cloudflare manifest matches the released version
-- After stable release work, verify `.github/one-time-stable-release.json` is disabled or explicitly retargeted so the scheduler does not keep evaluating stale versions
+- After stable release work, verify `.github/one-time-stable-release.json` is disabled or explicitly retargeted; `.github/workflows/schedule-stable-once.yml` should remain manual-only without a cron trigger
 
 ## Regression-sensitive UI checks
 

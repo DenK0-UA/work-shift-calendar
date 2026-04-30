@@ -34,20 +34,20 @@
 
 - Stable promotion must target an already-published beta version
 - Run `node scripts/release-preflight.mjs stable x.y.z`
-- Stable promotion uses tag `stable-x.y.z` or the one-time scheduler path
+- Stable promotion normally uses tag `stable-x.y.z`; the one-time scheduler workflow is manual-only and should not run on a cron
 - Verify the GitHub stable release exists and `stable/version.json` is updated on `main`
 - Verify the stable APK was uploaded to Cloudflare R2 and `stable/version.json` points to the Cloudflare `/downloads/*.apk` URL
 - Verify Cloudflare serves the updated stable manifest, because that is what new app versions check for update visibility
 - During the temporary public-repo bridge, also verify GitHub Pages serves the updated stable manifest for older app versions
 
-## Scheduled stable promotion
+## Manual one-time stable helper
 
 - One-time scheduler config lives in `.github/one-time-stable-release.json`
 - Scheduler workflow lives in `.github/workflows/schedule-stable-once.yml`
 - Scheduler dispatches `promote-stable.yml` and then `deploy-pages.yml`
-- Scheduled time is stored in UTC and GitHub cron can drift by a few minutes
-- Keep `enabled: false` in `.github/one-time-stable-release.json` unless you are explicitly preparing a one-time stable release window
-- After a scheduled promotion completes, verify the release and disarm or retarget the one-time scheduler config immediately
+- The workflow is manual-only; do not add a cron trigger unless the user explicitly asks for timed stable releases again
+- Keep `enabled: false` in `.github/one-time-stable-release.json` unless you are explicitly preparing a manual one-time stable window
+- After a manual one-time promotion completes, verify the release and disarm or retarget the one-time scheduler config immediately
 - If `.github/one-time-stable-release.json` points to an older version than current `stable/version.json`, the scheduler should skip without failing; update or disable the config anyway to avoid confusion
 
 ## Release verification checklist

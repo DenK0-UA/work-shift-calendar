@@ -64,7 +64,7 @@ Purpose:
 - App version in source files: `1.0.55`
 - Beta manifest version: `1.0.55`
 - Stable manifest version: `1.0.54`
-- One-time stable scheduler config is now disarmed by default (`enabled: false`) and should only be armed for explicit one-time stable windows
+- One-time stable scheduler config is disarmed by default (`enabled: false`), and the scheduler workflow is manual-only; stable releases should happen only when the user asks
 - Repository is currently public as a transition bridge for existing app installs; plan is to keep it public for about 2 weeks after the Cloudflare migration release, then make it private
 - New public hosting target is Cloudflare Workers at `https://work-shift-calendar.denidinamo.workers.dev`
 - GitHub Pages remains as a temporary legacy bridge while older app versions still read manifests from `https://denk0-ua.github.io/work-shift-calendar/`
@@ -143,7 +143,7 @@ Purpose:
 - Releases are user-directed only: do not create beta tags, stable tags, scheduled promotions, or release dispatches unless the user explicitly tells you to do it
 - In this repo, a user request to "release beta/stable" means finishing the app-visible release path, not stopping at a tag or GitHub release page
 - Beta release flow uses `beta-x.y.z` tags
-- Stable promotion uses `stable-x.y.z` tags or the one-time scheduler flow
+- Stable promotion uses `stable-x.y.z` tags; the one-time stable workflow is manual-only and should not run on a cron
 - `promote-stable.yml` promotes the beta APK to stable, updates `stable/version.json`, and commits metadata back to `main`
 - `deploy-cloudflare.yml` builds `www/` and deploys the Worker/Assets app to Cloudflare
 - `deploy-pages.yml` now publishes only `www/` to GitHub Pages as a temporary legacy bridge, not the whole repo tree
@@ -152,8 +152,7 @@ Purpose:
 
 - Tag-triggered workflows run on detached HEAD; metadata commits need a temporary local branch before rebase and push
 - In this repo, GitHub Actions bot pushes to `main` do not reliably trigger Pages deploy, so explicit Pages dispatch may still be required
-- `.github/workflows/schedule-stable-once.yml` polls every 5 minutes and dispatches `promote-stable.yml`, then dispatches `deploy-pages.yml`
-- GitHub cron is not second-accurate; scheduled releases can drift by a few minutes
+- `.github/workflows/schedule-stable-once.yml` is kept only for manual dispatch and should not contain a scheduled cron trigger
 - If `.github/one-time-stable-release.json` is left enabled with an old version, scheduled runs can time out in metadata wait loops unless stale-version guards are present; keep one-time config disarmed when idle
 - `release-beta.yml` creates the public GitHub release tag `vX.Y.Z-beta` from a detached checkout before the workflow commits metadata back to `main`; after tag-triggered beta releases, verify `vX.Y.Z-beta` points to the same commit as `beta-X.Y.Z` and retarget it if GitHub created it from stale `main`
 

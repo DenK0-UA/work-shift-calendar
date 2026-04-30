@@ -26,7 +26,7 @@ Use this file for open ideas and follow-up work that is not yet a committed plan
 
 - `planned`: remove the remaining Android `flatDir` warnings if the cleanup is resumed later
 - `idea`: evaluate whether the generated `capacitor-cordova-android-plugins` module can be simplified or removed safely if it remains effectively empty
-- `planned`: after the scheduled stable `1.0.46` promotion completes, verify the full public release chain and then decide whether to disarm or reuse the one-time scheduler config
+- `resolved`: one-time stable scheduling is no longer cron-driven; stable releases are manual/user-directed, and `.github/workflows/schedule-stable-once.yml` should remain manual-only
 
 ## Process and documentation follow-ups
 
