@@ -111,6 +111,7 @@ Purpose:
 - Android wrapper lives in `android/`
 - Release and build scripts live in `scripts/`
 - GitHub Actions live in `.github/workflows/`
+- `CLAUDE.md` at repo root documents commands, architecture, and critical gotchas for Claude Code sessions
 
 ## Build and validation rules
 
@@ -159,8 +160,8 @@ Purpose:
 ## Android and Gradle notes
 
 - Local Android compatibility patching is handled by `scripts/patch-capacitor-android.mjs`
-- Recent Gradle cleanup reduced project-owned warnings substantially
-- If Android warning cleanup resumes later, remaining focus is the `flatDir` usage in the app and generated Cordova module
+- `flatDir` repositories and `fileTree` dependencies removed from `android/app/build.gradle`; patch script now also strips them from `android/capacitor-cordova-android-plugins/build.gradle` after each `cap sync` (both `libs/` dirs were empty)
+- Remaining open question: whether `capacitor-cordova-android-plugins` module can be safely simplified or removed (it is effectively empty)
 
 ## Reset and recovery notes
 
